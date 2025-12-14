@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load catalog_tags %}
+
+{% block title %}MARAIS — украшения{% endblock %}
+
+{% block content %}
+
+<section class="catalog-page">
+  <div class="container-m">
+    <div class="catalog-layout">
+      <aside class="filter-panel" data-filter-panel>
+        <div class="filter-header">
+          <h4 class="filter-title">Фильтр</h4>
+          <button class="filter-close" type="button" data-filter-close aria-label="Закрыть фильтр">✕</button>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Категории</div>
+          <div class="filter-options-list">
+            {% for cat in categories %}
+            <a href="?{% url_replace category=cat.slug %}"
+              class="filter-link {% if cat.slug in selected_categories %}active{% endif %}">
+              {{ cat.name }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Металл</div>
+          <div class="filter-options-list">
+            <a href="?{% url_replace metal='Золото' %}"
+              class="filter-link {% if 'Золото' in selected_metals %}active{% endif %}">Золото</a>
+            <a href="?{% url_replace metal='Серебро' %}"
+              class="filter-link {% if 'Серебро' in selected_metals %}active{% endif %}">Серебро</a>
+            <a href="?{% url_replace metal='Розовое золото' %}"
+              class="filter-link {% if 'Розовое золото' in selected_metals %}active{% endif %}">Розовое золото</a>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Покрытие</div>
+          <div class="filter-options-list">
+            <a href="?{% url_replace coverage='Гальваническое' %}"
+              class="filter-link {% if 'Гальваническое' in selected_coverages %}active{% endif %}">Гальваническое</a>
+            <a href="?{% url_replace coverage='Золочение' %}"
+              class="filter-link {% if 'Золочение' in selected_coverages %}active{% endif %}">Золочение</a>
+            <a href="?{% url_replace coverage='Родирование' %}"
+              class="filter-link {% if 'Родирование' in selected_coverages %}active{% endif %}">Родирование</a>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Вставки</div>
+          <div class="filter-options-list">
+            <a href="?{% url_replace stones='Рубин' %}"
+              class="filter-link {% if 'Рубин' in selected_stones %}active{% endif %}">Рубин</a>
+            <a href="?{% url_replace stones='Алмаз' %}"
+              class="filter-link {% if 'Алмаз' in selected_stones %}active{% endif %}">Алмаз</a>
+            <a href="?{% url_replace stones='Сапфир' %}"
+              class="filter-link {% if 'Сапфир' in selected_stones %}active{% endif %}">Сапфир</a>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Цвет</div>
+          <div class="filter-options-list">
+            <a href="?{% url_replace color='Белый' %}"
+              class="filter-link {% if 'Белый' in selected_colors %}active{% endif %}">Белый</a>
+            <a href="?{% url_replace color='Розовый' %}"
+              class="filter-link {% if 'Розовый' in selected_colors %}active{% endif %}">Розовый</a>
+            <a href="?{% url_replace color='Красное золото' %}"
+              class="filter-link {% if 'Красное золото' in selected_colors %}active{% endif %}">Красное золото</a>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-title">Бренды</div>
+          <div class="filter-options-list">
+            {% for brand in brands %}
+            <a href="?{% url_replace brand=brand.name %}"
+              class="filter-link {% if brand.name in selected_brands %}active{% endif %}">
+              {{ brand.name }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <a href="{% url 'catalog:home' %}" class="filter-clear-all"
+            style="display:block; margin-top:15px; text-decoration: underline; color: inherit;">Сбросить все</a>
+        </div>
+      </aside>
+      <div class="filter-backdrop" data-filter-backdrop></div>
+
+      <style>
+        .filter-options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .filter-link {
+          text-decoration: none;
+          color: #333;
+          font-size: 16px;
+          transition: color 0.2s;
+          cursor: pointer;
+        }
+
+        .filter-link:hover {
+          color: #a71930;
+        }
+
+        .filter-link.active {
+          font-weight: 500;
+          color: #a71930;
+        }
+      </style>
+
+      <div class="catalog-content">
+        <div class="catalog-mobile-bar">
+          <button class="filter-toggle" type="button" data-filter-toggle>
+            <span class="filter-toggle__icon" aria-hidden="true">
+              <img src="{% static 'images/filters.png' %}" alt="">
+            </span>
+            <span style="font-weight: 400;">Фильтр</span>
+          </button>
+        </div>
+        <div class="product-grid">
+          {% for product in products %}
+          <a class="product-card" href="{% url 'catalog:detail' product.slug %}"
+            style="text-decoration: none; color: inherit;">
+            <div class="product-thumb">
+              {% if product.main_image %}
+              <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+              {% else %}
+              <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}" style="opacity: 0.5;">
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <div class="product-row">
+                <h3 class="product-name">{{ product.title }}</h3>
+                <span class="product-price">{{ product.price|floatformat:0 }} ₸</span>
+              </div>
+              <p class="product-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
+            </div>
+          </a>
+          {% empty %}
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+            <p>Товары не найдены по выбранным фильтрам.</p>
+            <a href="{% url 'catalog:home' %}" class="btn-primary"
+              style="margin-top:20px; display:inline-block;">Сбросить фильтры</a>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="catalog-pagination">
+          {% if page_obj.has_previous %}
+          <a class="page-arrow" href="?{% url_replace page=page_obj.previous_page_number %}"
+            aria-label="Предыдущая страница">&#10094;</a>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <span class="page-link active">{{ num }}</span>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a class="page-link"
+            href="?{% url_replace page=num %}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a class="page-arrow" href="?{% url_replace page=page_obj.next_page_number %}"
+              aria-label="Следующая страница">&#10095;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

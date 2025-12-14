@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Регистрация — MARAIS{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+  <div class="container-m auth-grid">
+    <div class="auth-visual">
+      <img src="{% static 'images/hero_image.png' %}" alt="Изысканные украшения">
+      <div class="auth-visual__caption">
+        <h3>Изысканные украшения</h3>
+        <p>Откройте мир роскоши и элегантности</p>
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="{% static 'images/logo.png' %}" alt="MARAIS">
+      </div>
+      <h1 class="auth-title">Создать аккаунт</h1>
+      <p class="auth-subtitle">Заполните данные для регистрации</p>
+
+      {% if error %}
+      <div class="auth-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        <label class="auth-field">
+          <span>ФИО</span>
+          <div class="auth-input">
+            <input type="text" name="full_name" placeholder="Имя Фамилия" value="{{ full_name|default:'' }}" required>
+          </div>
+        </label>
+
+        <label class="auth-field">
+          <span>Электронная почта</span>
+          <div class="auth-input">
+            <input type="email" name="email" placeholder="example@email.com" value="{{ email|default:'' }}" required>
+          </div>
+        </label>
+
+        <label class="auth-field">
+          <span>Пароль</span>
+          <div class="auth-input">
+            <input type="password" name="password" placeholder="••••••••" required>
+          </div>
+        </label>
+
+        <label class="auth-field">
+          <span>Повторите пароль</span>
+          <div class="auth-input">
+            <input type="password" name="password_confirm" placeholder="••••••••" required>
+          </div>
+        </label>
+
+        <button class="btn-primary auth-submit" type="submit">Зарегистрироваться</button>
+      </form>
+
+      <div class="auth-divider">или</div>
+
+      <div class="auth-footer">
+        Уже есть аккаунт?
+        <a href="{% url 'users:login' %}" class="auth-link strong">Войти</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

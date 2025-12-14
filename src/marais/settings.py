@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from re import M, S
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-@8oby_i7)+#jti4r5@p989l%7j%v2@e9rgztn7_%+b(v)!3vgw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'marais.kz', 'www.marais.kz', '0.0.0.0', 'localhost', '192.168.31.99', 'backend.tbd.bz', '127.0.0.1', 'backend', '193.39.68.182']
 
 
 # Application definition
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'basket.context_processors.cart_processor',
             ],
         },
     },
@@ -86,6 +88,21 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'marais_db'),
+#         'USER': os.getenv('DB_USER', 'tab1k'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'TOBI8585'),
+#         'HOST': os.getenv('DB_HOST', 'db'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#         'CONN_MAX_AGE': 60,
+#         'OPTIONS': {
+#             'connect_timeout': 30,
+#         }
+#     }
+# }
 
 
 # Password validation
@@ -139,6 +156,34 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Authentication settings
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://marais.kz",
+    "https://marais.kz",
+    "https://marais.kz",
+    "http://marais.kz",
+    "http://marais.kz",
+    "http://localhost",
+    "http://localhost:8585",
+    "http://85.116.187.153:8585",
+    "http://85.116.187.153",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://marais.kz',
+    'http://www.marais.kz',
+    'http://85.116.187.153',
+    'http://localhost',
+    'https://marais.kz',
+    'https://www.marais.kz',
+]
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+DEFAULT_UPLOAD_LIMIT_MB = 100
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

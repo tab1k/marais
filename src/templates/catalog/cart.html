@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Корзина — MARAIS{% endblock %}
+
+{% block content %}
+
+<section class="cart-page">
+  <div class="container-m">
+    <div class="cart-page__title">Корзина</div>
+    <div class="cart-layout">
+      <div class="cart-list">
+        {% for item in items %}
+        <article class="cart-item">
+          <div class="cart-item__media">
+            {% if item.product.main_image %}
+            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.title }}">
+            {% else %}
+            <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ item.product.title }}">
+            {% endif %}
+          </div>
+          <div class="cart-item__body">
+            <div class="cart-item__text">
+              <h3 class="cart-item__title">{{ item.product.title }}</h3>
+              <p class="cart-item__meta">{{ item.product.brand_ref.name }}, {{ item.product.metal }}{% if item.size %},
+                Размер: {{ item.size }}{% endif %}</p>
+            </div>
+            <div class="cart-item__controls">
+              <div class="qty">
+                <form action="{% url 'basket:update' item.pk %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="decrement" class="qty__btn">−</button>
+                </form>
+                <span class="qty__value">{{ item.quantity }}</span>
+                <form action="{% url 'basket:update' item.pk %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="increment" class="qty__btn">+</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="cart-item__price">{{ item.price|floatformat:0 }} ₸</div>
+          <form action="{% url 'basket:remove' item.pk %}" method="post">
+            {% csrf_token %}
+            <button class="cart-item__remove" type="submit" aria-label="Удалить">×</button>
+          </form>
+        </article>
+        {% empty %}
+        <p>Ваша корзина пуста.</p>
+        {% endfor %}
+
+
+
+      </div>
+
+      {% if items %}
+      <aside class="cart-summary">
+        <h4 class="cart-summary__title">Итого</h4>
+        <div class="cart-summary__row">
+          <span>Сумма товаров</span>
+          <span>{{ total|floatformat:0 }} ₸</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Доставка</span>
+          <span>Бесплатно</span>
+        </div>
+        <div class="cart-summary__divider"></div>
+        <div class="cart-summary__row cart-summary__row--total">
+          <span>Всего к оплате</span>
+          <span>{{ total|floatformat:0 }} ₸</span>
+        </div>
+        <div class="cart-summary__buttons">
+          <a href="#" class="btn-primary cart-summary__btn">Оформить заказ</a>
+          <a href="#" class="btn-secondary cart-summary__btn">Поделиться</a>
+        </div>
+
+        <details class="cart-info" open>
+          <summary>Информация о доставке</summary>
+          <div class="cart-info__body">
+            <p>Мы отправляем заказы из Алматы. В обычные дни оформление и передача в доставку занимает один день. В
+              период акций и праздников обработка может занять немного больше времени.</p>
+            <p>Доставка по Казахстану и в другие страны осуществляется через транспортные компании.</p>
+            <p>Срок зависит от вашего города и выбранного способа доставки. По Казахстану доставка обычно занимает до 4
+              рабочих дней. Для заказов от 300 000 ₸ доставка по Казахстану бесплатная.</p>
+            <ul class="cart-info__list">
+              <li>Бесплатная доставка при заказе от 100 000 ₸</li>
+              <li>Оплата с любого банка</li>
+              <li>Подарочная упаковка доступна</li>
+              <li>Бесплатная годовая гарантия</li>
+            </ul>
+          </div>
+        </details>
+      </aside>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

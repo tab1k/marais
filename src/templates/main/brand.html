@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Бренд — MARAIS{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container-m hero-wrapper">
+    <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
+    <img class="hero-decor hero-decor--left" src="{% static 'images/lefft.png' %}" alt="">
+    <img class="hero-decor hero-decor--right" src="{% static 'images/rightt.png' %}" alt="">
+    <div class="hero-overlay">
+      <h1>Бренды</h1>
+    </div>
+  </div>
+</section>
+
+<section class="brand-page">
+  <div class="container-m">
+    <div class="brand-hero">
+      <div class="brand-hero__text">
+        <h1>Бренд MARAIS</h1>
+        <p>Истории, созданные в золоте и серебре. MARAIS объединяет изысканные формы и современные акценты, чтобы подчеркнуть вашу индивидуальность.</p>
+      </div>
+    </div>
+
+    <div class="brand-section">
+      <h2>Наше вдохновение</h2>
+      <p>Мы черпаем идеи в архитектуре европейских столиц и органических линиях природы. Каждая коллекция — это диалог между классикой и смелостью.</p>
+    </div>
+
+    <div class="brand-section">
+      <h2>Бренды</h2>
+      <div class="brand-list">
+        {% for brand in brands %}
+        <div class="brand-entry">
+          <div class="brand-entry__header">
+            <div class="brand-entry__title">
+              <h3>{{ brand.name }}</h3>
+              {% if brand.country %}<span>{{ brand.country }}</span>{% endif %}
+            </div>
+            {% if brand.logo %}
+              <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
+            {% endif %}
+          </div>
+          {% if brand.description %}
+            <p>{{ brand.description }}</p>
+          {% endif %}
+        </div>
+        {% empty %}
+          <p class="brand-note">Бренды скоро появятся.</p>
+        {% endfor %}
+      </div>
+      <p class="brand-note">Кроме основных брендов, в MARAIS есть украшения независимых дизайнеров из Европы и Америки — у каждого свой характер, эстетика и почерк. Вместе они формируют живую коллекцию, создающую пространство для личного стиля.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

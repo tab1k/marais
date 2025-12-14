@@ -30,41 +30,65 @@
 <section class="categories">
   <div class="container-m">
     <div class="categories-grid">
-      <div class="category-card">
-        <img src="{% static 'images/cepochki.png' %}" alt="Цепочки">
-        <p>Цепочки</p>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/sergi.png' %}" alt="Серьги">
-        <p>Серьги</p>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/braslet.png' %}" alt="Браслеты">
-        <p>Браслеты</p>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/kolca.png' %}" alt="Кольца">
-        <p>Кольца</p>
-      </div>
+      {% for cat in categories %}
+      <a href="{% url 'catalog:home' %}?category={{ cat.slug }}" class="category-card"
+        style="text-decoration: none; color: inherit;">
+        {% if cat.image %}
+        <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+        {% elif cat.slug == 'rings' or cat.slug == 'ring' %}
+        <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}">
+        {% elif cat.slug == 'earrings' %}
+        <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}">
+        {% elif cat.slug == 'necklaces' or cat.slug == 'necklace' %}
+        <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}">
+        {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
+        <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}">
+        {% else %}
+        <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ cat.name }}" style="opacity:0.5">
+        {% endif %}
+        <p>{{ cat.name }}</p>
+      </a>
+      {% endfor %}
     </div>
   </div>
 </section>
 
+
+<!-- Dynamic Homepage Blocks -->
+{% for block in blocks %}
+
+{% if block.block_type == 'brand' %}
+<!-- Brand Spotlight: Image + Featured Product -->
 <section class="split-section">
   <div class="container-m split-grid">
-    <div class="split-media" style="align-items: center;text-align: center;">
-      <img src="{% static 'images/flouida.png' %}" alt="Коллекция Flouida">
+    <div class="split-media" style="align-items: center;text-align: center;margin: auto;">
+      {% if block.image %}
+      <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}">
+        <img src="{{ block.image.url }}" alt="{{ block.brand.name }}">
+      </a>
+      {% endif %}
     </div>
     <div class="split-content" style="justify-content: center; text-align: center;">
-      <h2 class="split-title">КОЛЛЕКЦИЯ <br> FLOUIDA</h2>
-      <a href="#" class="split-button">Посмотреть больше</a>
-      <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
-        <img src="{% static 'images/cascade.png' %}" alt="Ожерелье Cascade">
-        <div class="featured-meta" style="text-align: center; width: 100%;" >
-          <p class="home-product-price" style="width: 100%; justify-content: space-between;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
+      <h2 class="split-title">КОЛЛЕКЦИЯ <br> {{ block.brand.name|upper }}</h2>
+      <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}" class="split-button">Посмотреть больше</a>
+
+      {% if block.featured_product %}
+      <a href="{% url 'catalog:detail' block.featured_product.slug %}" style="text-decoration: none; color: inherit;">
+        <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
+          {% if block.featured_product.main_image %}
+          <img src="{{ block.featured_product.main_image.url }}" alt="{{ block.featured_product.title }}">
+          {% else %}
+          <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ block.featured_product.title }}">
+          {% endif %}
+          <div class="featured-meta" style="text-align: center; width: 100%;">
+            <p class="home-product-price" style="width: 100%; justify-content: space-between; text-align: left;">
+              {{ block.featured_product.title|upper }} <span>{{ block.featured_product.price|floatformat:0 }}₸</span>
+            </p>
+            <p class="home-product-note">{{ block.featured_product.metal }}</p>
+          </div>
         </div>
-      </div>
+      </a>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -72,192 +96,68 @@
 <section class="mobile-flouida">
   <div class="container-m">
     <div class="categories-text">
-      <h2 class="split-title">FLOUIDA<br>COLLECTION</h2>
+      <h2 class="split-title">{{ block.brand.name|upper }}<br>COLLECTION</h2>
     </div>
-    <a href="#" class="split-button">Посмотреть больше</a>
+    <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}" class="split-button">Посмотреть больше</a>
   </div>
 </section>
 
 <section class="mobile-full-bleed">
   <div class="container-m">
-    <img src="{% static 'images/flouida.png' %}" alt="Коллекция Flouida" class="full-bleed-image">
+    {% if block.image %}
+    <img src="{{ block.image.url }}" alt="{{ block.brand.name }}" class="full-bleed-image">
+    {% endif %}
   </div>
 </section>
 
-
-
-<!-- Categories section (4 items) -->
+<!-- Brand Products Grid -->
 <section class="categories">
   <div class="container-m">
     <div class="categories-grid">
-      <div class="category-card">
-        <img src="{% static 'images/cepochki.png' %}" alt="Цепочки">
+      {% for prod in block.brand.products.all|slice:":4" %}
+      <a href="{% url 'catalog:detail' prod.slug %}" class="category-card" style="text-decoration:none; color:inherit;">
+        {% if prod.main_image %}
+        <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}">
+        {% else %}
+        <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ prod.title }}">
+        {% endif %}
         <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
+          <p class="home-product-price">{{ prod.title|upper }} <span>{{ prod.price|floatformat:0 }}₸</span></p>
+          <p class="home-product-note">{{ prod.metal|default:block.brand.name }}</p>
         </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh1.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh2.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
+      </a>
+      {% endfor %}
     </div>
   </div>
 </section>
 
+{% elif block.block_type == 'banner' %}
+<!-- Mishes-style Banner -->
 <section>
-  <div class="container-m">
+  <div class="container-m" style="margin-top: 30px;">
     <div class="categories-text">
-      <h2>Мишес</h2>
+      <h2>{{ block.title }}</h2>
     </div>
   </div>
 </section>
 
 <section class="mishes-hero">
   <div class="container-m mishes-banner">
-    <img src="{% static 'images/mishes.jpg' %}" alt="Коллекция Flouida" class="mishes-image">
-    <img src="{% static 'images/top.png' %}" alt="" class="mishes-decor mishes-decor--top">
-    <img src="{% static 'images/down.png' %}" alt="" class="mishes-decor mishes-decor--bottom">
+    {% if block.image %}
+    <img src="{{ block.image.url }}" alt="{{ block.title }}" class="mishes-image">
+    {% endif %}
     <div class="mishes-overlay">
-      <h3 class="mishes-title">КОЛЛЕКЦИЯ FLOUIDA</h3>
-      <a class="mishes-button" href="#">Новые поступления</a>
+      <h3 class="mishes-title">{{ block.subtitle }}</h3>
+      {% if block.link_url %}
+      <a class="mishes-button" href="{{ block.link_url }}">Перейти</a>
+      {% endif %}
     </div>
   </div>
 </section>
+{% endif %}
 
-<section class="split-section">
-  <div class="container-m split-grid">
-    <div class="split-media" style="align-items: center;text-align: center;">
-      <img src="{% static 'images/flouida.png' %}" alt="Коллекция Flouida">
-    </div>
-    <div class="split-content" style="justify-content: center; text-align: center;">
-      <h2 class="split-title">КОЛЛЕКЦИЯ <br> FLOUIDA</h2>
-      <a href="#" class="split-button">Посмотреть больше</a>
-      <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
-        <img src="{% static 'images/cascade.png' %}" alt="Ожерелье Cascade">
-        <div class="featured-meta" style="text-align: center; width: 100%;" >
-          <p class="home-product-price" style="width: 100%; justify-content: space-between;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+{% endfor %}
 
-<section>
-  <div class="container-m">
-    <div class="categories-text">
-      <h2>Серьги Коллекции Самолюбия</h2>
-    </div>
-  </div>
-</section>
-
-<section class="categories">
-  <div class="container-m">
-    <div class="categories-grid">
-      <div class="category-card">
-        <img src="{% static 'images/sergi1.png' %}" alt="Серьги">
-        <div class="featured-meta">
-          <p class="home-product-price" style="width: 100%;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/sergi2.png' %}" alt="Серьги">
-        <div class="featured-meta">
-          <p class="home-product-price" style="width: 100%;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/sergi1.png' %}" alt="Серьги">
-        <div class="featured-meta">
-          <p class="home-product-price" style="width: 100%;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/sergi2.png' %}" alt="Серьги">
-        <div class="featured-meta">
-          <p class="home-product-price" style="width: 100%;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="split-section">
-  <div class="container-m split-grid">
-    <div class="split-media" style="align-items: center;text-align: center;">
-      <img src="{% static 'images/flouida.png' %}" alt="Коллекция Flouida">
-    </div>
-    <div class="split-content" style="justify-content: center; text-align: center;">
-      <h2 class="split-title">КОЛЛЕКЦИЯ <br> FLOUIDA</h2>
-      <a href="#" class="split-button">Посмотреть больше</a>
-      <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
-        <img src="{% static 'images/cascade.png' %}" alt="Ожерелье Cascade">
-        <div class="featured-meta" style="text-align: center; width: 100%;" >
-          <p class="home-product-price" style="width: 100%; justify-content: space-between;">CASCADE <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Categories section (4 items) -->
-<section class="categories">
-  <div class="container-m">
-    <div class="categories-grid">
-      <div class="category-card">
-        <img src="{% static 'images/cepochki.png' %}" alt="Цепочки">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh1.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-      <div class="category-card">
-        <img src="{% static 'images/zolotoe_ozh2.png' %}" alt="Золотое ожерелье">
-        <div class="home-product-info">
-          <p class="home-product-price">AURA <span>250.000₸</span></p>
-          <p class="home-product-note">Золотое ожерелье</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Testimonials section -->
 <section class="reviews">
@@ -266,18 +166,22 @@
     <div class="reviews-header">
       <p class="reviews-lead">Наши клиенты делятся впечатлениями о покупках</p>
       <div class="reviews-nav">
-        <button class="reviews-arrow" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="prev" aria-label="Предыдущий отзыв">‹</button>
-        <button class="reviews-arrow" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="next" aria-label="Следующий отзыв">›</button>
+        <button class="reviews-arrow" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="prev"
+          aria-label="Предыдущий отзыв">‹</button>
+        <button class="reviews-arrow" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="next"
+          aria-label="Следующий отзыв">›</button>
       </div>
     </div>
     <div class="reviews-grid reviews-grid-desktop wide">
       <div class="review-card review-centered">
         <div class="review-body">
           <div class="stars">★★★★★</div>
-          <p class="review-text">“Искала особенное украшение на годовщину, и нашла его здесь. Колье превзошло все ожидания — изящное, элегантное и очень качественное. Спасибо за внимание к деталям!”</p>
+          <p class="review-text">"Искала особенное украшение на годовщину, и нашла его здесь. Колье превзошло все ожидания — изящное, элегантное и очень качественное. Спасибо за внимание к деталям!"</p>
         </div>
         <div class="review-footer">
-          <img class="review-avatar-img" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80" alt="Елена Соколова">
+          <img class="review-avatar-img"
+            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80"
+            alt="Елена Соколова">
           <div class="review-meta">
             <p class="review-author">Елена Соколова</p>
             <p class="review-city">Алмата</p>
@@ -287,10 +191,12 @@
       <div class="review-card review-centered">
         <div class="review-body">
           <div class="stars">★★★★★</div>
-          <p class="review-text">“Спасибо за отличный сервис и качество. Украшения приходят быстро и в идеальном состоянии — буду заказывать ещё.”</p>
+          <p class="review-text">"Спасибо за отличный сервис и качество. Украшения приходят быстро и в идеальном состоянии — буду заказывать ещё."</p>
         </div>
         <div class="review-footer">
-          <img class="review-avatar-img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Азалия">
+          <img class="review-avatar-img"
+            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
+            alt="Азалия">
           <div class="review-meta">
             <p class="review-author">Азалия</p>
             <p class="review-city">Алмата</p>
@@ -300,10 +206,12 @@
       <div class="review-card review-centered">
         <div class="review-body">
           <div class="stars">★★★★★</div>
-          <p class="review-text">“Рекомендую MARAIS всем подругам! Стильные и качественные украшения по отличной цене. Каждый раз получаю комплименты.”</p>
+          <p class="review-text">"Рекомендую MARAIS всем подругам! Стильные и качественные украшения по отличной цене. Каждый раз получаю комплименты."</p>
         </div>
         <div class="review-footer">
-          <img class="review-avatar-img" src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=120&q=80" alt="Карина">
+          <img class="review-avatar-img"
+            src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=120&q=80"
+            alt="Карина">
           <div class="review-meta">
             <p class="review-author">Карина</p>
             <p class="review-city">Алмата</p>
@@ -313,10 +221,12 @@
       <div class="review-card review-centered">
         <div class="review-body">
           <div class="stars">★★★★★</div>
-          <p class="review-text">“Выбор огромный, консультанты помогают выбрать идеальное украшение на любой вкус. Очень приятно носить каждый день.”</p>
+          <p class="review-text">"Выбор огромный, консультанты помогают выбрать идеальное украшение на любой вкус. Очень приятно носить каждый день."</p>
         </div>
         <div class="review-footer">
-          <img class="review-avatar-img" src="https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=120&q=80" alt="Елена">
+          <img class="review-avatar-img"
+            src="https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=120&q=80"
+            alt="Елена">
           <div class="review-meta">
             <p class="review-author">Елена</p>
             <p class="review-city">Алмата</p>
@@ -326,73 +236,81 @@
     </div>
     <div id="reviewsCarousel" class="carousel slide reviews-carousel-mobile" data-bs-ride="carousel" data-bs-touch="true">
       <div class="carousel-inner">
+        {% for review in reviews %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <div class="review-card review-centered">
+            <div class="review-body">
+              <div class="stars">
+                {% for i in "12345"|slice:":"|make_list %}
+                  {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                {% endfor %}
+              </div>
+              <p class="review-text">"{{ review.text }}"</p>
+            </div>
+            <div class="review-footer">
+              <img class="review-avatar-img"
+                src="https://ui-avatars.com/api/?name={{ review.name }}&background=640406&color=fff&size=120"
+                alt="{{ review.name }}">
+              <div class="review-meta">
+                <p class="review-author">{{ review.name }}</p>
+                <p class="review-city">{{ review.city }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
         <div class="carousel-item active">
           <div class="review-card review-centered">
-            <div class="review-body">
-              <div class="stars">★★★★★</div>
-              <p class="review-text">“Искала особенное украшение на годовщину, и нашла его здесь. Колье превзошло все ожидания — изящное, элегантное и очень качественное. Спасибо за внимание к деталям!”</p>
-            </div>
-            <div class="review-footer">
-              <img class="review-avatar-img" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80" alt="Елена Соколова">
-              <div class="review-meta">
-                <p class="review-author">Елена Соколова</p>
-                <p class="review-city">Алмата</p>
-              </div>
-            </div>
+            <p style="text-align: center; padding: 40px;">Пока нет отзывов. Будьте первым!</p>
           </div>
         </div>
-        <div class="carousel-item">
-          <div class="review-card review-centered">
-            <div class="review-body">
-              <div class="stars">★★★★★</div>
-              <p class="review-text">“Спасибо за отличный сервис и качество. Украшения приходят быстро и в идеальном состоянии — буду заказывать ещё.”</p>
-            </div>
-            <div class="review-footer">
-              <img class="review-avatar-img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Азалия">
-              <div class="review-meta">
-                <p class="review-author">Азалия</p>
-                <p class="review-city">Алмата</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="review-card review-centered">
-            <div class="review-body">
-              <div class="stars">★★★★★</div>
-              <p class="review-text">“Рекомендую MARAIS всем подругам! Стильные и качественные украшения по отличной цене. Каждый раз получаю комплименты.”</p>
-            </div>
-            <div class="review-footer">
-              <img class="review-avatar-img" src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=120&q=80" alt="Карина">
-              <div class="review-meta">
-                <p class="review-author">Карина</p>
-                <p class="review-city">Алмата</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="review-card review-centered">
-            <div class="review-body">
-              <div class="stars">★★★★★</div>
-              <p class="review-text">“Выбор огромный, консультанты помогают выбрать идеальное украшение на любой вкус. Очень приятно носить каждый день.”</p>
-            </div>
-            <div class="review-footer">
-              <img class="review-avatar-img" src="https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=120&q=80" alt="Елена">
-              <div class="review-meta">
-                <p class="review-author">Елена</p>
-                <p class="review-city">Алмата</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% endfor %}
       </div>
-      
     </div>
     <div class="reviews-cta">
-      <a class="split-button reviews-button" href="#">Оставить отзыв</a>
+      <a class="split-button reviews-button" href="#" data-review-modal-trigger>Оставить отзыв</a>
     </div>
   </div>
 </section>
+
+<!-- Review Modal -->
+<div class="review-modal" data-review-modal>
+  <div class="review-modal__backdrop" data-review-modal-backdrop></div>
+  <div class="review-modal__content">
+    <button class="review-modal__close" data-review-modal-close aria-label="Закрыть">✕</button>
+    <h2 class="review-modal__title">Оставить отзыв</h2>
+    <form class="review-form" method="post" id="review-form">
+      {% csrf_token %}
+      <div class="review-form__group">
+        <label for="review-name">Ваше имя</label>
+        <input type="text" id="review-name" name="name" required>
+      </div>
+      <div class="review-form__group">
+        <label for="review-city">Город</label>
+        <input type="text" id="review-city" name="city" required>
+      </div>
+      <div class="review-form__group">
+        <label for="review-rating">Оценка</label>
+        <div class="review-stars">
+          <input type="radio" id="star5" name="rating" value="5" required>
+          <label for="star5">★</label>
+          <input type="radio" id="star4" name="rating" value="4">
+          <label for="star4">★</label>
+          <input type="radio" id="star3" name="rating" value="3">
+          <label for="star3">★</label>
+          <input type="radio" id="star2" name="rating" value="2">
+          <label for="star2">★</label>
+          <input type="radio" id="star1" name="rating" value="1">
+          <label for="star1">★</label>
+        </div>
+      </div>
+      <div class="review-form__group">
+        <label for="review-text">Ваш отзыв</label>
+        <textarea id="review-text" name="text" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="split-button">Отправить отзыв</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}

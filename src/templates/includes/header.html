@@ -1,11 +1,16 @@
 {% load static %}
 <header class="site-header">
   <div class="container-m header-inner">
+    <button class="burger" aria-label="Меню" type="button" data-menu-toggle>
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <nav class="header-nav">
-      <a href="#" class="nav-link">Магазин</a>
-      <a href="#" class="nav-link">Бренд</a>
-      <a href="#" class="nav-link">Проект</a>
-      <a href="#" class="nav-link">Отзывы</a>
+      <a href="{% url 'catalog:home' %}" class="">Магазин</a>
+      <a href="{% url 'brand' %}" class="">Бренды</a>
+      <a href="{% url 'project' %}" class="">Проект</a>
     </nav>
 
     <div class="header-logo">
@@ -14,12 +19,57 @@
       </a>
     </div>
 
-    <div class="header-actions">
+    <div class="header-actions header-actions--compact">
       <img src="{% static 'images/Phone.png' %}" alt="Phone" class="icon-link">
-      <img src="{% static 'images/Vector.png' %}" alt="Wishlist" class="icon-link">
-      <img src="{% static 'images/Serch.png' %}" alt="Search" class="icon-link">
-      <img src="{% static 'images/profile.png' %}" alt="Profile" class="icon-link">
-      <a href="#" class="lang">RU</a>
+      <a href="{% url 'basket:detail' %}"><img src="{% static 'images/Vector.png' %}" alt="Cart" class="icon-link"></a>
+      <img src="{% static 'images/Serch.png' %}" alt="Search" class="icon-link" data-search-trigger
+        style="cursor: pointer;">
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'catalog:profile' %}">
+        <img src="{% static 'images/profile.png' %}" alt="Profile" class="icon-link">
+      </a>
+      {% else %}
+      <a href="{% url 'users:login' %}">
+        <img src="{% static 'images/profile.png' %}" alt="Profile" class="icon-link">
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="mobile-menu" data-menu>
+    <div class="mobile-menu__backdrop" data-menu-backdrop></div>
+    <div class="mobile-menu__panel">
+      <button class="mobile-menu__close" type="button" aria-label="Закрыть меню" data-menu-close>✕</button>
+      <nav class="mobile-menu__nav">
+        <a href="{% url 'catalog:home' %}" class="mobile-menu__link">Магазин</a>
+        <a href="{% url 'brand' %}" class="mobile-menu__link">Бренды</a>
+        <a href="{% url 'project' %}" class="mobile-menu__link">Проект</a>
+        <a href="{% url 'basket:detail' %}" class="mobile-menu__link">Корзина</a>
+      </nav>
+      <a class="mobile-user" href="{% url 'catalog:profile' %}">
+        <span class="mobile-user__avatar">
+          {% if request.user.is_authenticated and request.user.avatar %}
+          <img src="{{ request.user.avatar.url }}" alt="{{ request.user.get_full_name|default:request.user.username }}">
+          {% else %}
+          <img src="{% static 'images/sergi.png' %}" alt="Профиль">
+          {% endif %}
+        </span>
+        <span class="mobile-user__meta">
+          <span class="mobile-user__name">
+            {% if request.user.is_authenticated %}
+            {{ request.user.get_full_name|default:request.user.username }}
+            {% else %}
+            Гость
+            {% endif %}
+          </span>
+          <span class="mobile-user__email">
+            {% if request.user.is_authenticated %}
+            {{ request.user.email }}
+            {% else %}
+            Войти или зарегистрироваться
+            {% endif %}
+          </span>
+        </span>
+      </a>
     </div>
   </div>
 </header>

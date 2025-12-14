@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профиль — MARAIS{% endblock %}
+
+{% block content %}
+
+<section class="profile-page">
+  <div class="container-m">
+    <div class="profile-header">
+      <div class="profile-user">
+        <div class="profile-avatar">
+          {% if request.user.is_authenticated and request.user.avatar %}
+          <img src="{{ request.user.avatar.url }}" alt="{{ request.user.get_full_name|default:request.user.username }}">
+          {% else %}
+          <img src="{% static 'images/sergi.png' %}" alt="Аватар">
+          {% endif %}
+        </div>
+        <div class="profile-user__meta">
+          <p class="profile-greet">Добро пожаловать</p>
+          <h2 class="profile-name">
+            {% if request.user.is_authenticated %}
+            {{ request.user.get_full_name|default:request.user.username }}
+            {% else %}
+            Гость
+            {% endif %}
+          </h2>
+        </div>
+      </div>
+      <div class="profile-header__actions">
+        <button type="button" class="profile-icon-btn" aria-label="Настройки" data-profile-settings-open>
+          <img src="{% static 'images/settings.png' %}" alt="Настройки">
+        </button>
+      </div>
+    </div>
+
+    <div class="profile-sheet" data-profile-settings>
+      <div class="profile-sheet__handle"></div>
+      <div class="profile-sheet__header">
+        <h3>Настройки профиля</h3>
+        <button class="profile-sheet__close" type="button" aria-label="Закрыть" data-profile-settings-close>✕</button>
+      </div>
+      <form class="profile-sheet__form" method="post" action="{% url 'users:profile_update' %}"
+        enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <label class="profile-sheet__field">
+          <span>Фото профиля</span>
+          <div class="profile-sheet__avatar-row">
+            <div class="profile-sheet__avatar">
+              {% if request.user.is_authenticated and request.user.avatar %}
+              <img src="{{ request.user.avatar.url }}"
+                alt="{{ request.user.get_full_name|default:request.user.username }}">
+              {% else %}
+              <img src="{% static 'images/sergi.png' %}" alt="Аватар">
+              {% endif %}
+            </div>
+            <label class="profile-sheet__upload">
+              <input type="file" name="avatar" accept="image/*">
+              <span>Добавить / изменить фото</span>
+            </label>
+          </div>
+        </label>
+
+        <label class="profile-sheet__field">
+          <span>Имя и фамилия</span>
+          <input type="text" name="full_name" placeholder="Имя Фамилия"
+            value="{% if request.user.is_authenticated %}{{ request.user.get_full_name|default:request.user.username }}{% endif %}">
+        </label>
+
+        <label class="profile-sheet__field">
+          <span>Email</span>
+          <input type="email" name="email"
+            value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}" readonly
+            class="profile-sheet__input--readonly">
+        </label>
+
+        <div class="profile-sheet__actions">
+          <button type="submit" class="btn-primary profile-sheet__save">Сохранить</button>
+          <button type="button" class="btn-secondary profile-sheet__cancel" data-profile-settings-close>Отмена</button>
+        </div>
+      </form>
+    </div>
+    <div class="profile-sheet__backdrop" data-profile-settings-backdrop></div>
+
+    <div class="profile-search">
+      <input type="search" placeholder="Поиск по заказам, товарам..." aria-label="Поиск">
+    </div>
+
+    <div class="profile-stats">
+      <div class="profile-stat-card">
+        <div class="profile-stat__icon">📦</div>
+        <div>
+          <div class="profile-stat__value">
+            {% if request.user.is_authenticated %}
+            {{ request.user.orders.count|default:0 }}
+            {% else %}
+            0
+            {% endif %}
+          </div>
+          <div class="profile-stat__label">Всего заказов</div>
+        </div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat__icon">🪙</div>
+        <div>
+          <div class="profile-stat__value">
+            {% if request.user.is_authenticated %}
+            {{ request.user.loyalty_points|default:0 }}
+            {% else %}
+            0
+            {% endif %}
+          </div>
+          <div class="profile-stat__label">Бонусные баллы</div>
+        </div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat__icon">%</div>
+        <div>
+          <div class="profile-stat__value">
+            {% if request.user.is_authenticated %}
+            {{ request.user.discount_percent|default:15 }}%
+            {% else %}
+            15%
+            {% endif %}
+          </div>
+          <div class="profile-stat__label">Ваша скидка</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section__header">
+        <h3>Последние заказы</h3>
+        <a href="#" class="profile-link">Все заказы ({{ orders_total }})</a>
+      </div>
+      <div class="profile-orders">
+        {% if orders %}
+        {% for order in orders %}
+        <article class="order-card">
+          <div class="order-card__info">
+            <div class="order-card__icon">
+              {% if order.items.first.product.main_image %}
+              <img src="{{ order.items.first.product.main_image.url }}" alt="">
+              {% else %}
+              <img src="{% static 'images/chameleon.png' %}" alt="">
+              {% endif %}
+            </div>
+            <div>
+              <div class="order-card__title">Заказ #{{ order.id|stringformat:"06d" }}</div>
+              <div class="order-card__date">{{ order.created_at|date:"d E Y" }}</div>
+            </div>
+          </div>
+          <div class="order-card__meta">
+            <div class="order-card__price">{{ order.total|floatformat:0 }} ₸</div>
+          </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <p style="text-align: center; padding: 20px; color: #666;">У вас пока нет заказов</p>
+        {% endif %}
+      </div>
+    </div>
+
+
+
+    <div class="profile-section">
+      <div class="profile-section__header">
+        <h3>Рекомендуем</h3>
+        <a href="{% url 'catalog:home' %}" class="profile-link">Смотреть все</a>
+      </div>
+      <div class="product-slider-wrapper">
+        <button class="slider-arrow slider-prev" aria-label="Назад">&#10094;</button>
+        <div class="product-slider-track">
+          {% for product in recommended_products %}
+          <article class="product-card">
+            <a href="{% url 'catalog:detail' product.slug %}" style="text-decoration: none; color: inherit;">
+              <div class="product-thumb">
+                {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% else %}
+                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
+                {% endif %}
+              </div>
+              <div class="product-info">
+                <div class="product-row">
+                  <h3 class="product-name">{{ product.title|upper }}</h3>
+                  <span class="product-price">{{ product.price|floatformat:0 }}₸</span>
+                </div>
+                <p class="product-subtitle">{{ product.metal|default:product.category.name }}</p>
+              </div>
+            </a>
+          </article>
+          {% endfor %}
+        </div>
+        <button class="slider-arrow slider-next" aria-label="Вперед">&#10095;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

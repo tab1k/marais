@@ -689,7 +689,7 @@ ul.messagelist li.error {
 
 .errornote {
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 500;
     display: block;
     padding: 10px 12px;
     margin: 0 0 10px 0;

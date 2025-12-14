@@ -1,7 +1,11 @@
 from django.urls import path
+from .views import LoginView, RegisterView, logout_view, ProfileUpdateView
 
-# Minimal URL patterns for the `users` app. Add real routes here as needed.
+app_name = 'users'
+
 urlpatterns = [
-	# path('', views.profile, name='profile'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('logout/', logout_view, name='logout'),
+    path('profile/update/', ProfileUpdateView.as_view(), name='profile_update'),
 ]
-

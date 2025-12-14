@@ -436,7 +436,7 @@ span.clearable-file-input label {
     margin: 0;
     text-align: center;
     border-top: none;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 0.75rem;
     color: #333;
     background: var(--accent);
@@ -471,7 +471,7 @@ span.clearable-file-input label {
 }
 
 .calendar td.today a {
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .calendar td a, .timelist a {

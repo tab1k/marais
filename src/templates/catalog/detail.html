@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MARAIS — украшения{% endblock %}
+
+{% block content %}
+
+<section class="product-detail">
+  <div class="container-m">
+    <a href="{% url 'catalog:home' %}" class="back-link">
+      <img src="{% static 'images/arrow_back.png' %}" alt="">
+      <span>Назад</span>
+    </a>
+
+    <div class="detail-layout">
+      <div class="detail-gallery">
+        <div class="gallery-main">
+          {% if product.main_image %}
+          <img src="{{ product.main_image.url }}" alt="{{ product.title }}" data-gallery-main>
+          {% else %}
+          <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}" data-gallery-main>
+          {% endif %}
+        </div>
+        <div class="gallery-thumbs" data-gallery-thumbs>
+          {% if product.main_image %}
+          <button type="button" class="thumb active" data-gallery-src="{{ product.main_image.url }}" aria-label="Main">
+            <img src="{{ product.main_image.url }}" alt="Main">
+          </button>
+          {% endif %}
+          {% for img in product.images.all %}
+          <button type="button" class="thumb" data-gallery-src="{{ img.image.url }}" aria-label="{{ img.alt }}">
+            <img src="{{ img.image.url }}" alt="{{ img.alt }}">
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="detail-info">
+        <h1 class="detail-title">{{ product.title }}</h1>
+        <h3 class="detail-price">{{ product.price|floatformat:0 }} ₸</h1>
+          <p class="detail-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
+
+          <p class="detail-description">
+            {{ product.description|linebreaks }}
+          </p>
+
+          {% if sizes_list %}
+          <div class="detail-meta">
+            <h4>Размер</h4>
+            <div class="size-options">
+              {% for size_val in sizes_list %}
+              <button class="size-btn {% if forloop.first %}active{% endif %}">{{ size_val }}</button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="detail-meta">
+            <h4>Цвет/Варианты</h4>
+            <div class="swatch-list">
+              <button class="swatch active" aria-label="Вариант 1">
+                <img src="{% static 'frames/Frame 1.png' %}" alt="">
+              </button>
+              <button class="swatch" aria-label="Вариант 2">
+                <img src="{% static 'frames/Frame 2-1.png' %}" alt="">
+              </button>
+              <button class="swatch" aria-label="Вариант 3">
+                <img src="{% static 'frames/Frame 3-1.png' %}" alt="">
+              </button>
+              <button class="swatch" aria-label="Вариант 4">
+                <img src="{% static 'frames/Frame 4-1.png' %}" alt="">
+              </button>
+              <button class="swatch" aria-label="Вариант 5">
+                <img src="{% static 'frames/Frame 5-1.png' %}" alt="">
+              </button>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <form action="{% url 'basket:add' product.slug %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="size" id="selected-size" value="{{ sizes_list.0|default:'' }}">
+              <button class="btn-primary cart-btn" type="submit">В корзину</button>
+            </form>
+            <button class="btn-secondary outline-btn" type="button">Консультант</button>
+          </div>
+
+          <a class="detail-link" href="#">Информация о доставке</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="related-section">
+  <div class="container-m">
+    <h2 class="related-title">Вам также может понравиться</h2>
+    {% if related_products %}
+    <div class="product-slider-wrapper">
+      <button class="slider-arrow slider-prev" aria-label="Назад">&#10094;</button>
+      <div class="product-slider-track">
+        {% for rel_prod in related_products %}
+        <a class="product-card" href="{% url 'catalog:detail' rel_prod.slug %}"
+          style="text-decoration:none; color:inherit;">
+          <div class="product-thumb">
+            {% if rel_prod.main_image %}
+            <img src="{{ rel_prod.main_image.url }}" alt="{{ rel_prod.title }}">
+            {% else %}
+            <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ rel_prod.title }}">
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <div class="product-row">
+              <h3 class="product-name">{{ rel_prod.title }}</h3>
+              <span class="product-price">{{ rel_prod.price|floatformat:0 }}₸</span>
+            </div>
+            <p class="product-subtitle">{{ rel_prod.brand_ref.name|default:rel_prod.metal }}</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      <button class="slider-arrow slider-next" aria-label="Вперед">&#10095;</button>
+    </div>
+    {% else %}
+    <p>Нет похожих товаров.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="related-section">
+  <div class="container-m">
+    <h2 class="related-title">Завершите образ</h2>
+    {% if complementary_products %}
+    <div class="product-slider-wrapper">
+      <button class="slider-arrow slider-prev" aria-label="Назад">&#10094;</button>
+      <div class="product-slider-track">
+        {% for comp_product in complementary_products %}
+        <article class="product-card">
+          <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
+            <div class="product-thumb">
+              {% if comp_product.main_image %}
+              <img src="{{ comp_product.main_image.url }}" alt="{{ comp_product.title }}">
+              {% else %}
+              <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ comp_product.title }}">
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <div class="product-row">
+                <h3 class="product-name">{{ comp_product.title|upper }}</h3>
+                <span class="product-price">{{ comp_product.price|floatformat:0 }}₸</span>
+              </div>
+              <p class="product-subtitle">{{ comp_product.metal|default:comp_product.category.name }}</p>
+            </div>
+          </a>
+        </article>
+        {% endfor %}
+      </div>
+      <button class="slider-arrow slider-next" aria-label="Вперед">&#10095;</button>
+    </div>
+    {% else %}
+    <p>Нет дополнительных товаров.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sizeBtns = document.querySelectorAll('.size-btn');
+    const sizeInput = document.getElementById('selected-size');
+
+    sizeBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        // Remove active class from all
+        sizeBtns.forEach(b => b.classList.remove('active'));
+        // Add active to current
+        this.classList.add('active');
+        // Update input value
+        if (sizeInput) {
+          sizeInput.value = this.textContent.trim();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

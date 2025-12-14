@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Проект — MARAIS{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container-m hero-wrapper">
+    <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
+    <img class="hero-decor hero-decor--left" src="{% static 'images/lefft.png' %}" alt="">
+    <img class="hero-decor hero-decor--right" src="{% static 'images/rightt.png' %}" alt="">
+    <div class="hero-overlay">
+      <h1>Проект</h1>
+    </div>
+  </div>
+</section>
+
+<section class="project-page">
+  <div class="container-m">
+    <div class="project-hero">
+      <div class="project-hero__text">
+        <h1>Проект MARAIS</h1>
+        <p>В MARAIS [марэ’] мы представляем уникальные, концептуальные украшения — сокровища, тщательно собранные из разных стран. В наших подборках мы находим баланс между модой и вневременностью.</p>
+        <p>Каждый предмет в нашей коллекции — результат кропотливой работы мастеров и дизайнеров, которые ценят индивидуальность и высокое качество. Наш негласный манифест “Be authentic, be unique” вдохновляет нас каждый день.</p>
+        <p>Название вдохновлено парижским кварталом Marais — местом с галереями современного искусства, уютными рынками и модными магазинами, куда тянутся творческие и смелые люди со всего мира.</p>
+        <p>Эклектика и свобода формируют атмосферу нашего пространства. Оно вдохновляет искать собственную эстетику и стиль, ценить индивидуальность, непринуждённую элегантность и душевность образов.</p>
+      </div>
+      <div class="project-hero__media">
+        <img src="{% static 'images/flouida.png' %}" alt="Проект MARAIS">
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>О команде</h2>
+      <p>Дизайнеры, технологи и ювелиры MARAIS работают вместе от первого эскиза до финальной полировки. Мы ценим ремесло и внимание к деталям.</p>
+    </div>
+
+    <div class="project-section project-grid">
+      <div class="project-card">
+        <h3>Коллаборации</h3>
+        <p>Мы сотрудничаем с художниками и архитекторами, чтобы добавлять свежие смыслы в каждую линейку.</p>
+      </div>
+      <div class="project-card">
+        <h3>Устойчивость</h3>
+        <p>Ответственный выбор материалов, переработка и минимизация отходов — основа нашего производства.</p>
+      </div>
+      <div class="project-card">
+        <h3>Будущие релизы</h3>
+        <p>Следите за анонсами: готовим новые капсулы и лимитированные серии.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
