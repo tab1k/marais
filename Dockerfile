@@ -1,14 +1,21 @@
-# Builder stage
-FROM python:3.12-slim as builder
+# Base stage
+FROM python:3.12-slim as base
 
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Common system dependencies (like libpq for postgres)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Builder stage
+FROM base as builder
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -16,15 +23,9 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.t
 
 
 # Final stage
-FROM python:3.12-slim
-
-WORKDIR /app
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev \
     gettext \
     && rm -rf /var/lib/apt/lists/*
 
