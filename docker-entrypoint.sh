@@ -8,13 +8,18 @@ echo "Waiting for database..."
 for i in {1..30}; do
   if python -c "
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'trucking_desk.settings')
+import sys
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marais.settings')
 import django
-django.setup()
-from django.db import connection
-connection.ensure_connection()
-print('OK')
-  " 2>/dev/null; then
+try:
+    django.setup()
+    from django.db import connection
+    connection.ensure_connection()
+    print('OK')
+except Exception as e:
+    print(f'DB Connection Error: {e}', file=sys.stderr)
+    sys.exit(1)
+  "; then
     echo "Database connected"
     break
   fi
@@ -36,4 +41,4 @@ python manage.py collectstatic --noinput
 
 # Запуск
 echo "Starting Gunicorn..."
-exec gunicorn --bind 0.0.0.0:8000 --workers 3 trucking_desk.wsgi:application
+exec gunicorn --bind 0.0.0.0:8000 --workers 3 marais.wsgi:application

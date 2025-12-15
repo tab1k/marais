@@ -22,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@8oby_i7)+#jti4r5@p989l%7j%v2@e9rgztn7_%+b(v)!3vgw'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-@8oby_i7)+#jti4r5@p989l%7j%v2@e9rgztn7_%+b(v)!3vgw')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*', 'marais.kz', 'www.marais.kz', '0.0.0.0', 'localhost', '192.168.31.99', 'backend.tbd.bz', '127.0.0.1', 'backend', '193.39.68.182']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
 
 
 # Application definition
@@ -82,27 +83,27 @@ WSGI_APPLICATION = 'marais.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('DB_NAME', 'marais_db'),
-#         'USER': os.getenv('DB_USER', 'tab1k'),
-#         'PASSWORD': os.getenv('DB_PASSWORD', 'TOBI8585'),
-#         'HOST': os.getenv('DB_HOST', 'db'),
-#         'PORT': os.getenv('DB_PORT', '5432'),
-#         'CONN_MAX_AGE': 60,
-#         'OPTIONS': {
-#             'connect_timeout': 30,
-#         }
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'marais_db'),
+        'USER': os.getenv('DB_USER', 'tab1k'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'TOBI8585'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'CONN_MAX_AGE': 60,
+        'OPTIONS': {
+            'connect_timeout': 30,
+        }
+    }
+}
 
 
 # Password validation

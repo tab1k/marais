@@ -1,33 +1,49 @@
+# Builder stage
+FROM python:3.12-slim as builder
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+
+# Final stage
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
-RUN apt-get update && apt-get install -y \
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
-    gcc \
     gettext \
-    bash \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
-# Копирование и установка Python зависимостей
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+COPY --from=builder /app/wheels /wheels
+COPY --from=builder /app/requirements.txt .
 
-# Копирование entrypoint ПЕРВЫМ
-COPY docker-entrypoint.sh .
+RUN pip install --no-cache /wheels/*
 
-# Копирование исходного кода
-COPY src/ .
+COPY . .
 
-# Права на выполнение entrypoint
-RUN chmod +x docker-entrypoint.sh
+# Ensure entrypoint is executable
+RUN chmod +x /app/docker-entrypoint.sh
 
-# Создание директорий для статики и медиа
+# Create directories for static/media
 RUN mkdir -p /app/staticfiles /app/media
+
+# Switch to source directory for running the app
+WORKDIR /app/src
 
 EXPOSE 8000
 
-# Использование entrypoint - ВАЖНО: shell форма
-CMD ["bash", "./docker-entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
