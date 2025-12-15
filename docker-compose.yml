@@ -4,8 +4,8 @@ services:
     command: gunicorn --bind 0.0.0.0:8000 --workers 3 marais.wsgi:application
     volumes:
       - ./src:/app/src
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - static_volume:/app/src/staticfiles
+      - media_volume:/app/src/media
     env_file:
       - .env
     depends_on:
