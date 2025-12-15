@@ -8,6 +8,8 @@ services:
       - media_volume:/app/src/media
     env_file:
       - .env
+    ports:
+      - "8585:8000"
     depends_on:
       - db
 
@@ -22,16 +24,7 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
 
-  nginx:
-    image: nginx:alpine
-    volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    ports:
-      - "8585:80"
-    depends_on:
-      - web
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
 
 volumes:
   postgres_data:

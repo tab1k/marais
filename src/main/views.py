@@ -45,3 +45,39 @@ class BrandPageView(View):
 class ProjectPageView(View):
     def get(self, request):
         return render(request, 'main/project.html')
+
+
+from django.http import JsonResponse
+import json
+
+class NewsletterSubscribeView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            
+            if not email:
+                return JsonResponse({'success': False, 'message': 'Email обязателен'}, status=400)
+            
+            from django.core.validators import validate_email
+            from django.core.exceptions import ValidationError
+            
+            try:
+                validate_email(email)
+            except ValidationError:
+                 return JsonResponse({'success': False, 'message': 'Некорректный email'}, status=400)
+
+            from .models import NewsletterSubscriber
+            obj, created = NewsletterSubscriber.objects.get_or_create(email=email)
+            
+            if not created:
+                 if not obj.is_active:
+                     obj.is_active = True
+                     obj.save()
+                     return JsonResponse({'success': True, 'message': 'Вы снова подписались!'})
+                 return JsonResponse({'success': False, 'message': 'Вы уже подписаны'}, status=400)
+            
+            return JsonResponse({'success': True, 'message': 'Спасибо за подписку!'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)

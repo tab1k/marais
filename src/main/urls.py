@@ -1,11 +1,9 @@
-from .views import GeneralPageView, BrandPageView, ProjectPageView
+from . import views
 from django.urls import path
 
 urlpatterns = [
-    path('', GeneralPageView.as_view(), name='general'),
-    path('brand/', BrandPageView.as_view(), name='brand'),
-    path('project/', ProjectPageView.as_view(), name='project'),
-] 
-
-
-
+    path('', views.GeneralPageView.as_view(), name='general'),
+    path('brand/', views.BrandPageView.as_view(), name='brand'),
+    path('project/', views.ProjectPageView.as_view(), name='project'),
+    path('api/subscribe/', views.NewsletterSubscribeView.as_view(), name='subscribe'),
+]

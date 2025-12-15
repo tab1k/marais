@@ -338,4 +338,42 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+  // Newsletter Subscription
+  window.subscribeNewsletter = async () => {
+    const form = document.getElementById('newsletter-form');
+    const input = document.getElementById('newsletter-email');
+    const messageDiv = document.getElementById('newsletter-message');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+    if (!input || !input.value) return;
+
+    messageDiv.textContent = 'Отправка...';
+    messageDiv.style.color = '#666';
+
+    try {
+      const response = await fetch('/main/api/subscribe/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ email: input.value })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        messageDiv.textContent = data.message;
+        messageDiv.style.color = 'green';
+        input.value = '';
+      } else {
+        messageDiv.textContent = data.message || 'Ошибка при подписке';
+        messageDiv.style.color = 'red';
+      }
+    } catch (error) {
+      console.error(error);
+      messageDiv.textContent = 'Произошла ошибка. Попробуйте позже.';
+      messageDiv.style.color = 'red';
+    }
+  };
 });

@@ -12,7 +12,7 @@
 .site-header a {
   color: #1f1f1f;
   text-decoration: none;
-  font-size: 30px;
+  font-size: 18px;
   transition: color 0.3s;
   font-weight: 400;
   letter-spacing: 0.5px;
@@ -148,7 +148,7 @@
   }
 
   .site-header .container-m {
-   
+
     padding-left: 16px;
   }
 
@@ -342,11 +342,16 @@
 }
 
 .mobile-menu__link {
-  font-size: 18px;
+  font-size: 30px;
   font-weight: 600;
   color: #1d1d1d;
   text-decoration: none;
   letter-spacing: 0.2px;
+}
+
+/* Explicitly target the user request if they meant general site-header links in mobile, but likely they meant mobile menu */
+.mobile-menu__nav a {
+  font-size: 30px !important;
 }
 
 .mobile-menu__link:hover {

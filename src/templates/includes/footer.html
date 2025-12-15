@@ -37,8 +37,12 @@
       <div class="footer-col">
         <h4>Новости</h4>
         <p>Подпишись на рассылку:</p>
-        <input type="email" placeholder="Ваш email" class="footer-input">
-        <button class="footer-btn">Отправить</button>
+        <form id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+          {% csrf_token %}
+          <input type="email" id="newsletter-email" placeholder="Ваш email" class="footer-input" required>
+          <button type="submit" class="footer-btn">Отправить</button>
+        </form>
+        <div id="newsletter-message" style="margin-top: 10px; font-size: 14px;"></div>
       </div>
     </div>
     <!-- Footer bottom -->
