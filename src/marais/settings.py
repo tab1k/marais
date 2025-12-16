@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-@8oby_i7)+#jti4r5@p989l%7j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,192.168.0.14').split(',')
 
 
 # Application definition
@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     'basket.apps.BasketConfig',
     'catalog.apps.CatalogConfig',
     'reviews.apps.ReviewsConfig',
+    'orders.apps.OrdersConfig',
 ]
+
+WHATSAPP_NUMBER = "77772555348" # Number without symbols for API
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,27 +87,27 @@ WSGI_APPLICATION = 'marais.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'marais_db'),
-        'USER': os.getenv('DB_USER', 'tab1k'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'TOBI8585'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'CONN_MAX_AGE': 60,
-        'OPTIONS': {
-            'connect_timeout': 30,
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'marais_db'),
+#         'USER': os.getenv('DB_USER', 'tab1k'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'TOBI8585'),
+#         'HOST': os.getenv('DB_HOST', 'db'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#         'CONN_MAX_AGE': 60,
+#         'OPTIONS': {
+#             'connect_timeout': 30,
+#         }
+#     }
+# }
 
 
 # Password validation
@@ -193,5 +196,5 @@ DEFAULT_UPLOAD_LIMIT_MB = 100
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Whitenoise configuration
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

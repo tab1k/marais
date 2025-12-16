@@ -88,6 +88,25 @@ img {
   align-items: center;
   gap: 18px;
   pointer-events: none;
+  text-align: center;
+  z-index: 10;
+  /* Ensure it floats above image/decor */
+}
+
+.hero-overlay h1 {
+  color: #fff !important;
+  /* Force white color to override any specificity issues */
+  font-size: clamp(40px, 8vw, 80px);
+  /* Increased size range */
+  font-weight: 400;
+  /* Slightly bolder for visibility */
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  /* Stronger shadow */
+  margin: 0;
+  line-height: 1.1;
+  font-family: var(--font-sans);
 }
 
 .hero-logo {
