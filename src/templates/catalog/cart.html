@@ -71,10 +71,10 @@
         </div>
         <div class="cart-summary__buttons">
           <a href="{% url 'orders:checkout' %}" class="btn-primary cart-summary__btn">Оформить заказ</a>
-          <a href="#" class="btn-secondary cart-summary__btn">Поделиться</a>
+          <a href="#" id="share-cart-btn" class="btn-secondary cart-summary__btn">Поделиться</a>
         </div>
 
-        <details class="cart-info" open>
+        <details class="cart-info">
           <summary>Информация о доставке</summary>
           <div class="cart-info__body">
             <p>Мы отправляем заказы из Алматы. В обычные дни оформление и передача в доставку занимает один день. В

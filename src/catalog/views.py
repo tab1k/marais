@@ -27,39 +27,38 @@ class CatalogView(View):
             clean_brands = [b for b in brand_names if b and b != 'None']
             if clean_brands:
                 products = products.filter(brand_ref__name__in=clean_brands)
+
+        # Removed Metal, Coverage, Stones, Color filters as requested
+
+        available_sizes = set()
+        if category_slugs:
+            # Get all sizes for products in the current filtered set (by category/brand)
+            # We use a separate query or iterate the current queryset to find available sizes
+            # optimization: use values_list on the current 'products' queryset
+            # Note: 'products' at this point is filtered by category and brand
+            raw_sizes = products.exclude(size='').values_list('size', flat=True)
+            for s_str in raw_sizes:
+                # Assuming size can be "16, 17" or just "16"
+                for s in s_str.split(','):
+                    s_clean = s.strip()
+                    if s_clean:
+                        available_sizes.add(s_clean)
             
-        metals = request.GET.getlist('metal')
-        if metals:
-             clean_metals = [m for m in metals if m and m != 'None']
-             if clean_metals:
-                # Use Q objects if we need partially matching, but __in is better for checkboxes
-                # However, if DB has "Gold 585" and we filter "Gold", __in won't match.
-                # But checkboxes imply exact options. Let's assume exact match for now.
-                products = products.filter(metal__in=clean_metals)
-
-        coverages = request.GET.getlist('coverage')
-        if coverages:
-             clean_coverages = [c for c in coverages if c and c != 'None']
-             if clean_coverages:
-                products = products.filter(coverage__in=clean_coverages)
-
-        stones_list = request.GET.getlist('stones')
-        if stones_list:
-             clean_stones = [s for s in stones_list if s and s != 'None']
-             if clean_stones:
-                products = products.filter(stones__in=clean_stones)
-             
-        colors = request.GET.getlist('color')
-        if colors:
-             clean_colors = [c for c in colors if c and c != 'None']
-             if clean_colors:
-                products = products.filter(color__in=clean_colors)
-
+        # Filter by selected sizes
         sizes = request.GET.getlist('size')
         if sizes:
              clean_sizes = [s for s in sizes if s and s != 'None']
              if clean_sizes:
-                products = products.filter(size__in=clean_sizes)
+                # Filter products that CONTAIN the selected size
+                # Since size is a string "16, 17", we might need partial match for each selected size
+                # OR logic: if product has ANY of the selected sizes
+                from django.db.models import Q
+                q_objs = Q()
+                for s in clean_sizes:
+                    q_objs |= Q(size__icontains=s)
+                products = products.filter(q_objs)
+        
+        available_sizes = sorted(list(available_sizes))
         
         # Pagination
         paginator = Paginator(products, 12) # 12 items per page
@@ -73,11 +72,8 @@ class CatalogView(View):
             'brands': brands,
             'selected_categories': category_slugs,
             'selected_brands': brand_names,
-            'selected_metals': metals,
-            'selected_coverages': coverages,
-            'selected_stones': stones_list,
-            'selected_colors': colors,
             'selected_sizes': sizes,
+            'available_sizes': available_sizes,
         })
 
 

@@ -389,3 +389,110 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
   }
 });
+
+  // Image Modal (Lightbox)
+  const imageModal = document.querySelector('[data-image-modal]');
+  const imageModalImg = document.querySelector('[data-image-modal-img]');
+  const imageModalClose = document.querySelector('[data-image-modal-close]');
+  const galleryMain = document.querySelector('[data-gallery-main]');
+
+  const openImageModal = () => {
+    if (!imageModal || !galleryMain || !imageModalImg) return;
+    imageModalImg.src = galleryMain.src;
+    imageModal.classList.add('is-visible');
+    body.classList.add('no-scroll');
+  };
+
+  const closeImageModal = () => {
+    if (!imageModal) return;
+    imageModal.classList.remove('is-visible');
+    body.classList.remove('no-scroll');
+  };
+
+  if (galleryMain) {
+    galleryMain.addEventListener('click', openImageModal);
+    // Make sure it has cursor pointer to indicate clickable
+    galleryMain.style.cursor = 'zoom-in';
+  }
+
+  if (imageModalClose) {
+    imageModalClose.addEventListener('click', closeImageModal);
+  }
+
+  if (imageModal) {
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        closeImageModal();
+      }
+    });
+  }
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && imageModal?.classList.contains('is-visible')) {
+      closeImageModal();
+    }
+  });
+
+  // Share Cart Logic
+  const shareCartBtn = document.getElementById('share-cart-btn');
+  if (shareCartBtn) {
+    shareCartBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      const items = Array.from(document.querySelectorAll('.cart-item')).map(item => {
+        const title = item.querySelector('.cart-item__title')?.textContent.trim();
+        const price = item.querySelector('.cart-item__price')?.textContent.trim();
+        return `- ${title} (${price})`;
+      });
+
+      const text = 'Я выбрал эти украшения в MARAIS:\n\n' + items.join('\n') + '\n\nПосмотрите на сайте: ' + window.location.origin;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Моя корзина MARAIS',
+            text: text,
+            url: window.location.origin
+          });
+        } catch (err) {
+          console.log('Error sharing:', err);
+        }
+      } else {
+        // Fallback for desktop/browsers without share API
+        try {
+          await navigator.clipboard.writeText(text);
+          alert('Список товаров скопирован! Теперь вы можете отправить его в любом мессенджере.');
+        } catch (err) {
+          console.error('Failed to copy', err);
+        }
+      }
+    });
+  }
+
+  // Contact Modal Logic (Header Phone Icon)
+  const contactTrigger = document.getElementById('contact-modal-trigger');
+  const contactModal = document.getElementById('contact-modal');
+  
+  if (contactTrigger && contactModal) {
+    contactTrigger.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent document click from immediately closing
+      contactModal.classList.toggle('is-visible');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (contactModal.classList.contains('is-visible') && 
+          !contactModal.contains(e.target) && 
+          e.target !== contactTrigger) {
+        contactModal.classList.remove('is-visible');
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && contactModal.classList.contains('is-visible')) {
+        contactModal.classList.remove('is-visible');
+      }
+    });
+  }

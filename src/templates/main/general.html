@@ -146,6 +146,8 @@
     {% if block.image %}
     <img src="{{ block.image.url }}" alt="{{ block.title }}" class="mishes-image">
     {% endif %}
+    <img class="banner-decor banner-decor--left" src="{% static 'images/lefft.png' %}" alt="">
+    <img class="banner-decor banner-decor--right" src="{% static 'images/rightt.png' %}" alt="">
     <div class="mishes-overlay">
       <h3 class="mishes-title">{{ block.subtitle }}</h3>
       {% if block.link_url %}
@@ -173,104 +175,66 @@
       </div>
     </div>
     <div class="reviews-grid reviews-grid-desktop wide">
+      {% for review in reviews %}
       <div class="review-card review-centered">
         <div class="review-body">
-          <div class="stars">★★★★★</div>
-          <p class="review-text">"Искала особенное украшение на годовщину, и нашла его здесь. Колье превзошло все ожидания — изящное, элегантное и очень качественное. Спасибо за внимание к деталям!"</p>
-        </div>
-        <div class="review-footer">
-          <img class="review-avatar-img"
-            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80"
-            alt="Елена Соколова">
-          <div class="review-meta">
-            <p class="review-author">Елена Соколова</p>
-            <p class="review-city">Алмата</p>
-          </div>
-        </div>
-      </div>
-      <div class="review-card review-centered">
-        <div class="review-body">
-          <div class="stars">★★★★★</div>
-          <p class="review-text">"Спасибо за отличный сервис и качество. Украшения приходят быстро и в идеальном состоянии — буду заказывать ещё."</p>
-        </div>
-        <div class="review-footer">
-          <img class="review-avatar-img"
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
-            alt="Азалия">
-          <div class="review-meta">
-            <p class="review-author">Азалия</p>
-            <p class="review-city">Алмата</p>
-          </div>
-        </div>
-      </div>
-      <div class="review-card review-centered">
-        <div class="review-body">
-          <div class="stars">★★★★★</div>
-          <p class="review-text">"Рекомендую MARAIS всем подругам! Стильные и качественные украшения по отличной цене. Каждый раз получаю комплименты."</p>
-        </div>
-        <div class="review-footer">
-          <img class="review-avatar-img"
-            src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=120&q=80"
-            alt="Карина">
-          <div class="review-meta">
-            <p class="review-author">Карина</p>
-            <p class="review-city">Алмата</p>
-          </div>
-        </div>
-      </div>
-      <div class="review-card review-centered">
-        <div class="review-body">
-          <div class="stars">★★★★★</div>
-          <p class="review-text">"Выбор огромный, консультанты помогают выбрать идеальное украшение на любой вкус. Очень приятно носить каждый день."</p>
-        </div>
-        <div class="review-footer">
-          <img class="review-avatar-img"
-            src="https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=120&q=80"
-            alt="Елена">
-          <div class="review-meta">
-            <p class="review-author">Елена</p>
-            <p class="review-city">Алмата</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="reviewsCarousel" class="carousel slide reviews-carousel-mobile" data-bs-ride="carousel" data-bs-touch="true">
-      <div class="carousel-inner">
-        {% for review in reviews %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-          <div class="review-card review-centered">
-            <div class="review-body">
-              <div class="stars">
-                {% for i in "12345"|slice:":"|make_list %}
-                  {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
-                {% endfor %}
-              </div>
+          <div class="stars">
+            {% for i in "12345"|slice:":"|make_list %}
+            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %} {% endfor %} </div>
               <p class="review-text">"{{ review.text }}"</p>
-            </div>
-            <div class="review-footer">
-              <img class="review-avatar-img"
-                src="https://ui-avatars.com/api/?name={{ review.name }}&background=640406&color=fff&size=120"
-                alt="{{ review.name }}">
-              <div class="review-meta">
-                <p class="review-author">{{ review.name }}</p>
-                <p class="review-city">{{ review.city }}</p>
-              </div>
+          </div>
+          <div class="review-footer">
+            <img class="review-avatar-img"
+              src="https://ui-avatars.com/api/?name={{ review.name }}&background=640406&color=fff&size=120"
+              alt="{{ review.name }}">
+            <div class="review-meta">
+              <p class="review-author">{{ review.name }}</p>
+              <p class="review-city">{{ review.city }}</p>
             </div>
           </div>
         </div>
         {% empty %}
-        <div class="carousel-item active">
-          <div class="review-card review-centered">
-            <p style="text-align: center; padding: 40px;">Пока нет отзывов. Будьте первым!</p>
-          </div>
+        <div class="review-card review-centered" style="grid-column: 1/-1;">
+          <p style="text-align: center; padding: 40px;">Пока нет отзывов. Будьте первым!</p>
         </div>
         {% endfor %}
       </div>
-    </div>
-    <div class="reviews-cta">
-      <a class="split-button reviews-button" href="#" data-review-modal-trigger>Оставить отзыв</a>
-    </div>
-  </div>
+      <div id="reviewsCarousel" class="carousel slide reviews-carousel-mobile" data-bs-ride="carousel"
+        data-bs-touch="true">
+        <div class="carousel-inner">
+          {% for review in reviews %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="review-card review-centered">
+              <div class="review-body">
+                <div class="stars">
+                  {% for i in "12345"|slice:":"|make_list %}
+                  {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %} {% endfor %} </div>
+                    <p class="review-text">"{{ review.text }}"</p>
+                </div>
+                <div class="review-footer">
+                  <img class="review-avatar-img"
+                    src="https://ui-avatars.com/api/?name={{ review.name }}&background=640406&color=fff&size=120"
+                    alt="{{ review.name }}">
+                  <div class="review-meta">
+                    <p class="review-author">{{ review.name }}</p>
+                    <p class="review-city">{{ review.city }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+              <div class="review-card review-centered">
+                <p style="text-align: center; padding: 40px;">Пока нет отзывов. Будьте первым!</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="reviews-cta">
+          <a class="split-button reviews-button" href="#" data-review-modal-trigger>Оставить отзыв</a>
+        </div>
+      </div>
 </section>
 
 <!-- Review Modal -->

@@ -18,88 +18,24 @@
 <section class="brand-page">
   <div class="container-m">
     <div class="brand-section">
-      <div class="brand-list">
-
-        <!-- Marie Laure Chamorel -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>Marie Laure Chamorel</h3>
-              <span>Франция</span>
-            </div>
+      <div class="brand-grid">
+        {% for brand in brands %}
+        <div class="brand-card">
+          <div class="brand-card__image">
+            {% if brand.logo %}
+            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
+            {% else %}
+            <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ brand.name }}">
+            {% endif %}
           </div>
-          <p>Эти «текстильные» ювелирные изделия абсолютно уникальны! Страсть дизайнера к интересным материалам и
-            особенной подаче, воплощаются в этих нежных изделиях очень тонкой работы.</p>
-        </div>
-
-        <!-- Sharing -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>Sharing</h3>
-              <span>Франция</span>
-            </div>
+          <div class="brand-card__content">
+            <h3 class="brand-card__title">{{ brand.name }}</h3>
+            <span class="brand-card__country">{{ brand.country }}</span>
+            <p class="brand-card__desc">{{ brand.description }}</p>
           </div>
-          <p>Аутентичные колье родом из Тибета, они исполнены в тончайшей старинной технике микро-макраме. Камни
-            тщательно отбираются и вплетаются в прочные нейлоновые нити создавая невероятно красивый эффект.</p>
-          <p>Слово Sharing, заложенное дизайнером в концепцию этих украшений, означает “делиться” — делиться уникальными
-            сокровищами с теми, кто вам дорог.</p>
         </div>
-
-        <!-- Gerochristo -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>Gerochristo</h3>
-              <span>Греция</span>
-            </div>
-          </div>
-          <p>Греция в серебре и золоте. Когда хочется чего-то очень стильного, но в новом формате. В украшениях
-            Gerochristo живёт мастерство нескольких поколений. Украшения вдохновлены византийскими традициями и искусно
-            переданы в невероятно красивой форме.</p>
-        </div>
-
-        <!-- La2L -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>La2L</h3>
-              <span>Франция</span>
-            </div>
-          </div>
-          <p>В этих украшениях много символов-оберегов, талисманов и мистических смыслов. Обращаясь к античным традициям
-            разных культур, дизайнер создает настоящие диковинные сокровища!</p>
-        </div>
-
-        <!-- Pyrrha -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>Pyrrha</h3>
-              <span>Канада</span>
-            </div>
-          </div>
-          <p>Талисманы Pyrrha - символы с глубоким смыслом. Каждый амулет хранит в себе особое послание. Они становятся
-            личным напоминанием о том, что важно.</p>
-          <p>Ювелирная точность и особая история в каждом амулете.</p>
-        </div>
-
-        <!-- luj -->
-        <div class="brand-entry">
-          <div class="brand-entry__header">
-            <div class="brand-entry__title">
-              <h3>luj</h3>
-              <span>Франция</span>
-            </div>
-          </div>
-          <p>Эффектный парижский бренд с простыми, выразительными формами, вдохновляющий на повседневную эстетику.
-            Крупные цепи и миниатюрные подвески легко сочетаются между собой - mix and match.</p>
-        </div>
+        {% endfor %}
       </div>
-
-      <p class="brand-note" style="margin-top: 40px;">Кроме основных брендов, в MARAIS есть украшения независимых
-        дизайнеров из Европы и Америки — у каждого свой характер, эстетика и почерк. Вместе они формируют живую
-        коллекцию, создающую пространство для личного стиля.</p>
     </div>
   </div>
 </section>

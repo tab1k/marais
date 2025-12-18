@@ -45,7 +45,7 @@ class WhatsAppCheckoutView(View):
             
             # Add to message
             size_str = f" (Размер: {cart_item.size})" if cart_item.size else ""
-            line = f"- {cart_item.product.name}{size_str} x{cart_item.quantity} — {cost} ₸"
+            line = f"- {cart_item.product.title}{size_str} x{cart_item.quantity} — {cost} ₸"
             message_lines.append(line)
 
         # Update Order Total

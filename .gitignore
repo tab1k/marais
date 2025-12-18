@@ -7,7 +7,7 @@ __pycache__/
 *.log
 *.pot
 *.mo
-
+db.sqlite3
 media/
 staticfiles/
 /static/

@@ -19,7 +19,7 @@
           <div class="filter-group-title">Категории</div>
           <div class="filter-options-list">
             {% for cat in categories %}
-            <a href="?{% url_replace category=cat.slug %}"
+            <a href="?{% if cat.slug in selected_categories %}{% url_replace category=None %}{% else %}{% url_replace category=cat.slug %}{% endif %}"
               class="filter-link {% if cat.slug in selected_categories %}active{% endif %}">
               {{ cat.name }}
             </a>
@@ -27,59 +27,25 @@
           </div>
         </div>
 
+        {% if available_sizes %}
         <div class="filter-group">
-          <div class="filter-group-title">Металл</div>
+          <div class="filter-group-title">Размер</div>
           <div class="filter-options-list">
-            <a href="?{% url_replace metal='Золото' %}"
-              class="filter-link {% if 'Золото' in selected_metals %}active{% endif %}">Золото</a>
-            <a href="?{% url_replace metal='Серебро' %}"
-              class="filter-link {% if 'Серебро' in selected_metals %}active{% endif %}">Серебро</a>
-            <a href="?{% url_replace metal='Розовое золото' %}"
-              class="filter-link {% if 'Розовое золото' in selected_metals %}active{% endif %}">Розовое золото</a>
+            {% for s in available_sizes %}
+            <a href="?{% if s in selected_sizes %}{% url_replace size=None %}{% else %}{% url_replace size=s %}{% endif %}"
+              class="filter-link {% if s in selected_sizes %}active{% endif %}">
+              {{ s }}
+            </a>
+            {% endfor %}
           </div>
         </div>
-
-        <div class="filter-group">
-          <div class="filter-group-title">Покрытие</div>
-          <div class="filter-options-list">
-            <a href="?{% url_replace coverage='Гальваническое' %}"
-              class="filter-link {% if 'Гальваническое' in selected_coverages %}active{% endif %}">Гальваническое</a>
-            <a href="?{% url_replace coverage='Золочение' %}"
-              class="filter-link {% if 'Золочение' in selected_coverages %}active{% endif %}">Золочение</a>
-            <a href="?{% url_replace coverage='Родирование' %}"
-              class="filter-link {% if 'Родирование' in selected_coverages %}active{% endif %}">Родирование</a>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <div class="filter-group-title">Вставки</div>
-          <div class="filter-options-list">
-            <a href="?{% url_replace stones='Рубин' %}"
-              class="filter-link {% if 'Рубин' in selected_stones %}active{% endif %}">Рубин</a>
-            <a href="?{% url_replace stones='Алмаз' %}"
-              class="filter-link {% if 'Алмаз' in selected_stones %}active{% endif %}">Алмаз</a>
-            <a href="?{% url_replace stones='Сапфир' %}"
-              class="filter-link {% if 'Сапфир' in selected_stones %}active{% endif %}">Сапфир</a>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <div class="filter-group-title">Цвет</div>
-          <div class="filter-options-list">
-            <a href="?{% url_replace color='Белый' %}"
-              class="filter-link {% if 'Белый' in selected_colors %}active{% endif %}">Белый</a>
-            <a href="?{% url_replace color='Розовый' %}"
-              class="filter-link {% if 'Розовый' in selected_colors %}active{% endif %}">Розовый</a>
-            <a href="?{% url_replace color='Красное золото' %}"
-              class="filter-link {% if 'Красное золото' in selected_colors %}active{% endif %}">Красное золото</a>
-          </div>
-        </div>
+        {% endif %}
 
         <div class="filter-group">
           <div class="filter-group-title">Бренды</div>
           <div class="filter-options-list">
             {% for brand in brands %}
-            <a href="?{% url_replace brand=brand.name %}"
+            <a href="?{% if brand.name in selected_brands %}{% url_replace brand=None %}{% else %}{% url_replace brand=brand.name %}{% endif %}"
               class="filter-link {% if brand.name in selected_brands %}active{% endif %}">
               {{ brand.name }}
             </a>

@@ -20,7 +20,20 @@
     </div>
 
     <div class="header-actions header-actions--compact">
-      <img src="{% static 'images/Phone.png' %}" alt="Phone" class="icon-link">
+      <img src="{% static 'images/Phone.png' %}" alt="Phone" class="icon-link" id="contact-modal-trigger"
+        style="cursor: pointer;">
+
+      <!-- Contact Modal -->
+      <div class="contact-modal" id="contact-modal">
+        <div class="contact-modal__content">
+          <p class="contact-modal__phone">+7 (777) 255-53-48</p>
+          <p class="contact-modal__email">kz.marais.info@gmail.com</p>
+          <div class="contact-modal__socials">
+            <a href="https://instagram.com/marais.kz" target="_blank">Instagram</a>
+            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+      </div>
       <a href="{% url 'basket:detail' %}"><img src="{% static 'images/Vector.png' %}" alt="Cart" class="icon-link"></a>
       <img src="{% static 'images/Serch.png' %}" alt="Search" class="icon-link" data-search-trigger
         style="cursor: pointer;">
