@@ -30,10 +30,10 @@
         {% if available_sizes %}
         <div class="filter-group">
           <div class="filter-group-title">Размер</div>
-          <div class="filter-options-list">
+          <div class="filter-sizes-grid">
             {% for s in available_sizes %}
             <a href="?{% if s in selected_sizes %}{% url_replace size=None %}{% else %}{% url_replace size=s %}{% endif %}"
-              class="filter-link {% if s in selected_sizes %}active{% endif %}">
+              class="filter-size-btn {% if s in selected_sizes %}active{% endif %}">
               {{ s }}
             </a>
             {% endfor %}
@@ -101,8 +101,11 @@
             <div class="product-thumb">
               {% if product.main_image %}
               <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+              {% elif product.brand_ref and product.brand_ref.logo %}
+              <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder">
               {% else %}
-              <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}" style="opacity: 0.5;">
+              <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
+                style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>
             <div class="product-info">

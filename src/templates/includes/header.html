@@ -29,8 +29,12 @@
           <p class="contact-modal__phone">+7 (777) 255-53-48</p>
           <p class="contact-modal__email">kz.marais.info@gmail.com</p>
           <div class="contact-modal__socials">
-            <a href="https://instagram.com/marais.kz" target="_blank">Instagram</a>
-            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank">WhatsApp</a>
+            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank">
+              <img src="{% static 'images/whatsapp.svg' %}" alt="WhatsApp">
+            </a>
+            <a href="https://instagram.com/marais.kz" target="_blank">
+              <img src="{% static 'images/instagram.svg' %}" alt="Instagram">
+            </a>
           </div>
         </div>
       </div>
@@ -58,7 +62,8 @@
         <a href="{% url 'project' %}" class="mobile-menu__link">Проект</a>
         <a href="{% url 'basket:detail' %}" class="mobile-menu__link">Корзина</a>
       </nav>
-      <a class="mobile-user" href="{% url 'catalog:profile' %}">
+      <a class="mobile-user"
+        href="{% if request.user.is_authenticated %}{% url 'catalog:profile' %}{% else %}{% url 'users:login' %}{% endif %}">
         <span class="mobile-user__avatar">
           {% if request.user.is_authenticated and request.user.avatar %}
           <img src="{{ request.user.avatar.url }}" alt="{{ request.user.get_full_name|default:request.user.username }}">

@@ -93,7 +93,7 @@
         <div>
           <div class="profile-stat__value">
             {% if request.user.is_authenticated %}
-            {{ request.user.orders.count|default:0 }}
+            {{ orders_total|default:0 }}
             {% else %}
             0
             {% endif %}
@@ -142,8 +142,11 @@
             <div class="order-card__icon">
               {% if order.items.first.product.main_image %}
               <img src="{{ order.items.first.product.main_image.url }}" alt="">
+              {% elif order.items.first.product.brand_ref and order.items.first.product.brand_ref.logo %}
+              <img src="{{ order.items.first.product.brand_ref.logo.url }}" alt="" class="product-brand-placeholder">
               {% else %}
-              <img src="{% static 'images/chameleon.png' %}" alt="">
+              <img src="{% static 'images/logo.png' %}" alt="" class="product-brand-placeholder"
+                style="padding: 10px; opacity: 0.8;">
               {% endif %}
             </div>
             <div>
@@ -152,7 +155,7 @@
             </div>
           </div>
           <div class="order-card__meta">
-            <div class="order-card__price">{{ order.total|floatformat:0 }} ₸</div>
+            <div class="order-card__price">{{ order.total_price|floatformat:0 }} ₸</div>
           </div>
         </article>
         {% endfor %}
@@ -178,8 +181,11 @@
               <div class="product-thumb">
                 {% if product.main_image %}
                 <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% elif product.brand_ref and product.brand_ref.logo %}
+                <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder">
                 {% else %}
-                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
+                <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
+                  style="padding: 40px; opacity: 0.8;">
                 {% endif %}
               </div>
               <div class="product-info">

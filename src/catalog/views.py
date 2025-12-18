@@ -135,11 +135,24 @@ class SearchSuggestionsView(View):
             products = Product.objects.filter(is_active=True).order_by('?')[:5]
 
         for p in products:
+            image_url = None
+            is_placeholder = False
+            
+            if p.main_image:
+                image_url = p.main_image.url
+            elif p.brand_ref and p.brand_ref.logo:
+                image_url = p.brand_ref.logo.url
+                is_placeholder = True
+            else:
+                image_url = '/static/images/logo.png'
+                is_placeholder = True
+                
             results.append({
                 'title': p.title,
                 'slug': p.slug,
                 'price': str(int(p.price)),
-                'image': p.main_image.url if p.main_image else None,
+                'image': image_url,
+                'is_placeholder': is_placeholder,
                 'brand': p.brand_ref.name if p.brand_ref else None
             })
         return JsonResponse({'results': results})

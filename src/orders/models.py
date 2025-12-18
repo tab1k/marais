@@ -32,7 +32,7 @@ class OrderItem(models.Model):
         verbose_name_plural = "Позиции заказа"
 
     def __str__(self):
-        return f"{self.product.name} (x{self.quantity})"
+        return f"{self.product.title} (x{self.quantity})"
 
     def get_cost(self):
         return self.price * self.quantity

@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const html = results.map(item => `
       <a href="/catalog/detail/${item.slug}/" class="search-result-item">
-        <img src="${item.image || '/static/images/product-placeholder.svg'}" alt="${item.title}" class="search-item-thumb">
+        <img src="${item.image}" alt="${item.title}" class="search-item-thumb ${item.is_placeholder ? 'product-brand-placeholder' : ''}" ${item.is_placeholder ? 'style="padding: 10px; opacity: 0.8;"' : ''}>
         <div class="search-item-info">
           <div class="search-item-title">${item.title}</div>
           <div class="search-item-price">${item.price} ₸</div>
@@ -390,109 +390,121 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-  // Image Modal (Lightbox)
-  const imageModal = document.querySelector('[data-image-modal]');
-  const imageModalImg = document.querySelector('[data-image-modal-img]');
-  const imageModalClose = document.querySelector('[data-image-modal-close]');
-  const galleryMain = document.querySelector('[data-gallery-main]');
+// Image Modal (Lightbox)
+const imageModal = document.querySelector('[data-image-modal]');
+const imageModalImg = document.querySelector('[data-image-modal-img]');
+const imageModalClose = document.querySelector('[data-image-modal-close]');
+const galleryMain = document.querySelector('[data-gallery-main]');
 
-  const openImageModal = () => {
-    if (!imageModal || !galleryMain || !imageModalImg) return;
-    imageModalImg.src = galleryMain.src;
-    imageModal.classList.add('is-visible');
-    body.classList.add('no-scroll');
-  };
+const openImageModal = () => {
+  if (!imageModal || !galleryMain || !imageModalImg) return;
+  imageModalImg.src = galleryMain.src;
+  imageModal.classList.add('is-visible');
+  body.classList.add('no-scroll');
+};
 
-  const closeImageModal = () => {
-    if (!imageModal) return;
-    imageModal.classList.remove('is-visible');
-    body.classList.remove('no-scroll');
-  };
+const closeImageModal = () => {
+  if (!imageModal) return;
+  imageModal.classList.remove('is-visible');
+  body.classList.remove('no-scroll');
+};
 
-  if (galleryMain) {
-    galleryMain.addEventListener('click', openImageModal);
-    // Make sure it has cursor pointer to indicate clickable
-    galleryMain.style.cursor = 'zoom-in';
-  }
+if (galleryMain) {
+  galleryMain.addEventListener('click', openImageModal);
+  // Make sure it has cursor pointer to indicate clickable
+  galleryMain.style.cursor = 'zoom-in';
+}
 
-  if (imageModalClose) {
-    imageModalClose.addEventListener('click', closeImageModal);
-  }
+if (imageModalClose) {
+  imageModalClose.addEventListener('click', closeImageModal);
+}
 
-  if (imageModal) {
-    imageModal.addEventListener('click', (e) => {
-      if (e.target === imageModal) {
-        closeImageModal();
-      }
-    });
-  }
-
-  // Close modal on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && imageModal?.classList.contains('is-visible')) {
+if (imageModal) {
+  imageModal.addEventListener('click', (e) => {
+    if (e.target === imageModal) {
       closeImageModal();
     }
   });
+}
 
-  // Share Cart Logic
-  const shareCartBtn = document.getElementById('share-cart-btn');
-  if (shareCartBtn) {
-    shareCartBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      
-      const items = Array.from(document.querySelectorAll('.cart-item')).map(item => {
-        const title = item.querySelector('.cart-item__title')?.textContent.trim();
-        const price = item.querySelector('.cart-item__price')?.textContent.trim();
-        return `- ${title} (${price})`;
-      });
-
-      const text = 'Я выбрал эти украшения в MARAIS:\n\n' + items.join('\n') + '\n\nПосмотрите на сайте: ' + window.location.origin;
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Моя корзина MARAIS',
-            text: text,
-            url: window.location.origin
-          });
-        } catch (err) {
-          console.log('Error sharing:', err);
-        }
-      } else {
-        // Fallback for desktop/browsers without share API
-        try {
-          await navigator.clipboard.writeText(text);
-          alert('Список товаров скопирован! Теперь вы можете отправить его в любом мессенджере.');
-        } catch (err) {
-          console.error('Failed to copy', err);
-        }
-      }
-    });
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && imageModal?.classList.contains('is-visible')) {
+    closeImageModal();
   }
+});
 
-  // Contact Modal Logic (Header Phone Icon)
-  const contactTrigger = document.getElementById('contact-modal-trigger');
-  const contactModal = document.getElementById('contact-modal');
-  
-  if (contactTrigger && contactModal) {
-    contactTrigger.addEventListener('click', (e) => {
-      e.stopPropagation(); // prevent document click from immediately closing
-      contactModal.classList.toggle('is-visible');
+// Share Cart Logic
+const shareCartBtn = document.getElementById('share-cart-btn');
+if (shareCartBtn) {
+  shareCartBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const items = Array.from(document.querySelectorAll('.cart-item')).map(item => {
+      const title = item.querySelector('.cart-item__title')?.textContent.trim();
+      const price = item.querySelector('.cart-item__price')?.textContent.trim();
+      return `- ${title} (${price})`;
     });
 
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-      if (contactModal.classList.contains('is-visible') && 
-          !contactModal.contains(e.target) && 
-          e.target !== contactTrigger) {
-        contactModal.classList.remove('is-visible');
+    const text = 'Я выбрал эти украшения в MARAIS:\n\n' + items.join('\n') + '\n\nПосмотрите на сайте: ' + window.location.origin;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Моя корзина MARAIS',
+          text: text,
+          url: window.location.origin
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
       }
-    });
+    } else {
+      // Fallback: Use textarea hack for better compatibility (e.g. non-HTTPS)
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed'; // Avoid scrolling to bottom
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
 
-    // Close on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && contactModal.classList.contains('is-visible')) {
-        contactModal.classList.remove('is-visible');
+      try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'Список товаров скопирован!' : 'Не удалось скопировать';
+        alert(msg);
+      } catch (err) {
+        console.error('Fallback copy failed', err);
+        alert('Не удалось скопировать список');
       }
-    });
-  }
+
+      document.body.removeChild(textArea);
+    }
+  });
+}
+
+// Contact Modal Logic (Header Phone Icon)
+const contactTrigger = document.getElementById('contact-modal-trigger');
+const contactModal = document.getElementById('contact-modal');
+
+if (contactTrigger && contactModal) {
+  contactTrigger.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent document click from immediately closing
+    contactModal.classList.toggle('is-visible');
+  });
+
+  // Close when clicking outside
+  document.addEventListener('click', (e) => {
+    if (contactModal.classList.contains('is-visible') &&
+      !contactModal.contains(e.target) &&
+      e.target !== contactTrigger) {
+      contactModal.classList.remove('is-visible');
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && contactModal.classList.contains('is-visible')) {
+      contactModal.classList.remove('is-visible');
+    }
+  });
+}

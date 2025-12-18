@@ -15,8 +15,12 @@
           <div class="cart-item__media">
             {% if item.product.main_image %}
             <img src="{{ item.product.main_image.url }}" alt="{{ item.product.title }}">
+            {% elif item.product.brand_ref and item.product.brand_ref.logo %}
+            <img src="{{ item.product.brand_ref.logo.url }}" alt="{{ item.product.title }}"
+              class="product-brand-placeholder">
             {% else %}
-            <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ item.product.title }}">
+            <img src="{% static 'images/logo.png' %}" alt="{{ item.product.title }}" class="product-brand-placeholder"
+              style="padding: 10px; opacity: 0.8;">
             {% endif %}
           </div>
           <div class="cart-item__body">

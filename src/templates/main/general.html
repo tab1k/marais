@@ -6,7 +6,7 @@
 {% block content %}
 
 <!-- Hero section -->
-<div class="container-m hero-wrapper">
+<div class="container-m hero-wrapper" style="margin-bottom: 50px;">
   {% if hero_block and hero_block.image %}
   <img class="hero-image" src="{{ hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}">
   {% else %}
@@ -54,7 +54,8 @@
         {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
         <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}">
         {% else %}
-        <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ cat.name }}" style="opacity:0.5">
+        <img src="{% static 'images/logo.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder"
+          style="padding: 40px; opacity: 0.8;">
         {% endif %}
         <p>{{ cat.name }}</p>
       </a>
@@ -128,8 +129,11 @@
       <a href="{% url 'catalog:detail' prod.slug %}" class="category-card" style="text-decoration:none; color:inherit;">
         {% if prod.main_image %}
         <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}">
+        {% elif prod.brand_ref and prod.brand_ref.logo %}
+        <img src="{{ prod.brand_ref.logo.url }}" alt="{{ prod.title }}" class="product-brand-placeholder">
         {% else %}
-        <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ prod.title }}">
+        <img src="{% static 'images/logo.png' %}" alt="{{ prod.title }}" class="product-brand-placeholder"
+          style="padding: 40px; opacity: 0.8;">
         {% endif %}
         <div class="home-product-info">
           <p class="home-product-price">{{ prod.title|upper }} <span>{{ prod.price|floatformat:0 }}₸</span></p>

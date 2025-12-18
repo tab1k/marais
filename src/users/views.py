@@ -26,7 +26,29 @@ class LoginView(View):
 
         user = authenticate(request, username=user_obj.username, password=password)
         if user:
+            # Check for anonymous cart BEFORE login (session cycle)
+            session_key = request.session.session_key
+            anon_cart = None
+            if session_key:
+                from basket.models import Cart
+                anon_cart = Cart.objects.filter(session_key=session_key, user__isnull=True).first()
+
             login(request, user)
+
+            # Merge carts after login
+            if anon_cart:
+                user_cart, _ = Cart.objects.get_or_create(user=user)
+                for item in anon_cart.items.all():
+                    # Check if item exists in user_cart
+                    existing_item = user_cart.items.filter(product=item.product, size=item.size).first()
+                    if existing_item:
+                        existing_item.quantity += item.quantity
+                        existing_item.save()
+                    else:
+                        item.cart = user_cart
+                        item.save()
+                anon_cart.delete()
+
             return redirect(next_url)
 
         return render(request, self.template_name, {'error': 'Неверный пароль', 'email': email})
@@ -57,7 +79,30 @@ class RegisterView(View):
             return render(request, self.template_name, {'error': 'Такой email уже зарегистрирован', 'full_name': full_name, 'email': email})
 
         user = UserModel.objects.create_user(username=email, email=email, password=password, first_name=full_name)
+        
+        # Check for anonymous cart BEFORE login
+        session_key = request.session.session_key
+        anon_cart = None
+        if session_key:
+            from basket.models import Cart
+            anon_cart = Cart.objects.filter(session_key=session_key, user__isnull=True).first()
+
         login(request, user)
+
+        # Merge carts after login
+        if anon_cart:
+            user_cart, _ = Cart.objects.get_or_create(user=user)
+            for item in anon_cart.items.all():
+                # Check if item exists in user_cart
+                existing_item = user_cart.items.filter(product=item.product, size=item.size).first()
+                if existing_item:
+                    existing_item.quantity += item.quantity
+                    existing_item.save()
+                else:
+                    item.cart = user_cart
+                    item.save()
+            anon_cart.delete()
+
         return redirect(reverse('catalog:profile'))
 
 

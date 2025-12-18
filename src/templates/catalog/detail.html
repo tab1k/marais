@@ -17,8 +17,12 @@
         <div class="gallery-main">
           {% if product.main_image %}
           <img src="{{ product.main_image.url }}" alt="{{ product.title }}" data-gallery-main>
+          {% elif product.brand_ref and product.brand_ref.logo %}
+          <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" data-gallery-main
+            class="product-brand-placeholder">
           {% else %}
-          <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}" data-gallery-main>
+          <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" data-gallery-main
+            class="product-brand-placeholder" style="padding: 40px; opacity: 0.8;">
           {% endif %}
         </div>
         <div class="gallery-thumbs" data-gallery-thumbs>
@@ -73,8 +77,11 @@
               <a href="{% url 'catalog:detail' variant.slug %}" class="swatch" title="{{ variant.title }}">
                 {% if variant.main_image %}
                 <img src="{{ variant.main_image.url }}" alt="{{ variant.title }}">
+                {% elif variant.brand_ref and variant.brand_ref.logo %}
+                <img src="{{ variant.brand_ref.logo.url }}" alt="{{ variant.title }}" class="product-brand-placeholder">
                 {% else %}
-                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ variant.title }}">
+                <img src="{% static 'images/logo.png' %}" alt="{{ variant.title }}" class="product-brand-placeholder"
+                  style="padding: 4px; opacity: 0.8;">
                 {% endif %}
               </a>
               {% endfor %}
@@ -88,7 +95,8 @@
               <input type="hidden" name="size" id="selected-size" value="{{ sizes_list.0|default:'' }}">
               <button class="btn-primary cart-btn" type="submit">В корзину</button>
             </form>
-            <button class="btn-secondary outline-btn" type="button">Консультант</button>
+            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank" class="btn-secondary outline-btn"
+              style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Консультант</a>
           </div>
 
           <details class="cart-info" style="margin-top: 20px; border-top: 1px solid #e6e1da; padding-top: 10px;">
@@ -126,8 +134,11 @@
           <div class="product-thumb">
             {% if rel_prod.main_image %}
             <img src="{{ rel_prod.main_image.url }}" alt="{{ rel_prod.title }}">
+            {% elif rel_prod.brand_ref and rel_prod.brand_ref.logo %}
+            <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}" class="product-brand-placeholder">
             {% else %}
-            <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ rel_prod.title }}">
+            <img src="{% static 'images/logo.png' %}" alt="{{ rel_prod.title }}" class="product-brand-placeholder"
+              style="padding: 40px; opacity: 0.8;">
             {% endif %}
           </div>
           <div class="product-info">
@@ -161,8 +172,12 @@
             <div class="product-thumb">
               {% if comp_product.main_image %}
               <img src="{{ comp_product.main_image.url }}" alt="{{ comp_product.title }}">
+              {% elif comp_product.brand_ref and comp_product.brand_ref.logo %}
+              <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}"
+                class="product-brand-placeholder">
               {% else %}
-              <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ comp_product.title }}">
+              <img src="{% static 'images/logo.png' %}" alt="{{ comp_product.title }}" class="product-brand-placeholder"
+                style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>
             <div class="product-info">
