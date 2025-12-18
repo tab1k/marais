@@ -1810,8 +1810,7 @@ html.no-scroll {
 }
 
 .gallery-thumbs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  display: flex;
   gap: 12px;
 }
 
