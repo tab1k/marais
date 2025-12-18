@@ -3496,15 +3496,18 @@ html.no-scroll {
 .image-modal-close:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
 /* Contact Modal (Header) */
 .contact-modal {
   display: none;
   position: absolute;
-  top: 60px; /* Adjust based on header height */
-  right: 120px; /* Adjust to align with phone icon */
+  top: 60px;
+  /* Adjust based on header height */
+  right: 120px;
+  /* Adjust to align with phone icon */
   background: #fff;
   border: 1px solid #e6e1da;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 20px;
   z-index: 2000;
@@ -3554,15 +3557,24 @@ html.no-scroll {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
   .contact-modal {
-    right: 20px; /* Adjust for mobile */
+    right: 20px;
+    /* Adjust for mobile */
     top: 70px;
-    position: fixed; /* Fix on mobile to ensure visibility */
+    position: fixed;
+    /* Fix on mobile to ensure visibility */
   }
 }
 
@@ -3582,7 +3594,8 @@ html.no-scroll {
 
 .brand-card__image {
   width: 100%;
-  aspect-ratio: 4/5; /* Or 3/4 depending on preference, 4/5 looks good for portraits */
+  aspect-ratio: 4/5;
+  /* Or 3/4 depending on preference, 4/5 looks good for portraits */
   background: #f4f4f4;
   overflow: hidden;
 }
@@ -3643,24 +3656,24 @@ html.no-scroll {
 /* Banner Decor (like Hero) */
 .banner-decor {
   position: absolute;
-  width: 200px; /* Slightly smaller for banners */
+  width: 200px;
+  /* Slightly smaller for banners */
   height: auto;
   pointer-events: none;
   z-index: 1;
 }
 
 .banner-decor--left {
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 40px;
+  top: 232px;
 }
 
 .banner-decor--right {
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 40px;
+  bottom: 190px;
 }
 
 .mishes-overlay {
-  z-index: 2; /* Ensure text is above decor */
+  z-index: 2;
+  /* Ensure text is above decor */
 }

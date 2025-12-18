@@ -55,26 +55,32 @@
           </div>
           {% endif %}
 
+          {% if product.related_colors.exists %}
           <div class="detail-meta">
-            <h4>Цвет/Варианты</h4>
+            <h4>Варианты</h4>
             <div class="swatch-list">
-              <button class="swatch active" aria-label="Вариант 1">
-                <img src="{% static 'frames/Frame 1.png' %}" alt="">
-              </button>
-              <button class="swatch" aria-label="Вариант 2">
-                <img src="{% static 'frames/Frame 2-1.png' %}" alt="">
-              </button>
-              <button class="swatch" aria-label="Вариант 3">
-                <img src="{% static 'frames/Frame 3-1.png' %}" alt="">
-              </button>
-              <button class="swatch" aria-label="Вариант 4">
-                <img src="{% static 'frames/Frame 4-1.png' %}" alt="">
-              </button>
-              <button class="swatch" aria-label="Вариант 5">
-                <img src="{% static 'frames/Frame 5-1.png' %}" alt="">
-              </button>
+              <!-- Current product (active) -->
+              <a href="javascript:void(0)" class="swatch active" title="{{ product.title }}">
+                {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% else %}
+                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
+                {% endif %}
+              </a>
+
+              <!-- Related variants -->
+              {% for variant in product.related_colors.all %}
+              <a href="{% url 'catalog:detail' variant.slug %}" class="swatch" title="{{ variant.title }}">
+                {% if variant.main_image %}
+                <img src="{{ variant.main_image.url }}" alt="{{ variant.title }}">
+                {% else %}
+                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ variant.title }}">
+                {% endif %}
+              </a>
+              {% endfor %}
             </div>
           </div>
+          {% endif %}
 
           <div class="detail-actions">
             <form action="{% url 'basket:add' product.slug %}" method="post">

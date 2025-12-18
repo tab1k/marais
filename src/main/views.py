@@ -8,12 +8,14 @@ from catalog.models import Brand, Category, HomepageBlock, Review
 class GeneralPageView(View):
     def get(self, request):
         categories = Category.objects.all()
-        blocks = HomepageBlock.objects.filter(is_active=True).order_by('sort_order')
+        blocks = HomepageBlock.objects.filter(is_active=True).exclude(block_type='hero').order_by('sort_order')
+        hero_block = HomepageBlock.objects.filter(block_type='hero', is_active=True).first()
         reviews = Review.objects.filter(status='approved').order_by('-created_at')[:6]
         return render(request, 'main/general.html', {
             'categories': categories,
             'blocks': blocks,
-            'reviews': reviews
+            'reviews': reviews,
+            'hero_block': hero_block
         })
     
     def post(self, request):

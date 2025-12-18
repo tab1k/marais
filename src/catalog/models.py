@@ -51,6 +51,7 @@ class Product(models.Model):
   stock = models.PositiveIntegerField(default=0)
   is_active = models.BooleanField(default=True)
   main_image = models.ImageField(upload_to='products/', blank=True, null=True)
+  related_colors = models.ManyToManyField('self', blank=True, symmetrical=False, verbose_name="Варианты (другие цвета)")
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 
@@ -97,6 +98,7 @@ class Brand(models.Model):
 
 class HomepageBlock(models.Model):
     BLOCK_TYPES = (
+        ('hero', 'Главный Hero'),
         ('brand', 'Блок Бренда'),
         ('banner', 'Баннер'),
     )

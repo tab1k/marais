@@ -13,6 +13,7 @@ class ProductAdmin(admin.ModelAdmin):
   list_display = ('title', 'price', 'currency', 'is_active', 'category', 'collection', 'brand_ref', 'stock')
   list_filter = ('is_active', 'category', 'collection', 'brand_ref')
   search_fields = ('title', 'description', 'slug', 'brand', 'material', 'size', 'brand_ref__name')
+  autocomplete_fields = ['related_colors']
   prepopulated_fields = {'slug': ('title',)}
   inlines = [ProductImageInline]
 

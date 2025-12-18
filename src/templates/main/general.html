@@ -6,17 +6,27 @@
 {% block content %}
 
 <!-- Hero section -->
-<section class="categories">
-  <div class="container-m hero-wrapper">
-    <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
-    <img class="hero-decor hero-decor--left" src="{% static 'images/lefft.png' %}" alt="">
-    <img class="hero-decor hero-decor--right" src="{% static 'images/rightt.png' %}" alt="">
-    <div class="hero-overlay">
-      <img src="{% static 'images/light_logo.png' %}" alt="Marais" class="hero-logo">
-      <a href="#" class="hero-cta">Новые поступления</a>
-    </div>
+<div class="container-m hero-wrapper">
+  {% if hero_block and hero_block.image %}
+  <img class="hero-image" src="{{ hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}">
+  {% else %}
+  <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
+  {% endif %}
+
+  <img class="hero-decor hero-decor--left" src="{% static 'images/lefft.png' %}" alt="">
+  <img class="hero-decor hero-decor--right" src="{% static 'images/rightt.png' %}" alt="">
+
+  <div class="hero-overlay">
+    <img src="{% static 'images/light_logo.png' %}" alt="Marais" class="hero-logo">
+    {% if hero_block and hero_block.link_url %}
+    <a href="{{ hero_block.link_url }}" class="hero-cta">{{ hero_block.title|default:'Новые поступления' }}</a>
+    {% else %}
+    <a href="#" class="hero-cta">Новые поступления</a>
+    {% endif %}
   </div>
-</section>
+</div>
+
+
 
 <section>
   <div class="container-m">
