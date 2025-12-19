@@ -3598,14 +3598,13 @@ html.no-scroll {
   width: 100%;
   aspect-ratio: 4/5;
   /* Or 3/4 depending on preference, 4/5 looks good for portraits */
-  background: #f4f4f4;
+  background: #fff;
   overflow: hidden;
 }
 
 .brand-card__image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   transition: transform 0.5s ease;
 }
 
