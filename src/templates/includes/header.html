@@ -10,11 +10,11 @@
     <nav class="header-nav">
       <a href="{% url 'catalog:home' %}" class="">Магазин</a>
       <a href="{% url 'brand' %}" class="">Бренды</a>
-      <a href="{% url 'project' %}" class="">Проект</a>
+      <a href="{% url 'project' %}" class="">О нас</a>
     </nav>
 
     <div class="header-logo">
-      <a href="/">
+      <a href="{% url 'general' %}">
         <img src="{% static 'images/logo.png' %}" alt="Marais">
       </a>
     </div>
@@ -57,37 +57,52 @@
     <div class="mobile-menu__panel">
       <button class="mobile-menu__close" type="button" aria-label="Закрыть меню" data-menu-close>✕</button>
       <nav class="mobile-menu__nav">
+        <a href="/" class="mobile-menu__link">Главная</a>
         <a href="{% url 'catalog:home' %}" class="mobile-menu__link">Магазин</a>
         <a href="{% url 'brand' %}" class="mobile-menu__link">Бренды</a>
-        <a href="{% url 'project' %}" class="mobile-menu__link">Проект</a>
+        <a href="{% url 'project' %}" class="mobile-menu__link">О нас</a>
         <a href="{% url 'basket:detail' %}" class="mobile-menu__link">Корзина</a>
       </nav>
-      <a class="mobile-user"
-        href="{% if request.user.is_authenticated %}{% url 'catalog:profile' %}{% else %}{% url 'users:login' %}{% endif %}">
-        <span class="mobile-user__avatar">
-          {% if request.user.is_authenticated and request.user.avatar %}
-          <img src="{{ request.user.avatar.url }}" alt="{{ request.user.get_full_name|default:request.user.username }}">
-          {% else %}
-          <img src="{% static 'images/sergi.png' %}" alt="Профиль">
-          {% endif %}
-        </span>
-        <span class="mobile-user__meta">
-          <span class="mobile-user__name">
-            {% if request.user.is_authenticated %}
-            {{ request.user.get_full_name|default:request.user.username }}
-            {% else %}
-            Гость
-            {% endif %}
-          </span>
-          <span class="mobile-user__email">
-            {% if request.user.is_authenticated %}
-            {{ request.user.email }}
-            {% else %}
-            Войти или зарегистрироваться
-            {% endif %}
-          </span>
-        </span>
-      </a>
+
+      <div class="mobile-menu__footer">
+        <div class="mobile-menu__user-section">
+          <a class="mobile-user"
+            href="{% if request.user.is_authenticated %}{% url 'catalog:profile' %}{% else %}{% url 'users:login' %}{% endif %}">
+            <span class="mobile-user__avatar">
+              {% if request.user.is_authenticated and request.user.avatar %}
+              <img src="{{ request.user.avatar.url }}"
+                alt="{{ request.user.get_full_name|default:request.user.username }}">
+              {% else %}
+              <img src="{% static 'images/sergi.png' %}" alt="Профиль">
+              {% endif %}
+            </span>
+            <span class="mobile-user__meta">
+              <span class="mobile-user__name">
+                {% if request.user.is_authenticated %}
+                {{ request.user.get_full_name|default:request.user.username }}
+                {% else %}
+                Гость
+                {% endif %}
+              </span>
+              <span class="mobile-user__email">
+                {% if request.user.is_authenticated %}
+                {{ request.user.email }}
+                {% else %}
+                Войти или зарегистрироваться
+                {% endif %}
+              </span>
+            </span>
+          </a>
+        </div>
+
+        <div class="mobile-menu__contacts">
+          <span class="mobile-menu__footer-label">Связаться с нами</span>
+          <div class="mobile-menu__contacts-list">
+            <a href="tel:+77772555348" class="mobile-menu__contact-link">+7 (777) 255-53-48</a>
+            <a href="mailto:kz.marais.info@gmail.com" class="mobile-menu__contact-link">kz.marais.info@gmail.com</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </header>

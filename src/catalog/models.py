@@ -95,6 +95,10 @@ class Brand(models.Model):
   def __str__(self):
     return self.name
 
+  @property
+  def active_products(self):
+    return self.products.filter(is_active=True)
+
 
 class HomepageBlock(models.Model):
     BLOCK_TYPES = (

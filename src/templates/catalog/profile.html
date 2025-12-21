@@ -29,8 +29,11 @@
       </div>
       <div class="profile-header__actions">
         <button type="button" class="profile-icon-btn" aria-label="Настройки" data-profile-settings-open>
-          <img src="{% static 'images/settings.png' %}" alt="Настройки">
+          <img src="{% static 'images/settings.svg' %}" alt="Настройки">
         </button>
+        <a href="{% url 'users:logout' %}" class="profile-icon-btn btn-logout" aria-label="Выйти">
+          <img src="{% static 'images/sign-out-alt.svg' %}" alt="Выйти">
+        </a>
       </div>
     </div>
 

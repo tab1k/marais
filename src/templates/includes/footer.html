@@ -2,40 +2,67 @@
 <footer class="site-footer">
   <div class="container-m">
     <div class="footer-content">
-      <!-- Column 1: Links -->
+      <!-- Column 1: Brand Info -->
+      <div class="footer-col footer-brand">
+        <a href="{% url 'general' %}" class="footer-logo">
+          <img src="{% static 'images/logo.png' %}" alt="Marais">
+        </a>
+        <p class="footer-description">
+          Концептуальные украшения, тщательно собранные со всего мира. Мы верим в уникальность каждого изделия.
+        </p>
+      </div>
+
+      <!-- Column 2: Menu -->
       <div class="footer-col">
         <h4>Меню</h4>
         <ul>
           <li><a href="{% url 'catalog:home' %}">Магазин</a></li>
           <li><a href="{% url 'brand' %}">Бренды</a></li>
-          <li><a href="{% url 'project' %}">Проект</a></li>
+          <li><a href="{% url 'project' %}">О нас</a></li>
         </ul>
       </div>
-      <!-- Column 3: Contact -->
+
+      <!-- Column 3: Contact & Social -->
       <div class="footer-col">
         <h4>Контакты</h4>
-        <p>+7 (777) 255-53-48</p>
-        <p>kz.marais.info@gmail.com</p>
-        <div class="footer-social">
+        <a href="tel:+77772555348" class="">+7 (777) 255-53-48</a>
+        <a href="mailto:kz.marais.info@gmail.com">kz.marais.info@gmail.com</a>
+        <div class="footer-social-simple">
           <a href="https://instagram.com/marais.kz" target="_blank">Instagram</a>
           <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank">WhatsApp</a>
         </div>
       </div>
+
       <!-- Column 4: Newsletter -->
-      <div class="footer-col">
+      <div class="footer-col footer-newsletter">
         <h4>Новости</h4>
         <p>Подпишись на рассылку:</p>
-        <form id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+        <form id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();" class="footer-form">
           {% csrf_token %}
-          <input type="email" id="newsletter-email" placeholder="Ваш email" class="footer-input" required>
-          <button type="submit" class="footer-btn">Отправить</button>
+          <div class="footer-input-group">
+            <input type="email" id="newsletter-email" placeholder="Ваш email" class="footer-input" required>
+            <button type="submit" class="footer-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
         </form>
-        <div id="newsletter-message" style="margin-top: 10px; font-size: 14px;"></div>
+        <div id="newsletter-message" class="newsletter-status"></div>
       </div>
     </div>
+
     <!-- Footer bottom -->
     <div class="footer-bottom">
-      <p>&copy; 2024 Marais. Все права защищены.</p>
+      <div class="footer-bottom-inner">
+        <p>&copy; 2024 Marais. Все права защищены.</p>
+        <div class="footer-legal">
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Публичная оферта</a>
+        </div>
+      </div>
     </div>
   </div>
 </footer>

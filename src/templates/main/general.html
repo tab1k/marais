@@ -83,7 +83,7 @@
       <h2 class="split-title">КОЛЛЕКЦИЯ <br> {{ block.brand.name|upper }}</h2>
       <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}" class="split-button">Посмотреть больше</a>
 
-      {% if block.featured_product %}
+      {% if block.featured_product and block.featured_product.is_active %}
       <a href="{% url 'catalog:detail' block.featured_product.slug %}" style="text-decoration: none; color: inherit;">
         <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
           {% if block.featured_product.main_image %}
@@ -125,7 +125,7 @@
 <section class="categories">
   <div class="container-m">
     <div class="categories-grid">
-      {% for prod in block.brand.products.all|slice:":4" %}
+      {% for prod in block.brand.active_products|slice:":4" %}
       <a href="{% url 'catalog:detail' prod.slug %}" class="category-card" style="text-decoration:none; color:inherit;">
         {% if prod.main_image %}
         <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}">

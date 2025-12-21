@@ -20,7 +20,7 @@
     <div class="brand-section">
       <div class="brand-grid">
         {% for brand in brands %}
-        <div class="brand-card">
+        <a href="{% url 'catalog:home' %}?brand={{ brand.name|urlencode }}" class="brand-card">
           <div class="brand-card__image">
             {% if brand.logo %}
             <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
@@ -34,7 +34,7 @@
             <span class="brand-card__country">{{ brand.country }}</span>
             <p class="brand-card__desc">{{ brand.description }}</p>
           </div>
-        </div>
+        </a>
         {% endfor %}
       </div>
     </div>

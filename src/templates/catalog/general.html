@@ -15,48 +15,63 @@
           <button class="filter-close" type="button" data-filter-close aria-label="Закрыть фильтр">✕</button>
         </div>
 
-        <div class="filter-group">
-          <div class="filter-group-title">Категории</div>
-          <div class="filter-options-list">
-            {% for cat in categories %}
-            <a href="?{% if cat.slug in selected_categories %}{% url_replace category=None %}{% else %}{% url_replace category=cat.slug %}{% endif %}"
-              class="filter-link {% if cat.slug in selected_categories %}active{% endif %}">
-              {{ cat.name }}
-            </a>
-            {% endfor %}
+        <div class="filter-group" style="padding-top: 5px;">
+          <a href="{% url 'catalog:home' %}" class="filter-clear-all">Сбросить все</a>
+        </div>
+
+        <div class="filter-group active" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Категории</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for cat in categories %}
+              <a href="?{% if cat.slug in selected_categories %}{% url_replace category=None %}{% else %}{% url_replace category=cat.slug %}{% endif %}"
+                class="filter-link {% if cat.slug in selected_categories %}active{% endif %}">
+                {{ cat.name }}
+              </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
 
         {% if available_sizes %}
-        <div class="filter-group">
-          <div class="filter-group-title">Размер</div>
-          <div class="filter-sizes-grid">
-            {% for s in available_sizes %}
-            <a href="?{% if s in selected_sizes %}{% url_replace size=None %}{% else %}{% url_replace size=s %}{% endif %}"
-              class="filter-size-btn {% if s in selected_sizes %}active{% endif %}">
-              {{ s }}
-            </a>
-            {% endfor %}
+        <div class="filter-group {% if selected_sizes %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Размер</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-sizes-grid">
+              {% for s in available_sizes %}
+              <a href="?{% if s in selected_sizes %}{% url_replace size=None %}{% else %}{% url_replace size=s %}{% endif %}"
+                class="filter-size-btn {% if s in selected_sizes %}active{% endif %}">
+                {{ s }}
+              </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
         {% endif %}
 
-        <div class="filter-group">
-          <div class="filter-group-title">Бренды</div>
-          <div class="filter-options-list">
-            {% for brand in brands %}
-            <a href="?{% if brand.name in selected_brands %}{% url_replace brand=None %}{% else %}{% url_replace brand=brand.name %}{% endif %}"
-              class="filter-link {% if brand.name in selected_brands %}active{% endif %}">
-              {{ brand.name }}
-            </a>
-            {% endfor %}
+        <div class="filter-group {% if selected_brands %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Бренды</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for brand in brands %}
+              <a href="?{% if brand.name in selected_brands %}{% url_replace brand=None %}{% else %}{% url_replace brand=brand.name %}{% endif %}"
+                class="filter-link {% if brand.name in selected_brands %}active{% endif %}">
+                {{ brand.name }}
+              </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
 
-        <div class="filter-group">
-          <a href="{% url 'catalog:home' %}" class="filter-clear-all"
-            style="display:block; margin-top:15px; text-decoration: underline; color: inherit;">Сбросить все</a>
-        </div>
       </aside>
       <div class="filter-backdrop" data-filter-backdrop></div>
 
@@ -82,6 +97,78 @@
         .filter-link.active {
           font-weight: 500;
           color: #a71930;
+        }
+
+        .filter-group-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          padding: 8px 0;
+        }
+
+        .filter-group-title {
+          font-size: 14px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin: 0;
+        }
+
+        .filter-chevron {
+          width: 8px;
+          height: 8px;
+          border-right: 1.5px solid #333;
+          border-bottom: 1.5px solid #333;
+          transform: rotate(45deg);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          margin-right: 4px;
+          margin-top: -4px;
+        }
+
+        .filter-group.active .filter-chevron {
+          transform: rotate(-135deg);
+          margin-top: 4px;
+        }
+
+        .filter-group-content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease, margin 0.3s ease;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .filter-group.active .filter-group-content {
+          max-height: 1000px;
+          padding-bottom: 16px;
+          margin-top: 8px;
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .filter-clear-all {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #333;
+          text-decoration: none;
+          padding: 8px 16px;
+          border: 1px solid #efebe6;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+          width: 100%;
+          text-align: center;
+          margin-bottom: 10px;
+          margin-top: 10px;
+        }
+
+        .filter-clear-all:hover {
+          background-color: #a71930;
+          color: #fff;
+          border-color: #a71930;
         }
       </style>
 
@@ -150,5 +237,19 @@
     </div>
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggles = document.querySelectorAll('[data-collapse-toggle]');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const group = toggle.closest('[data-collapsible]');
+        if (group) {
+          group.classList.toggle('active');
+        }
+      });
+    });
+  });
+</script>
 
 {% endblock %}

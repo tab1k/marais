@@ -40,7 +40,8 @@ class GeneralPageView(View):
 
 class BrandPageView(View):
     def get(self, request):
-        brands = Brand.objects.filter(is_active=True).order_by('sort_order', 'name')
+        from django.db.models import Count
+        brands = Brand.objects.annotate(product_count=Count('products')).filter(is_active=True, product_count__gt=0).order_by('sort_order', 'name')
         return render(request, 'main/brand.html', {'brands': brands})
 
 
