@@ -1,5 +1,42 @@
 {% load static %}
+{% if top_banners %}
+<div class="top-banner" id="top-banner" style="display: block;">
+  <button class="top-banner__close" aria-label="Close" style="cursor: pointer;">✕</button>
+  <div class="top-banner__link">
+    <div class="marquee-track">
+      <p class="top-banner__text">
+        {% for banner in top_banners %}
+        <a href="{{ banner.link|default:'#' }}" style="color: inherit; text-decoration: none;">{{ banner.text|upper }}</a>
+        &nbsp;&nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+        {% for banner in top_banners %}
+        <a href="{{ banner.link|default:'#' }}" style="color: inherit; text-decoration: none;">{{ banner.text|upper }}</a>
+        &nbsp;&nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+      </p>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var banner = document.getElementById('top-banner');
+    if (sessionStorage.getItem('hideTopBanner')) {
+      banner.style.display = 'none';
+    }
+
+    var closeBtn = document.querySelector('.top-banner__close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        banner.style.display = 'none';
+        sessionStorage.setItem('hideTopBanner', 'true');
+      });
+    }
+  })();
+</script>
+{% endif %}
 <header class="site-header">
+
   <div class="container-m header-inner">
     <button class="burger" aria-label="Меню" type="button" data-menu-toggle>
       <span></span>
@@ -97,6 +134,14 @@
 
         <div class="mobile-menu__contacts">
           <span class="mobile-menu__footer-label">Связаться с нами</span>
+          <div class="mobile-menu__socials" style="display: flex; gap: 16px; margin: 12px 0;">
+            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank">
+              <img src="{% static 'images/whatsapp.svg' %}" alt="WhatsApp" style="width: 24px; height: 24px;">
+            </a>
+            <a href="https://instagram.com/marais.kz" target="_blank">
+              <img src="{% static 'images/instagram.svg' %}" alt="Instagram" style="width: 24px; height: 24px;">
+            </a>
+          </div>
           <div class="mobile-menu__contacts-list">
             <a href="tel:+77772555348" class="mobile-menu__contact-link">+7 (777) 255-53-48</a>
             <a href="mailto:kz.marais.info@gmail.com" class="mobile-menu__contact-link">kz.marais.info@gmail.com</a>

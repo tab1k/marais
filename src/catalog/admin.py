@@ -66,3 +66,19 @@ class ReviewAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} отзывов отклонено.')
     reject_reviews.short_description = 'Отклонить выбранные отзывы'
 
+    reject_reviews.short_description = 'Отклонить выбранные отзывы'
+
+
+from .models import SiteSettings
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    # Lock down add/delete usually, but for simplicity just basic
+    def has_add_permission(self, request):
+        # Allow add only if none exists
+        if SiteSettings.objects.exists():
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False

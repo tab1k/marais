@@ -60,10 +60,44 @@
       {% if items %}
       <aside class="cart-summary">
         <h4 class="cart-summary__title">Итого</h4>
+
         <div class="cart-summary__row">
           <span>Сумма товаров</span>
           <span>{{ total|floatformat:0 }} ₸</span>
         </div>
+
+        {% if discount_amount > 0 %}
+        <div class="cart-summary__row" style="color: green;">
+          <span>Скидка ({{ discount_percent }}%)</span>
+          <span>-{{ discount_amount|floatformat:0 }} ₸</span>
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <div class="cart-bonuses">
+          <div class="cart-summary__row">
+            <span>Ваши бонусы</span>
+            <span>{{ user_bonuses }} B</span>
+          </div>
+
+          <form action="{% url 'basket:apply_bonuses' %}" method="post" class="bonus-form">
+            {% csrf_token %}
+            <div class="bonus-input-group">
+              <input type="number" name="bonuses" value="{{ bonuses_to_use }}" min="0" max="{{ user_bonuses }}"
+                placeholder="Списать бонусы">
+              <button type="submit" class="bonus-btn">Применить</button>
+            </div>
+          </form>
+
+          {% if bonuses_to_use > 0 %}
+          <div class="cart-summary__row" style="color: green;">
+            <span>Списание бонусов</span>
+            <span>-{{ bonuses_to_use }} ₸</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
         <div class="cart-summary__row">
           <span>Доставка</span>
           <span>Бесплатно</span>
@@ -71,7 +105,7 @@
         <div class="cart-summary__divider"></div>
         <div class="cart-summary__row cart-summary__row--total">
           <span>Всего к оплате</span>
-          <span>{{ total|floatformat:0 }} ₸</span>
+          <span>{{ final_total|floatformat:0 }} ₸</span>
         </div>
         <div class="cart-summary__buttons">
           <a href="{% url 'orders:checkout' %}" class="btn-primary cart-summary__btn">Оформить заказ</a>

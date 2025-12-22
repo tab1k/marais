@@ -21,10 +21,44 @@ class CartDetailView(View):
         items = cart.items.select_related('product').all()
         total = sum(item.price * item.quantity for item in items)
         
+        # 1. Personal Discount
+        discount_percent = 0
+        if request.user.is_authenticated:
+            discount_percent = request.user.discount_percent
+        
+        discount_amount = int(total * discount_percent / 100)
+        
+        # 2. Bonuses
+        # User requested bonuses to be used (stored in session temporarily)
+        bonuses_to_use = request.session.get('bonuses_to_use', 0)
+        user_bonuses = 0
+        if request.user.is_authenticated:
+            user_bonuses = request.user.loyalty_points
+            
+            # Validation: cannot use more than own balance
+            if bonuses_to_use > user_bonuses:
+                bonuses_to_use = user_bonuses
+                request.session['bonuses_to_use'] = bonuses_to_use
+        else:
+            bonuses_to_use = 0
+            
+        # Validation: cannot use more than total - discount
+        subtotal_after_discount = total - discount_amount
+        if bonuses_to_use > subtotal_after_discount:
+            bonuses_to_use = int(subtotal_after_discount)
+            request.session['bonuses_to_use'] = bonuses_to_use
+
+        final_total = total - discount_amount - bonuses_to_use
+        
         return render(request, 'catalog/cart.html', {
             'cart': cart,
             'items': items,
-            'total': total
+            'total': total,
+            'discount_percent': discount_percent,
+            'discount_amount': discount_amount,
+            'user_bonuses': user_bonuses,
+            'bonuses_to_use': bonuses_to_use,
+            'final_total': final_total,
         })
 
 class AddToCartView(View):
@@ -66,4 +100,21 @@ class UpdateCartItemView(View):
                 item.save()
             else:
                 item.delete()
+        return redirect('basket:detail')
+
+class ApplyBonusesView(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect('basket:detail')
+            
+        try:
+            bonuses = int(request.POST.get('bonuses', 0))
+        except ValueError:
+            bonuses = 0
+            
+        # Validation happens in CartDetailView, but we can do basic checks here
+        if bonuses < 0:
+            bonuses = 0
+            
+        request.session['bonuses_to_use'] = bonuses
         return redirect('basket:detail')

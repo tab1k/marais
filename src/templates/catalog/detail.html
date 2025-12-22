@@ -14,17 +14,35 @@
 
     <div class="detail-layout">
       <div class="detail-gallery">
-        <div class="gallery-main">
+        <div class="gallery-main" id="mobileGallery">
+          <!-- Main Image -->
           {% if product.main_image %}
-          <img src="{{ product.main_image.url }}" alt="{{ product.title }}" data-gallery-main>
+          <img src="{{ product.main_image.url }}" alt="{{ product.title }}" data-gallery-main
+            class="gallery-item active">
           {% elif product.brand_ref and product.brand_ref.logo %}
           <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" data-gallery-main
-            class="product-brand-placeholder">
+            class="product-brand-placeholder gallery-item active">
           {% else %}
           <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" data-gallery-main
-            class="product-brand-placeholder" style="padding: 40px; opacity: 0.8;">
+            class="product-brand-placeholder gallery-item active" style="padding: 40px; opacity: 0.8;">
           {% endif %}
+
+          <!-- Additional Images (visible on mobile scroll) -->
+          {% for img in product.images.all %}
+          {% if img.image.url != product.main_image.url %}
+          <img src="{{ img.image.url }}" alt="{{ img.alt }}" class="gallery-item">
+          {% endif %}
+          {% endfor %}
         </div>
+
+        <!-- Dots for mobile slider -->
+        <div class="gallery-dots" id="galleryDots">
+          <span class="dot active"></span>
+          {% for img in product.images.all %}
+          <span class="dot"></span>
+          {% endfor %}
+        </div>
+
         <div class="gallery-thumbs" data-gallery-thumbs>
           {% if product.main_image %}
           <button type="button" class="thumb active" data-gallery-src="{{ product.main_image.url }}" aria-label="Main">
@@ -47,6 +65,50 @@
           <p class="detail-description">
             {{ product.description|linebreaks }}
           </p>
+
+          <div class="detail-specs">
+            {% if product.collection %}
+            <div class="spec-row">
+              <span class="spec-label">Коллекция:</span>
+              <span class="spec-value">{{ product.collection.name }}</span>
+            </div>
+            {% endif %}
+
+            {% if product.metal %}
+            <div class="spec-row">
+              <span class="spec-label">Металл:</span>
+              <span class="spec-value">{{ product.metal }}</span>
+            </div>
+            {% endif %}
+
+            {% if product.material %}
+            <div class="spec-row">
+              <span class="spec-label">Материал:</span>
+              <span class="spec-value">{{ product.material }}</span>
+            </div>
+            {% endif %}
+
+            {% if product.coverage %}
+            <div class="spec-row">
+              <span class="spec-label">Покрытие:</span>
+              <span class="spec-value">{{ product.coverage }}</span>
+            </div>
+            {% endif %}
+
+            {% if product.stones %}
+            <div class="spec-row">
+              <span class="spec-label">Вставки:</span>
+              <span class="spec-value">{{ product.stones }}</span>
+            </div>
+            {% endif %}
+
+            {% if product.color %}
+            <div class="spec-row">
+              <span class="spec-label">Цвет:</span>
+              <span class="spec-value">{{ product.color }}</span>
+            </div>
+            {% endif %}
+          </div>
 
           {% if sizes_list %}
           <div class="detail-meta">
@@ -99,7 +161,7 @@
               style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Консультант</a>
           </div>
 
-          <details class="cart-info" style="margin-top: 20px; border-top: 1px solid #e6e1da; padding-top: 10px;">
+          <details class="cart-info">
             <summary>Информация о доставке</summary>
             <div class="cart-info__body">
               <p>Мы отправляем заказы из Алматы. В обычные дни оформление и передача в доставку занимает один день. В
@@ -222,6 +284,144 @@
         if (sizeInput) {
           sizeInput.value = this.textContent.trim();
         }
+      });
+    });
+  });
+</script>
+
+
+<!-- Lightbox Modal -->
+<div class="lightbox" id="productLightbox">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <button class="lightbox-prev" aria-label="Previous">&#10094;</button>
+  <div class="lightbox-content">
+    <img src="" alt="" class="lightbox-img">
+  </div>
+  <button class="lightbox-next" aria-label="Next">&#10095;</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const lightbox = document.getElementById('productLightbox');
+    const lightboxImg = lightbox.querySelector('.lightbox-img');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+    const mainImage = document.querySelector('[data-gallery-main]');
+
+    // Collect all images (main + thumbnails)
+    let images = [];
+
+    // Add main image first
+    if (mainImage) {
+      images.push(mainImage.src);
+    }
+
+    // Add thumbnails
+    const thumbs = document.querySelectorAll('[data-gallery-src]');
+    thumbs.forEach(thumb => {
+      // Avoid duplicates if main image is also a thumb
+      if (!images.includes(thumb.getAttribute('data-gallery-src'))) {
+        images.push(thumb.getAttribute('data-gallery-src'));
+      }
+    });
+
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      if (images.length === 0) return;
+      currentIndex = index;
+      lightboxImg.src = images[currentIndex];
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Disable scroll
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = ''; // Enable scroll
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % images.length;
+      lightboxImg.src = images[currentIndex];
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      lightboxImg.src = images[currentIndex];
+    }
+
+    // Event Listeners
+    if (mainImage) {
+      mainImage.style.cursor = 'zoom-in';
+      mainImage.addEventListener('click', () => openLightbox(0));
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    nextBtn.addEventListener('click', showNext);
+    prevBtn.addEventListener('click', showPrev);
+
+    // Close on background click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') showNext();
+      if (e.key === 'ArrowLeft') showPrev();
+    });
+  });
+
+
+  // Mobile Gallery Dots
+  document.addEventListener('DOMContentLoaded', function () {
+    const gallery = document.getElementById('mobileGallery');
+    const dots = document.querySelectorAll('.gallery-dots .dot');
+
+    if (gallery && dots.length > 0) {
+      gallery.addEventListener('scroll', function () {
+        // Calculate current index based on scroll position
+        const scrollLeft = gallery.scrollLeft;
+        const itemWidth = gallery.clientWidth;
+        const index = Math.round(scrollLeft / itemWidth);
+
+        // Update active dot
+        dots.forEach((dot, i) => {
+          if (i === index) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      });
+    }
+  });
+
+  // Desktop Gallery Switcher
+  document.addEventListener('DOMContentLoaded', function () {
+    const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    thumbs.forEach(thumb => {
+      thumb.addEventListener('click', function () {
+        // Update active thumb
+        thumbs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        // Update active main image
+        const src = this.getAttribute('data-gallery-src');
+        galleryItems.forEach(item => {
+          if (item.src.includes(src) || item.getAttribute('src') === src) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
       });
     });
   });

@@ -7,10 +7,16 @@ class Order(models.Model):
     session_key = models.CharField("Сессия", max_length=40, null=True, blank=True)
     total_price = models.DecimalField("Итоговая сумма", max_digits=10, decimal_places=0, default=0)
     created_at = models.DateTimeField("Дата создания", auto_now_add=True)
-    status = models.CharField("Статус", max_length=20, default='pending', choices=[
-        ('pending', 'Ожидает отправки'),
+    status = models.CharField("Статус", max_length=20, default='new', choices=[
+        ('new', 'Новый'),
+        ('waiting_payment', 'Ожидание оплаты'),
+        ('purchased', 'Покупка (Оплачено)'),
+        ('cancelled', 'Отмена'),
         ('sent', 'Отправлен в WhatsApp'),
     ])
+    discount_amount = models.DecimalField("Сумма скидки", max_digits=10, decimal_places=0, default=0)
+    bonuses_used = models.PositiveIntegerField("Использовано бонусов", default=0)
+    final_price = models.DecimalField("Итого к оплате", max_digits=10, decimal_places=0, default=0)
 
     class Meta:
         verbose_name = "Заказ"

@@ -31,49 +31,116 @@ class CatalogView(View):
         # Removed Metal, Coverage, Stones, Color filters as requested
 
         available_sizes = set()
-        if category_slugs:
-            # Get all sizes for products in the current filtered set (by category/brand)
-            # We use a separate query or iterate the current queryset to find available sizes
-            # optimization: use values_list on the current 'products' queryset
-            # Note: 'products' at this point is filtered by category and brand
-            raw_sizes = products.exclude(size='').values_list('size', flat=True)
-            for s_str in raw_sizes:
-                # Assuming size can be "16, 17" or just "16"
-                for s in s_str.split(','):
+        
+        # New filters collections
+        available_metals = set()
+        available_materials = set()
+        available_stones = set()
+        available_coverages = set()
+        available_colors = set()
+
+        # Collect available values from ACTIVE products (before filtering by attributes, but after categories/brands if desired)
+        # However, typically we want facets to reflect current results or all possibilities.
+        # Let's collect from 'products' which is currently filtered by Category and Brand.
+        
+        # Efficiently get distinct non-empty values
+        # Note: We iterate once or use distinct() queries. For small DB iteration is fine, for large use individual queries.
+        # Given this is likely not huge yet:
+        
+        for p in products:
+             # Size
+            if p.size:
+                for s in p.size.split(','):
                     s_clean = s.strip()
-                    if s_clean:
-                        available_sizes.add(s_clean)
+                    if s_clean: available_sizes.add(s_clean)
             
-        # Filter by selected sizes
+            # Other text fields (exact match)
+            if p.metal: available_metals.add(p.metal)
+            if p.material: available_materials.add(p.material)
+            if p.stones: available_stones.add(p.stones)
+            if p.coverage: available_coverages.add(p.coverage)
+            if p.color: available_colors.add(p.color)
+
+        available_sizes = sorted(list(available_sizes))
+        available_metals = sorted(list(available_metals))
+        available_materials = sorted(list(available_materials))
+        available_stones = sorted(list(available_stones))
+        available_coverages = sorted(list(available_coverages))
+        available_colors = sorted(list(available_colors))
+            
+        # --- Apply Filters ---
+
+        # Size
         sizes = request.GET.getlist('size')
         if sizes:
              clean_sizes = [s for s in sizes if s and s != 'None']
              if clean_sizes:
-                # Filter products that CONTAIN the selected size
-                # Since size is a string "16, 17", we might need partial match for each selected size
-                # OR logic: if product has ANY of the selected sizes
                 from django.db.models import Q
                 q_objs = Q()
                 for s in clean_sizes:
                     q_objs |= Q(size__icontains=s)
                 products = products.filter(q_objs)
-        
-        available_sizes = sorted(list(available_sizes))
-        
+
+        # Metal
+        metals = request.GET.getlist('metal')
+        if metals:
+            clean_metals = [v for v in metals if v and v != 'None']
+            if clean_metals:
+                products = products.filter(metal__in=clean_metals)
+
+        # Material
+        materials = request.GET.getlist('material')
+        if materials:
+            clean_vals = [v for v in materials if v and v != 'None']
+            if clean_vals:
+                products = products.filter(material__in=clean_vals)
+
+        # Stones
+        stones = request.GET.getlist('stones')
+        if stones:
+            clean_vals = [v for v in stones if v and v != 'None']
+            if clean_vals:
+                products = products.filter(stones__in=clean_vals)
+
+        # Coverage
+        coverage = request.GET.getlist('coverage')
+        if coverage:
+             clean_vals = [v for v in coverage if v and v != 'None']
+             if clean_vals:
+                products = products.filter(coverage__in=clean_vals)
+
+        # Color
+        colors = request.GET.getlist('color')
+        if colors:
+             clean_vals = [v for v in colors if v and v != 'None']
+             if clean_vals:
+                products = products.filter(color__in=clean_vals)
+
         # Pagination
         paginator = Paginator(products, 12) # 12 items per page
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
         return render(request, 'catalog/general.html', {
-            'products': page_obj, # This works for iteration
-            'page_obj': page_obj, # This works for pagination controls
+            'products': page_obj, 
+            'page_obj': page_obj, 
             'categories': categories,
             'brands': brands,
             'selected_categories': category_slugs,
             'selected_brands': brand_names,
             'selected_sizes': sizes,
+            'selected_metals': metals,
+            'selected_materials': materials,
+            'selected_stones': stones,
+            'selected_coverage': coverage,
+            'selected_colors': colors,
+            
             'available_sizes': available_sizes,
+            'available_metals': available_metals,
+            'available_materials': available_materials,
+            'available_stones': available_stones,
+            'available_coverages': available_coverages,
+            'available_colors': available_colors, 
         })
 
 
@@ -90,7 +157,7 @@ class ProductDetailView(View):
         
         sizes_list = []
         if product.size:
-             sizes_list = [s.strip() for s in product.size.split(',') if s.strip()]
+             sizes_list = [s.strip() for s in product.size.split(',') if s.strip() and s.strip() != '0']
 
         return render(request, 'catalog/detail.html', {
             'product': product,
@@ -109,8 +176,16 @@ class ProfileView(View):
         orders_total = 0
         if request.user.is_authenticated:
             qs = Order.objects.filter(user=request.user).prefetch_related('items__product').order_by('-created_at')
-            orders_total = qs.count()
-            orders = list(qs[:3])
+        else:
+            # For guests, show orders from current session
+            session_key = request.session.session_key
+            if session_key:
+                qs = Order.objects.filter(session_key=session_key, user__isnull=True).prefetch_related('items__product').order_by('-created_at')
+            else:
+                qs = Order.objects.none()
+
+        orders_total = qs.count()
+        orders = list(qs) # Show all orders
         
         # Get recommended products (random active products)
         recommended_products = Product.objects.filter(is_active=True).order_by('?')[:4]

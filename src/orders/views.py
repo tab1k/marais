@@ -48,13 +48,51 @@ class WhatsAppCheckoutView(View):
             line = f"- {cart_item.product.title}{size_str} x{cart_item.quantity} — {cost} ₸"
             message_lines.append(line)
 
-        # Update Order Total
+        # --- Calculate Discounts and Bonuses ---
+        discount_percent = 0
+        if user and user.discount_percent > 0:
+            discount_percent = user.discount_percent
+            
+        discount_amount = int(total_price * discount_percent / 100)
+        
+        # Bonuses
+        bonuses_used = request.session.get('bonuses_to_use', 0)
+        
+        # Validate bonuses again (security check)
+        if user:
+            if bonuses_used > user.loyalty_points:
+                bonuses_used = user.loyalty_points
+        else:
+            bonuses_used = 0 # Anonymous users can't use bonuses
+
+        subtotal_after_discount = total_price - discount_amount
+        if bonuses_used > subtotal_after_discount:
+            bonuses_used = int(subtotal_after_discount)
+            
+        final_total = total_price - discount_amount - bonuses_used
+        
+        # --- Update Order ---
         order.total_price = total_price
+        order.discount_amount = discount_amount
+        order.bonuses_used = bonuses_used
+        order.final_price = final_total
         order.status = 'sent'
         order.save()
+        
+        # --- Update User Balance ---
+        if user and bonuses_used > 0:
+            user.loyalty_points -= bonuses_used
+            user.save()
+            request.session['bonuses_to_use'] = 0 # Reset session
 
-        # Add total to message
-        message_lines.append(f"\nИтого: {total_price} ₸")
+        # --- Add details to message ---
+        if discount_amount > 0:
+            message_lines.append(f"Скидка ({discount_percent}%): -{discount_amount} ₸")
+        if bonuses_used > 0:
+            message_lines.append(f"Списано бонусов: -{bonuses_used} B")
+            
+        message_lines.append(f"\nИтого к оплате: {final_total} ₸")
+        message_lines.append("\nПожалуйста, подтвердите заказ.")
         
         # Clear Cart
         cart.items.all().delete() # Or cart.delete() if you want to remove the cart entirely

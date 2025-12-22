@@ -158,3 +158,26 @@ class Review(models.Model):
         """
         rating = max(0, min(int(self.rating or 0), 5))
         return '★' * rating + '☆' * (5 - rating)
+
+
+class SiteSettings(models.Model):
+    is_snow_enabled = models.BooleanField(default=False, verbose_name="Включить эффект снега")
+
+    class Meta:
+        verbose_name = 'Настройки сайта'
+        verbose_name_plural = 'Настройки сайта'
+
+    def __str__(self):
+        return "Настройки сайта"
+
+    def save(self, *args, **kwargs):
+        # Allow only one instance
+        if not self.pk and SiteSettings.objects.exists():
+            return
+        super(SiteSettings, self).save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+

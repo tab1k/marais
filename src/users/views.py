@@ -49,6 +49,10 @@ class LoginView(View):
                         item.save()
                 anon_cart.delete()
 
+            # Attach anonymous orders to user
+            from orders.models import Order
+            Order.objects.filter(session_key=session_key, user__isnull=True).update(user=user)
+
             return redirect(next_url)
 
         return render(request, self.template_name, {'error': 'Неверный пароль', 'email': email})

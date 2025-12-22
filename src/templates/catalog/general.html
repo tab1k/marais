@@ -72,6 +72,101 @@
           </div>
         </div>
 
+        {% if available_metals %}
+        <div class="filter-group {% if selected_metals %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Металл</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for val in available_metals %}
+              <a href="?{% if val in selected_metals %}{% url_replace metal=None %}{% else %}{% url_replace metal=val %}{% endif %}"
+                class="filter-link {% if val in selected_metals %}active{% endif %}">
+                {{ val }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if available_materials %}
+        <div class="filter-group {% if selected_materials %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Материал</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for val in available_materials %}
+              <a href="?{% if val in selected_materials %}{% url_replace material=None %}{% else %}{% url_replace material=val %}{% endif %}"
+                class="filter-link {% if val in selected_materials %}active{% endif %}">
+                {{ val }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if available_stones %}
+        <div class="filter-group {% if selected_stones %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Вставки</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for val in available_stones %}
+              <a href="?{% if val in selected_stones %}{% url_replace stones=None %}{% else %}{% url_replace stones=val %}{% endif %}"
+                class="filter-link {% if val in selected_stones %}active{% endif %}">
+                {{ val }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if available_coverages %}
+        <div class="filter-group {% if selected_coverage %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Покрытие</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for val in available_coverages %}
+              <a href="?{% if val in selected_coverage %}{% url_replace coverage=None %}{% else %}{% url_replace coverage=val %}{% endif %}"
+                class="filter-link {% if val in selected_coverage %}active{% endif %}">
+                {{ val }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if available_colors %}
+        <div class="filter-group {% if selected_colors %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Цвет</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% for val in available_colors %}
+              <a href="?{% if val in selected_colors %}{% url_replace color=None %}{% else %}{% url_replace color=val %}{% endif %}"
+                class="filter-link {% if val in selected_colors %}active{% endif %}">
+                {{ val }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
       </aside>
       <div class="filter-backdrop" data-filter-backdrop></div>
 
