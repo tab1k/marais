@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ brand.name }} — MARAIS{% endblock %}
+
+{% block content %}
+<!-- Banner -->
+<section class="brand-hero-banner">
+    <div class="container-m hero-wrapper">
+        {% if brand.banner %}
+        <img class="hero-image" src="{{ brand.banner.url }}" alt="{{ brand.name }}">
+        {% elif brand.logo %}
+        <img class="hero-image" src="{{ brand.logo.url }}" alt="{{ brand.name }}"
+            style="object-fit: contain; background: #faf8f6;">
+        {% else %}
+        <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="{{ brand.name }}">
+        {% endif %}
+        <div class="hero-overlay">
+            <h1 style="color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">{{ brand.name }}</h1>
+        </div>
+    </div>
+</section>
+
+<!-- Brand Info -->
+<section class="brand-info-section" style="padding: 60px 0;">
+    <div class="container-m">
+        <div class="brand-hero" style="gap: 40px;">
+            <div class="brand-hero__text" style="flex: 1;">
+                <h2 style="font-size: 28px; font-weight: 500; margin-bottom: 20px;">{{ brand.name }}</h2>
+                {% if brand.country %}
+                <p style="color: #666; font-size: 16px; margin-bottom: 16px;"><strong>Страна:</strong> {{ brand.country
+                    }}</p>
+                {% endif %}
+                <p style="color: #444; line-height: 1.8; font-size: 16px;">{{ brand.description }}</p>
+
+                <a href="{% url 'catalog:home' %}?brand={{ brand.name|urlencode }}" class="split-button"
+                    style="margin-top: 30px;">
+                    Смотреть коллекцию
+                </a>
+            </div>
+            <div class="brand-hero__media" style="flex: 1; max-width: 450px;">
+                {% if brand.logo %}
+                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width: 100%; height: auto;">
+                {% else %}
+                <img src="{% static 'images/logo.png' %}" alt="{{ brand.name }}"
+                    style="width: 100%; padding: 60px; opacity: 0.8;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Preview -->
+{% if brand.active_products %}
+<section class="brand-products-section" style="padding: 40px 0 80px;">
+    <div class="container-m">
+        <h3 style="text-align: center; font-size: 24px; font-weight: 350; margin-bottom: 40px;">Товары бренда {{ brand.name }}</h3>
+        <div class="categories-grid">
+            {% for product in brand.active_products|slice:":4" %}
+            <a href="{% url 'catalog:detail' product.slug %}" class="category-card"
+                style="text-decoration: none; color: inherit;">
+                {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% elif brand.logo %}
+                <img src="{{ brand.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder">
+                {% else %}
+                <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
+                    style="padding: 40px; opacity: 0.8;">
+                {% endif %}
+                <div class="home-product-info">
+                    <p class="home-product-price">{{ product.title|upper }} <span>{{ product.price|floatformat:0 }}₸</span></p>
+                    <p class="home-product-note">{{ product.metal|default:brand.name }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'catalog:home' %}?brand={{ brand.name|urlencode }}" class="split-button">
+                Смотреть все товары
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -15,15 +15,6 @@
 
   <img class="hero-decor hero-decor--left" src="{% static 'images/lefft.png' %}" alt="">
   <img class="hero-decor hero-decor--right" src="{% static 'images/rightt.png' %}" alt="">
-
-  <div class="hero-overlay">
-    <img src="{% static 'images/light_logo.png' %}" alt="Marais" class="hero-logo">
-    {% if hero_block and hero_block.link_url %}
-    <a href="{{ hero_block.link_url }}" class="hero-cta">{{ hero_block.title|default:'Новые поступления' }}</a>
-    {% else %}
-    <a href="#" class="hero-cta">Новые поступления</a>
-    {% endif %}
-  </div>
 </div>
 
 <!-- 
@@ -35,6 +26,15 @@
     </div>
   </div>
 </section> -->
+
+<!-- Tagline Section -->
+<section>
+  <div class="container-m">
+    <h2 style="text-align: center; font-size: 24px; font-weight: 350; letter-spacing: 1.5px; color: #333;">
+      Концептуальные украшения из разных стран
+    </h2>
+  </div>
+</section>
 
 <!-- Categories section (4 items) -->
 <section class="categories">

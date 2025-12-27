@@ -46,9 +46,32 @@
 
     <nav class="header-nav">
       <a href="{% url 'catalog:home' %}" class="">Магазин</a>
-      <a href="{% url 'brand' %}" class="">Бренды</a>
+      <div class="nav-dropdown" style="position: relative;">
+        <a href="{% url 'brand' %}" class="nav-dropdown__trigger">Бренды</a>
+        <div class="nav-dropdown__menu"
+          style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(-10px); min-width: 180px; background: #fff; border: 1px solid #e6e1da; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); padding: 12px 0; margin-top: 16px; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease; z-index: 200;">
+          {% for brand in all_brands %}
+          <a href="{% url 'brand_detail' brand.slug %}" class="nav-dropdown__item"
+            style="display: block; padding: 10px 20px; font-size: 14px; color: #333; text-decoration: none; white-space: nowrap;">{{ brand.name }}</a>
+          {% empty %}
+          <span class="nav-dropdown__item" style="display: block; padding: 10px 20px;">Нет брендов</span>
+          {% endfor %}
+        </div>
+      </div>
       <a href="{% url 'project' %}" class="">О нас</a>
     </nav>
+    <style>
+      .nav-dropdown:hover .nav-dropdown__menu {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateX(-50%) translateY(0) !important;
+      }
+
+      .nav-dropdown__item:hover {
+        background: #f9f7f5;
+        color: #640406 !important;
+      }
+    </style>
 
     <div class="header-logo">
       <a href="{% url 'general' %}">

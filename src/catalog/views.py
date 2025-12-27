@@ -116,6 +116,32 @@ class CatalogView(View):
              if clean_vals:
                 products = products.filter(color__in=clean_vals)
 
+        # Price Range
+        # Calculate min and max prices from all available products (before price filtering)
+        price_min = None
+        price_max = None
+        if products.exists():
+            from django.db.models import Min, Max
+            price_range = products.aggregate(Min('price'), Max('price'))
+            price_min = int(price_range['price__min'] or 0)
+            price_max = int(price_range['price__max'] or 0)
+        
+        # Apply price filter if provided
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+        
+        if min_price:
+            try:
+                products = products.filter(price__gte=float(min_price))
+            except ValueError:
+                pass
+        
+        if max_price:
+            try:
+                products = products.filter(price__lte=float(max_price))
+            except ValueError:
+                pass
+
         # Pagination
         paginator = Paginator(products, 12) # 12 items per page
         page_number = request.GET.get('page')
@@ -140,7 +166,12 @@ class CatalogView(View):
             'available_materials': available_materials,
             'available_stones': available_stones,
             'available_coverages': available_coverages,
-            'available_colors': available_colors, 
+            'available_colors': available_colors,
+            
+            'price_min': price_min,
+            'price_max': price_max,
+            'selected_min_price': min_price,
+            'selected_max_price': max_price,
         })
 
 
@@ -150,10 +181,10 @@ class ProductDetailView(View):
     def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug, is_active=True)
         # Suggest related products (same category, exclude current)
-        related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:4]
+        related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:15]
         
         # Complementary products (different category, for "Complete the Look")
-        complementary_products = Product.objects.filter(is_active=True).exclude(category=product.category).exclude(id=product.id)[:4]
+        complementary_products = Product.objects.filter(is_active=True).exclude(category=product.category).exclude(id=product.id)[:15]
         
         sizes_list = []
         if product.size:

@@ -50,7 +50,8 @@ class Product(models.Model):
   size = models.CharField(max_length=50, blank=True)
   stock = models.PositiveIntegerField(default=0)
   is_active = models.BooleanField(default=True)
-  main_image = models.ImageField(upload_to='products/', blank=True, null=True)
+  main_image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='Главное фото (файл)')
+  main_image_url = models.URLField(max_length=500, blank=True, verbose_name='Главное фото (ссылка)', help_text='Или укажите URL изображения вместо загрузки файла')
   related_colors = models.ManyToManyField('self', blank=True, symmetrical=False, verbose_name="Варианты (другие цвета)")
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -63,10 +64,25 @@ class Product(models.Model):
   def __str__(self):
     return self.title
 
+  @property
+  def get_main_image_url(self):
+    """Returns the main image URL - from URL field or uploaded file"""
+    if self.main_image_url:
+      return self.main_image_url
+    elif self.main_image:
+      return self.main_image.url
+    return None
+
+  @property
+  def has_main_image(self):
+    """Check if product has main image (file or URL)"""
+    return bool(self.main_image_url or self.main_image)
+
 
 class ProductImage(models.Model):
   product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-  image = models.ImageField(upload_to='products/gallery/')
+  image = models.ImageField(upload_to='products/gallery/', blank=True, null=True, verbose_name='Фото (файл)')
+  image_url = models.URLField(max_length=500, blank=True, verbose_name='Фото (ссылка)', help_text='Или укажите URL изображения вместо загрузки файла')
   alt = models.CharField(max_length=200, blank=True)
   sort_order = models.PositiveIntegerField(default=0)
 
@@ -78,11 +94,27 @@ class ProductImage(models.Model):
   def __str__(self):
     return f'{self.product.title} — {self.id}'
 
+  @property
+  def get_image_url(self):
+    """Returns the image URL - from URL field or uploaded file"""
+    if self.image_url:
+      return self.image_url
+    elif self.image:
+      return self.image.url
+    return None
+
+  @property
+  def has_image(self):
+    """Check if has image (file or URL)"""
+    return bool(self.image_url or self.image)
+
 
 class Brand(models.Model):
   name = models.CharField(max_length=200, unique=True)
+  slug = models.SlugField(max_length=220, unique=True, blank=True)
   country = models.CharField(max_length=120, blank=True)
   logo = models.ImageField(upload_to='brands/', blank=True, null=True)
+  banner = models.ImageField(upload_to='brands/banners/', blank=True, null=True, verbose_name='Баннер')
   description = models.TextField(blank=True)
   is_active = models.BooleanField(default=True)
   sort_order = models.PositiveIntegerField(default=0)
@@ -94,6 +126,12 @@ class Brand(models.Model):
 
   def __str__(self):
     return self.name
+
+  def save(self, *args, **kwargs):
+    if not self.slug:
+      from django.utils.text import slugify
+      self.slug = slugify(self.name)
+    super().save(*args, **kwargs)
 
   @property
   def active_products(self):

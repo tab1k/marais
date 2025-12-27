@@ -36,6 +36,37 @@
           </div>
         </div>
 
+        {% if price_min is not None and price_max is not None and price_min != price_max %}
+        <div class="filter-group active" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Цена</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="price-filter-container">
+              <div class="price-inputs">
+                <input type="number" id="price-min-input" class="price-input"
+                  value="{{ selected_min_price|default:price_min }}" min="{{ price_min }}" max="{{ price_max }}"
+                  step="1000">
+                <span class="price-separator">—</span>
+                <input type="number" id="price-max-input" class="price-input"
+                  value="{{ selected_max_price|default:price_max }}" min="{{ price_min }}" max="{{ price_max }}"
+                  step="1000">
+              </div>
+              <div class="price-slider-wrapper">
+                <div class="price-slider-track"></div>
+                <div class="price-slider-range" id="price-slider-range"></div>
+                <input type="range" id="price-slider-min" class="price-slider" min="{{ price_min }}"
+                  max="{{ price_max }}" value="{{ selected_min_price|default:price_min }}" step="1000">
+                <input type="range" id="price-slider-max" class="price-slider" min="{{ price_min }}"
+                  max="{{ price_max }}" value="{{ selected_max_price|default:price_max }}" step="1000">
+              </div>
+              <button type="button" class="price-apply-btn" id="price-apply-btn">Применить</button>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         {% if available_sizes %}
         <div class="filter-group {% if selected_sizes %}active{% endif %}" data-collapsible>
           <div class="filter-group-header" data-collapse-toggle>
@@ -265,6 +296,129 @@
           color: #fff;
           border-color: #a71930;
         }
+
+        /* Price Filter Styles */
+        .price-filter-container {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .price-inputs {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .price-input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid #efebe6;
+          border-radius: 4px;
+          font-size: 14px;
+          text-align: center;
+          transition: border-color 0.2s;
+        }
+
+        .price-input:focus {
+          outline: none;
+          border-color: #a71930;
+        }
+
+        .price-separator {
+          color: #999;
+          font-weight: 300;
+        }
+
+        .price-slider-wrapper {
+          position: relative;
+          height: 6px;
+          margin: 20px 0;
+        }
+
+        .price-slider-track {
+          position: absolute;
+          width: 100%;
+          height: 6px;
+          background: #efebe6;
+          border-radius: 3px;
+        }
+
+        .price-slider-range {
+          position: absolute;
+          height: 6px;
+          background: #a71930;
+          border-radius: 3px;
+          pointer-events: none;
+        }
+
+        .price-slider {
+          position: absolute;
+          width: 100%;
+          height: 6px;
+          background: transparent;
+          pointer-events: none;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          background: #a71930;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          cursor: pointer;
+          pointer-events: auto;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .price-slider::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .price-slider::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          background: #a71930;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          cursor: pointer;
+          pointer-events: auto;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .price-slider::-moz-range-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .price-apply-btn {
+          padding: 10px 16px;
+          background-color: #a71930;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .price-apply-btn:hover {
+          background-color: #8a1426;
+        }
+
+        .price-apply-btn:active {
+          transform: scale(0.98);
+        }
       </style>
 
       <div class="catalog-content">
@@ -286,7 +440,7 @@
               {% elif product.brand_ref and product.brand_ref.logo %}
               <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder">
               {% else %}
-              <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
+              <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
                 style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>
@@ -335,6 +489,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // Collapsible filter groups
     const toggles = document.querySelectorAll('[data-collapse-toggle]');
     toggles.forEach(toggle => {
       toggle.addEventListener('click', () => {
@@ -344,6 +499,101 @@
         }
       });
     });
+
+    // Price slider functionality
+    const priceMinSlider = document.getElementById('price-slider-min');
+    const priceMaxSlider = document.getElementById('price-slider-max');
+    const priceMinInput = document.getElementById('price-min-input');
+    const priceMaxInput = document.getElementById('price-max-input');
+    const priceRange = document.getElementById('price-slider-range');
+    const applyBtn = document.getElementById('price-apply-btn');
+
+    if (priceMinSlider && priceMaxSlider && priceMinInput && priceMaxInput && priceRange && applyBtn) {
+      const minPrice = parseInt(priceMinSlider.min);
+      const maxPrice = parseInt(priceMaxSlider.max);
+
+      function updateSliderRange() {
+        const minVal = parseInt(priceMinSlider.value);
+        const maxVal = parseInt(priceMaxSlider.value);
+        const percent1 = ((minVal - minPrice) / (maxPrice - minPrice)) * 100;
+        const percent2 = ((maxVal - minPrice) / (maxPrice - minPrice)) * 100;
+        priceRange.style.left = percent1 + '%';
+        priceRange.style.width = (percent2 - percent1) + '%';
+      }
+
+      function syncSliderToInput() {
+        let minVal = parseInt(priceMinInput.value) || minPrice;
+        let maxVal = parseInt(priceMaxInput.value) || maxPrice;
+
+        // Validate and constrain values
+        minVal = Math.max(minPrice, Math.min(minVal, maxPrice));
+        maxVal = Math.max(minPrice, Math.min(maxVal, maxPrice));
+
+        if (minVal > maxVal) {
+          [minVal, maxVal] = [maxVal, minVal];
+        }
+
+        priceMinInput.value = minVal;
+        priceMaxInput.value = maxVal;
+        priceMinSlider.value = minVal;
+        priceMaxSlider.value = maxVal;
+        updateSliderRange();
+      }
+
+      function syncInputToSlider() {
+        let minVal = parseInt(priceMinSlider.value);
+        let maxVal = parseInt(priceMaxSlider.value);
+
+        // Prevent sliders from crossing
+        if (minVal > maxVal - 1000) {
+          if (this === priceMinSlider) {
+            minVal = maxVal - 1000;
+            priceMinSlider.value = minVal;
+          } else {
+            maxVal = minVal + 1000;
+            priceMaxSlider.value = maxVal;
+          }
+        }
+
+        priceMinInput.value = minVal;
+        priceMaxInput.value = maxVal;
+        updateSliderRange();
+      }
+
+      // Event listeners
+      priceMinSlider.addEventListener('input', syncInputToSlider);
+      priceMaxSlider.addEventListener('input', syncInputToSlider);
+      priceMinInput.addEventListener('input', syncSliderToInput);
+      priceMaxInput.addEventListener('input', syncSliderToInput);
+
+      // Apply button - update URL with price parameters
+      applyBtn.addEventListener('click', () => {
+        const minVal = priceMinInput.value;
+        const maxVal = priceMaxInput.value;
+        const url = new URL(window.location.href);
+
+        // Only add parameters if they differ from the defaults
+        if (minVal && minVal != minPrice) {
+          url.searchParams.set('min_price', minVal);
+        } else {
+          url.searchParams.delete('min_price');
+        }
+
+        if (maxVal && maxVal != maxPrice) {
+          url.searchParams.set('max_price', maxVal);
+        } else {
+          url.searchParams.delete('max_price');
+        }
+
+        // Reset to page 1 when filtering
+        url.searchParams.delete('page');
+
+        window.location.href = url.toString();
+      });
+
+      // Initialize slider range on load
+      updateSliderRange();
+    }
   });
 </script>
 

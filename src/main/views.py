@@ -45,6 +45,13 @@ class BrandPageView(View):
         return render(request, 'main/brand.html', {'brands': brands})
 
 
+class BrandDetailView(View):
+    def get(self, request, slug):
+        from django.shortcuts import get_object_or_404
+        brand = get_object_or_404(Brand, slug=slug, is_active=True)
+        return render(request, 'main/brand_detail.html', {'brand': brand})
+
+
 class ProjectPageView(View):
     def get(self, request):
         return render(request, 'main/project.html')

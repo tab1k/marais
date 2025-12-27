@@ -185,10 +185,15 @@
 
 <section class="related-section">
   <div class="container-m">
-    <h2 class="related-title">Вам также может понравиться</h2>
+    <div class="slider-header">
+      <h2 class="related-title">Вам также может понравиться</h2>
+      <div class="slider-nav">
+        <button class="slider-arrow slider-prev" aria-label="Назад">‹</button>
+        <button class="slider-arrow slider-next" aria-label="Вперед">›</button>
+      </div>
+    </div>
     {% if related_products %}
     <div class="product-slider-wrapper">
-      <button class="slider-arrow slider-prev" aria-label="Назад">&#10094;</button>
       <div class="product-slider-track">
         {% for rel_prod in related_products %}
         <a class="product-card" href="{% url 'catalog:detail' rel_prod.slug %}"
@@ -197,9 +202,9 @@
             {% if rel_prod.main_image %}
             <img src="{{ rel_prod.main_image.url }}" alt="{{ rel_prod.title }}">
             {% elif rel_prod.brand_ref and rel_prod.brand_ref.logo %}
-            <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}" class="product-brand-placeholder">
+            <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}">
             {% else %}
-            <img src="{% static 'images/logo.png' %}" alt="{{ rel_prod.title }}" class="product-brand-placeholder"
+            <img src="{% static 'images/zaglushka.png' %}" alt="{{ rel_prod.title }}"
               style="padding: 40px; opacity: 0.8;">
             {% endif %}
           </div>
@@ -213,7 +218,6 @@
         </a>
         {% endfor %}
       </div>
-      <button class="slider-arrow slider-next" aria-label="Вперед">&#10095;</button>
     </div>
     {% else %}
     <p>Нет похожих товаров.</p>
@@ -223,10 +227,15 @@
 
 <section class="related-section">
   <div class="container-m">
-    <h2 class="related-title">Завершите образ</h2>
+    <div class="slider-header">
+      <h2 class="related-title">Завершите образ</h2>
+      <div class="slider-nav">
+        <button class="slider-arrow slider-prev" aria-label="Назад">‹</button>
+        <button class="slider-arrow slider-next" aria-label="Вперед">›</button>
+      </div>
+    </div>
     {% if complementary_products %}
     <div class="product-slider-wrapper">
-      <button class="slider-arrow slider-prev" aria-label="Назад">&#10094;</button>
       <div class="product-slider-track">
         {% for comp_product in complementary_products %}
         <article class="product-card">
@@ -235,10 +244,9 @@
               {% if comp_product.main_image %}
               <img src="{{ comp_product.main_image.url }}" alt="{{ comp_product.title }}">
               {% elif comp_product.brand_ref and comp_product.brand_ref.logo %}
-              <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}"
-                class="product-brand-placeholder">
+              <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}">
               {% else %}
-              <img src="{% static 'images/logo.png' %}" alt="{{ comp_product.title }}" class="product-brand-placeholder"
+              <img src="{% static 'images/zaglushka.png' %}" alt="{{ comp_product.title }}"
                 style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>
@@ -253,7 +261,6 @@
         </article>
         {% endfor %}
       </div>
-      <button class="slider-arrow slider-next" aria-label="Вперед">&#10095;</button>
     </div>
     {% else %}
     <p>Нет дополнительных товаров.</p>
@@ -285,6 +292,26 @@
           sizeInput.value = this.textContent.trim();
         }
       });
+    });
+
+    // Slider Navigation Arrows
+    document.querySelectorAll('.slider-header').forEach(header => {
+      const section = header.closest('.related-section');
+      const track = section.querySelector('.product-slider-track');
+      const prevBtn = header.querySelector('.slider-prev');
+      const nextBtn = header.querySelector('.slider-next');
+
+      if (track && prevBtn && nextBtn) {
+        const scrollAmount = 300;
+
+        prevBtn.addEventListener('click', () => {
+          track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', () => {
+          track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+      }
     });
   });
 </script>
