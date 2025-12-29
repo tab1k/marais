@@ -47,6 +47,7 @@ class Product(models.Model):
   coverage = models.CharField(max_length=100, blank=True)
   stones = models.CharField(max_length=200, blank=True)
   color = models.CharField(max_length=80, blank=True)
+  article = models.CharField(max_length=120, blank=True, verbose_name='Артикул')
   size = models.CharField(max_length=50, blank=True)
   stock = models.PositiveIntegerField(default=0)
   is_active = models.BooleanField(default=True)
@@ -218,4 +219,3 @@ class SiteSettings(models.Model):
     def load(cls):
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
-

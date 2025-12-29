@@ -47,7 +47,7 @@
     <nav class="header-nav">
       <a href="{% url 'catalog:home' %}" class="">Магазин</a>
       <div class="nav-dropdown" style="position: relative;">
-        <a href="{% url 'brand' %}" class="nav-dropdown__trigger">Бренды</a>
+        <button type="button" class="nav-dropdown__trigger" aria-haspopup="true" aria-expanded="false">Бренды</button>
         <div class="nav-dropdown__menu"
           style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(-10px); min-width: 180px; background: #fff; border: 1px solid #e6e1da; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); padding: 12px 0; margin-top: 16px; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease; z-index: 200;">
           {% for brand in all_brands %}
@@ -117,12 +117,21 @@
     <div class="mobile-menu__panel">
       <button class="mobile-menu__close" type="button" aria-label="Закрыть меню" data-menu-close>✕</button>
       <nav class="mobile-menu__nav">
-        <a href="/" class="mobile-menu__link">Главная</a>
-        <a href="{% url 'catalog:home' %}" class="mobile-menu__link">Магазин</a>
-        <a href="{% url 'brand' %}" class="mobile-menu__link">Бренды</a>
-        <a href="{% url 'project' %}" class="mobile-menu__link">О нас</a>
-        <a href="{% url 'basket:detail' %}" class="mobile-menu__link">Корзина</a>
-      </nav>
+      <a href="/" class="mobile-menu__link">Главная</a>
+      <a href="{% url 'catalog:home' %}" class="mobile-menu__link">Магазин</a>
+      <details class="mobile-menu__accordion">
+        <summary class="mobile-menu__link">Бренды</summary>
+        <div class="mobile-menu__submenu">
+          {% for brand in all_brands %}
+          <a href="{% url 'brand_detail' brand.slug %}" class="mobile-menu__sublink">{{ brand.name }}</a>
+          {% empty %}
+          <span class="mobile-menu__sublink mobile-menu__sublink--empty">Нет брендов</span>
+          {% endfor %}
+        </div>
+      </details>
+      <a href="{% url 'project' %}" class="mobile-menu__link">О нас</a>
+      <a href="{% url 'basket:detail' %}" class="mobile-menu__link">Корзина</a>
+    </nav>
 
       <div class="mobile-menu__footer">
         <div class="mobile-menu__user-section">

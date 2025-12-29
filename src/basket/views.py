@@ -27,6 +27,8 @@ class CartDetailView(View):
             discount_percent = request.user.discount_percent
         
         discount_amount = int(total * discount_percent / 100)
+        # Persist the applied percent for use in WhatsApp checkout to keep totals consistent
+        request.session['discount_percent_applied'] = discount_percent
         
         # 2. Bonuses
         # User requested bonuses to be used (stored in session temporarily)

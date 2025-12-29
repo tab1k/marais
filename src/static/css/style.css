@@ -612,6 +612,13 @@ img {
   color: #a01f34;
 }
 
+.cart-note {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #7c141f;
+  line-height: 1.4;
+}
+
 /* ============================================================================ */
 /* PROFILE PAGE                                                                 */
 /* ============================================================================ */
@@ -1615,8 +1622,8 @@ html.no-scroll {
 .product-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .product-name {
@@ -1638,6 +1645,7 @@ html.no-scroll {
 .product-price {
   font-size: 15px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .product-subtitle {
@@ -2254,6 +2262,7 @@ html.no-scroll {
   width: 100%;
   aspect-ratio: 3 / 4;
   background: #fff;
+  object-fit: cover;
 }
 
 /* ============================================================================ */
@@ -2915,7 +2924,6 @@ html.no-scroll {
   .hero-image {
     max-height: none;
     aspect-ratio: 1 / 1;
-    border-radius: 12px;
   }
 
   .categories {
@@ -3245,7 +3253,7 @@ html.no-scroll {
   .hero-image {
     max-height: none;
     aspect-ratio: 1 / 1;
-    border-radius: 14px;
+
   }
 
   .categories {

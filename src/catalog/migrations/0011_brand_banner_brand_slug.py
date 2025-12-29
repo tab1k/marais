@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='brand',
             name='slug',
-            field=models.SlugField(blank=True, max_length=220, default=''),
+            field=models.SlugField(blank=True, max_length=220, default='', unique=False, db_index=False),
         ),
         migrations.RunPython(populate_slugs, migrations.RunPython.noop),
         migrations.AlterField(
@@ -43,3 +43,4 @@ class Migration(migrations.Migration):
             field=models.SlugField(blank=True, max_length=220, unique=True),
         ),
     ]
+

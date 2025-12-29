@@ -1,7 +1,10 @@
-from django.shortcuts import redirect
-from django.views import View
+from decimal import Decimal
+
 from django.conf import settings
+from django.shortcuts import redirect
 from django.utils.http import urlencode
+from django.views import View
+
 from basket.models import Cart
 from .models import Order, OrderItem
 
@@ -23,15 +26,17 @@ class WhatsAppCheckoutView(View):
         order = Order.objects.create(
             user=user,
             session_key=request.session.session_key,
-            total_price=0 # Will update after items
+            total_price=0  # Will update after items
         )
 
         # Create Items and Message
         message_lines = ["Здравствуйте! Хочу оформить заказ:"]
-        total_price = 0
+        total_price = Decimal('0')
 
         for cart_item in cart.items.select_related('product').all():
-            cost = cart_item.product.price * cart_item.quantity
+            # Always use the cart item's stored price to mirror cart totals
+            item_price = Decimal(cart_item.price)
+            cost = item_price * cart_item.quantity
             total_price += cost
             
             # Create OrderItem
@@ -39,7 +44,7 @@ class WhatsAppCheckoutView(View):
                 order=order,
                 product=cart_item.product,
                 quantity=cart_item.quantity,
-                price=cart_item.product.price,
+                price=item_price,
                 size=cart_item.size
             )
             
@@ -49,31 +54,35 @@ class WhatsAppCheckoutView(View):
             message_lines.append(line)
 
         # --- Calculate Discounts and Bonuses ---
-        discount_percent = 0
-        if user and user.discount_percent > 0:
-            discount_percent = user.discount_percent
-            
+        # Try to reuse the same discount percent that was applied in cart
+        discount_percent = int(request.session.get('discount_percent_applied', 0))
+        effective_user = user or cart.user  # fallback to cart owner if session lost auth
+        if discount_percent <= 0 and effective_user:
+            # Use user-specific discount, or fallback baseline 15% if user exists but has 0
+            discount_percent = effective_user.discount_percent or 15
         discount_amount = int(total_price * discount_percent / 100)
         
         # Bonuses
         bonuses_used = request.session.get('bonuses_to_use', 0)
         
         # Validate bonuses again (security check)
-        if user:
-            if bonuses_used > user.loyalty_points:
-                bonuses_used = user.loyalty_points
+        if effective_user:
+            if bonuses_used > effective_user.loyalty_points:
+                bonuses_used = effective_user.loyalty_points
         else:
             bonuses_used = 0 # Anonymous users can't use bonuses
 
-        subtotal_after_discount = total_price - discount_amount
+        subtotal_after_discount = total_price - Decimal(discount_amount)
         if bonuses_used > subtotal_after_discount:
             bonuses_used = int(subtotal_after_discount)
             
-        final_total = total_price - discount_amount - bonuses_used
+        final_total = total_price - Decimal(discount_amount) - Decimal(bonuses_used)
+        if final_total < 0:
+            final_total = Decimal('0')
         
         # --- Update Order ---
-        order.total_price = total_price
-        order.discount_amount = discount_amount
+        order.total_price = total_price.quantize(Decimal('1.'))
+        order.discount_amount = Decimal(discount_amount)
         order.bonuses_used = bonuses_used
         order.final_price = final_total
         order.status = 'sent'
@@ -87,11 +96,11 @@ class WhatsAppCheckoutView(View):
 
         # --- Add details to message ---
         if discount_amount > 0:
-            message_lines.append(f"Скидка ({discount_percent}%): -{discount_amount} ₸")
+            message_lines.append(f"Скидка ({discount_percent}%): -{int(discount_amount)} ₸")
         if bonuses_used > 0:
             message_lines.append(f"Списано бонусов: -{bonuses_used} B")
-            
-        message_lines.append(f"\nИтого к оплате: {final_total} ₸")
+
+        message_lines.append(f"\nИтого к оплате: {int(final_total)} ₸")
         message_lines.append("\nПожалуйста, подтвердите заказ.")
         
         # Clear Cart
@@ -103,4 +112,3 @@ class WhatsAppCheckoutView(View):
         query_string = urlencode({'text': message_text})
         
         return redirect(f"{base_url}?{query_string}")
-
