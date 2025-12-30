@@ -70,8 +70,11 @@ class Product(models.Model):
     """Returns the main image URL - from URL field or uploaded file"""
     if self.main_image_url:
       return self.main_image_url
-    elif self.main_image:
-      return self.main_image.url
+    try:
+      if self.main_image:
+        return self.main_image.url
+    except ValueError:
+       pass
     return None
 
   @property
@@ -100,8 +103,11 @@ class ProductImage(models.Model):
     """Returns the image URL - from URL field or uploaded file"""
     if self.image_url:
       return self.image_url
-    elif self.image:
-      return self.image.url
+    try:
+      if self.image:
+        return self.image.url
+    except ValueError:
+      pass
     return None
 
   @property

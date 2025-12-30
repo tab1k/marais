@@ -16,13 +16,13 @@
       <div class="detail-gallery">
         <div class="gallery-main" id="mobileGallery">
           <!-- Main Image -->
-          {% if product.main_image %}
-          <img src="{{ product.main_image.url }}" alt="{{ product.title }}" data-gallery-main
+          {% if product.get_main_image_url %}
+          <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" data-gallery-main
             class="gallery-item active" onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
           {% elif product.brand_ref and product.brand_ref.logo %}
           <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" data-gallery-main
             class="product-brand-placeholder gallery-item active"
-            onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+            onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
           {% else %}
           <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" data-gallery-main
             class="product-brand-placeholder gallery-item active" style="padding: 40px; opacity: 0.8;">
@@ -30,8 +30,8 @@
 
           <!-- Additional Images (visible on mobile scroll) -->
           {% for img in product.images.all %}
-          {% if img.image.url != product.main_image.url %}
-          <img src="{{ img.image.url }}" alt="{{ img.alt }}" class="gallery-item"
+          {% if img.get_image_url and img.get_image_url != product.get_main_image_url %}
+          <img src="{{ img.get_image_url }}" alt="{{ img.alt }}" class="gallery-item"
             onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
           {% endif %}
           {% endfor %}
@@ -46,17 +46,20 @@
         </div>
 
         <div class="gallery-thumbs" data-gallery-thumbs>
-          {% if product.main_image %}
-          <button type="button" class="thumb active" data-gallery-src="{{ product.main_image.url }}" aria-label="Main">
-            <img src="{{ product.main_image.url }}" alt="Main" onerror='this.onerror=null;this.src="{% static '
-              images/logo.png' %}";'>
+          {% if product.get_main_image_url %}
+          <button type="button" class="thumb active" data-gallery-src="{{ product.get_main_image_url }}"
+            aria-label="Main">
+            <img src="{{ product.get_main_image_url }}" alt="Main"
+              onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
           </button>
           {% endif %}
           {% for img in product.images.all %}
-          <button type="button" class="thumb" data-gallery-src="{{ img.image.url }}" aria-label="{{ img.alt }}">
-            <img src="{{ img.image.url }}" alt="{{ img.alt }}" onerror='this.onerror=null;this.src="{% static '
-              images/logo.png' %}";'>
+          {% if img.get_image_url %}
+          <button type="button" class="thumb" data-gallery-src="{{ img.get_image_url }}" aria-label="{{ img.alt }}">
+            <img src="{{ img.get_image_url }}" alt="{{ img.alt }}"
+              onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
           </button>
+          {% endif %}
           {% endfor %}
         </div>
       </div>
@@ -131,8 +134,8 @@
             <div class="swatch-list">
               <!-- Current product (active) -->
               <a href="javascript:void(0)" class="swatch active" title="{{ product.title }}">
-                {% if product.main_image %}
-                <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% if product.get_main_image_url %}
+                <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}">
                 {% else %}
                 <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
                 {% endif %}
@@ -141,12 +144,12 @@
               <!-- Related variants -->
               {% for variant in product.related_colors.all %}
               <a href="{% url 'catalog:detail' variant.slug %}" class="swatch" title="{{ variant.title }}">
-                {% if variant.main_image %}
-                <img src="{{ variant.main_image.url }}" alt="{{ variant.title }}"
-                  onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+                {% if variant.get_main_image_url %}
+                <img src="{{ variant.get_main_image_url }}" alt="{{ variant.title }}"
+                  onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
                 {% elif variant.brand_ref and variant.brand_ref.logo %}
                 <img src="{{ variant.brand_ref.logo.url }}" alt="{{ variant.title }}" class="product-brand-placeholder"
-                  onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+                  onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
                 {% else %}
                 <img src="{% static 'images/logo.png' %}" alt="{{ variant.title }}" class="product-brand-placeholder"
                   style="padding: 4px; opacity: 0.8;">
@@ -204,14 +207,14 @@
         <a class="product-card" href="{% url 'catalog:detail' rel_prod.slug %}"
           style="text-decoration:none; color:inherit;">
           <div class="product-thumb">
-            {% if rel_prod.main_image %}
-            <img src="{{ rel_prod.main_image.url }}" alt="{{ rel_prod.title }}"
-              onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+            {% if rel_prod.get_main_image_url %}
+            <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
+              onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
             {% elif rel_prod.brand_ref and rel_prod.brand_ref.logo %}
-            <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}"
-              onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+            <img src="{% static 'images/zaglushka.png' %}" alt="{{ rel_prod.title }}"
+              onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
             {% else %}
-            <img src="{% static 'images/logo.png' %}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;">
+            <img src="{% static 'images/zaglushka.png' %}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;">
             {% endif %}
           </div>
           <div class="product-info">
@@ -247,14 +250,14 @@
         <article class="product-card">
           <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
-              {% if comp_product.main_image %}
-              <img src="{{ comp_product.main_image.url }}" alt="{{ comp_product.title }}"
-                onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+              {% if comp_product.get_main_image_url %}
+              <img src="{{ comp_product.get_main_image_url }}" alt="{{ comp_product.title }}"
+                onerror="this.onerror=null;this.src='{% static 'images/logo.png' %}';">
               {% elif comp_product.brand_ref and comp_product.brand_ref.logo %}
-              <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}"
-                onerror='this.onerror=null;this.src="{% static ' images/logo.png' %}";'>
+              <img src="{% static 'images/zaglushka.png' %}" alt="{{ comp_product.title }}"
+                onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
               {% else %}
-              <img src="{% static 'images/logo.png' %}" alt="{{ comp_product.title }}"
+              <img src="{% static 'images/zaglushka.png' %}" alt="{{ comp_product.title }}"
                 style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>
