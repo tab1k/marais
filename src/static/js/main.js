@@ -144,7 +144,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   mobileBackdrop?.addEventListener('click', closeMenu);
-  mobileLinks?.forEach(link => link.addEventListener('click', closeMenu));
+  mobileLinks?.forEach(link => link.addEventListener('click', (e) => {
+    // Don't close menu if clicking an accordion toggle
+    if (link.tagName.toLowerCase() === 'summary') return;
+    closeMenu();
+  }));
   mobileClose?.addEventListener('click', closeMenu);
 
   window.addEventListener('keydown', (event) => {

@@ -144,11 +144,13 @@
           <div class="order-card__info">
             <div class="order-card__icon">
               {% if order.items.first.product.main_image %}
-              <img src="{{ order.items.first.product.main_image.url }}" alt="">
+              <img src="{{ order.items.first.product.main_image.url }}" alt=""
+                onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
               {% elif order.items.first.product.brand_ref and order.items.first.product.brand_ref.logo %}
-              <img src="{{ order.items.first.product.brand_ref.logo.url }}" alt="" class="product-brand-placeholder">
+              <img src="{{ order.items.first.product.brand_ref.logo.url }}" alt="" class="product-brand-placeholder"
+                onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
               {% else %}
-              <img src="{% static 'images/logo.png' %}" alt="" class="product-brand-placeholder"
+              <img src="{% static 'images/zaglushka.png' %}" alt="" class="product-brand-placeholder"
                 style="padding: 10px; opacity: 0.8;">
               {% endif %}
             </div>
@@ -183,12 +185,14 @@
             <a href="{% url 'catalog:detail' product.slug %}" style="text-decoration: none; color: inherit;">
               <div class="product-thumb">
                 {% if product.main_image %}
-                <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                <img src="{{ product.main_image.url }}" alt="{{ product.title }}"
+                  onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
                 {% elif product.brand_ref and product.brand_ref.logo %}
-                <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder">
+                <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder"
+                  onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
                 {% else %}
-                <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
-                  style="padding: 40px; opacity: 0.8;">
+                <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}"
+                  class="product-brand-placeholder" style="padding: 40px; opacity: 0.8;">
                 {% endif %}
               </div>
               <div class="product-info">

@@ -40,20 +40,22 @@
       {% for cat in categories %}
       <a href="{% url 'catalog:home' %}?category={{ cat.slug }}" class="category-card"
         style="text-decoration: none; color: inherit;">
-        {% if cat.image %}
-        <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
-        {% elif cat.slug == 'rings' or cat.slug == 'ring' %}
-        <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}">
-        {% elif cat.slug == 'earrings' %}
-        <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}">
-        {% elif cat.slug == 'necklaces' or cat.slug == 'necklace' %}
-        <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}">
-        {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
-        <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}">
-        {% else %}
-        <img src="{% static 'images/logo.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder"
-          style="padding: 40px; opacity: 0.8;">
-        {% endif %}
+        <div class="category-card__image-wrapper">
+          {% if cat.image %}
+          <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+          {% elif cat.slug == 'rings' or cat.slug == 'ring' %}
+          <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}">
+          {% elif cat.slug == 'earrings' %}
+          <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}">
+          {% elif cat.slug == 'necklaces' or cat.slug == 'necklace' %}
+          <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}">
+          {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
+          <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}">
+          {% else %}
+          <img src="{% static 'images/zaglushka.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder"
+            style="padding: 40px; opacity: 0.8;">
+          {% endif %}
+        </div>
         <p>{{ cat.name }}</p>
       </a>
       {% endfor %}
@@ -124,14 +126,18 @@
     <div class="categories-grid">
       {% for prod in block.brand.active_products|slice:":4" %}
       <a href="{% url 'catalog:detail' prod.slug %}" class="category-card" style="text-decoration:none; color:inherit;">
-        {% if prod.main_image %}
-        <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}">
-        {% elif prod.brand_ref and prod.brand_ref.logo %}
-        <img src="{{ prod.brand_ref.logo.url }}" alt="{{ prod.title }}" class="product-brand-placeholder">
-        {% else %}
-        <img src="{% static 'images/logo.png' %}" alt="{{ prod.title }}" class="product-brand-placeholder"
-          style="padding: 40px; opacity: 0.8;">
-        {% endif %}
+        <div class="category-card__image-wrapper">
+          {% if prod.main_image %}
+          <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}"
+            onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+          {% elif prod.brand_ref and prod.brand_ref.logo %}
+          <img src="{{ prod.brand_ref.logo.url }}" alt="{{ prod.title }}" class="product-brand-placeholder"
+            onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+          {% else %}
+          <img src="{% static 'images/zaglushka.png' %}" alt="{{ prod.title }}" class="product-brand-placeholder"
+            style="padding: 40px; opacity: 0.8;">
+          {% endif %}
+        </div>
         <div class="home-product-info">
           <p class="home-product-price">{{ prod.title|upper }} <span>{{ prod.price|floatformat:0 }}₸</span></p>
           <p class="home-product-note">{{ prod.metal|default:block.brand.name }}</p>

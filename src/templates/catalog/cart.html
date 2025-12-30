@@ -14,12 +14,13 @@
         <article class="cart-item">
           <div class="cart-item__media">
             {% if item.product.main_image %}
-            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.title }}">
+            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.title }}"
+              onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
             {% elif item.product.brand_ref and item.product.brand_ref.logo %}
             <img src="{{ item.product.brand_ref.logo.url }}" alt="{{ item.product.title }}"
-              class="product-brand-placeholder">
+              class="product-brand-placeholder" onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
             {% else %}
-            <img src="{% static 'images/logo.png' %}" alt="{{ item.product.title }}" class="product-brand-placeholder"
+            <img src="{% static 'images/zaglushka.png' %}" alt="{{ item.product.title }}" class="product-brand-placeholder"
               style="padding: 10px; opacity: 0.8;">
             {% endif %}
           </div>

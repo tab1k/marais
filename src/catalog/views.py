@@ -28,6 +28,14 @@ class CatalogView(View):
             if clean_brands:
                 products = products.filter(brand_ref__name__in=clean_brands)
 
+        collections = request.GET.getlist('collection')
+        if collections:
+            clean_collections = [c for c in collections if c and c != 'None']
+            if clean_collections:
+                # Filter by collection slug (or name, but slug is safer for URLs)
+                # Model has 'slug' field. Let's assume URL param uses slug.
+                products = products.filter(collection__slug__in=clean_collections)
+
         # Removed Metal, Coverage, Stones, Color filters as requested
 
         available_sizes = set()
@@ -154,6 +162,7 @@ class CatalogView(View):
             'brands': brands,
             'selected_categories': category_slugs,
             'selected_brands': brand_names,
+            'selected_collections': collections,
             'selected_sizes': sizes,
             'selected_metals': metals,
             'selected_materials': materials,
@@ -250,7 +259,7 @@ class SearchSuggestionsView(View):
                 image_url = p.brand_ref.logo.url
                 is_placeholder = True
             else:
-                image_url = '/static/images/logo.png'
+                image_url = '/static/images/zaglushka.png'
                 is_placeholder = True
                 
             results.append({
