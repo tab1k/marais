@@ -13,7 +13,7 @@
           {% if request.user.is_authenticated and request.user.avatar %}
           <img src="{{ request.user.avatar.url }}" alt="{{ request.user.get_full_name|default:request.user.username }}">
           {% else %}
-          <img src="{% static 'images/sergi.png' %}" alt="Аватар">
+          <img src="{% static 'images/zaglushka.png' %}" alt="Аватар">
           {% endif %}
         </div>
         <div class="profile-user__meta">
@@ -55,7 +55,7 @@
               <img src="{{ request.user.avatar.url }}"
                 alt="{{ request.user.get_full_name|default:request.user.username }}">
               {% else %}
-              <img src="{% static 'images/sergi.png' %}" alt="Аватар">
+              <img src="{% static 'images/zaglushka.png' %}" alt="Аватар">
               {% endif %}
             </div>
             <label class="profile-sheet__upload">

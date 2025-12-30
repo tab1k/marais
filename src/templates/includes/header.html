@@ -10,7 +10,8 @@
         &nbsp;&nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;&nbsp;
         {% endfor %}
         {% for banner in top_banners %}
-        <a href="{{ banner.link|default:'#' }}" style="color: inherit; text-decoration: none;">{{ banner.text|upper }}</a>
+        <a href="{{ banner.link|default:'#' }}" style="color: inherit; text-decoration: none;">{{ banner.text|upper
+          }}</a>
         &nbsp;&nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;&nbsp;
         {% endfor %}
       </p>
@@ -52,7 +53,8 @@
           style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(-10px); min-width: 180px; background: #fff; border: 1px solid #e6e1da; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); padding: 12px 0; margin-top: 16px; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease; z-index: 200;">
           {% for brand in all_brands %}
           <a href="{% url 'brand_detail' brand.slug %}" class="nav-dropdown__item"
-            style="display: block; padding: 10px 20px; font-size: 14px; color: #333; text-decoration: none; white-space: nowrap;">{{ brand.name }}</a>
+            style="display: block; padding: 10px 20px; font-size: 14px; color: #333; text-decoration: none; white-space: nowrap;">{{
+            brand.name }}</a>
           {% empty %}
           <span class="nav-dropdown__item" style="display: block; padding: 10px 20px;">Нет брендов</span>
           {% endfor %}
@@ -154,7 +156,7 @@
               <img src="{{ request.user.avatar.url }}"
                 alt="{{ request.user.get_full_name|default:request.user.username }}">
               {% else %}
-              <img src="{% static 'images/sergi.png' %}" alt="Профиль">
+              <img src="{% static 'images/zaglushka.png' %}" alt="Профиль">
               {% endif %}
             </span>
             <span class="mobile-user__meta">
