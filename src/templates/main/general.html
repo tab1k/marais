@@ -85,10 +85,13 @@
       {% if block.featured_product and block.featured_product.is_active %}
       <a href="{% url 'catalog:detail' block.featured_product.slug %}" style="text-decoration: none; color: inherit;">
         <div class="featured-product" style="display: flex; flex-direction: column; align-items: center;">
-          {% if block.featured_product.main_image %}
-          <img src="{{ block.featured_product.main_image.url }}" alt="{{ block.featured_product.title }}">
+          {% static 'images/zaglushka.png' as zaglushka_url %}
+          {% if block.featured_product.get_main_image_url %}
+          <img src="{{ block.featured_product.get_main_image_url }}" alt="{{ block.featured_product.title }}"
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
           {% else %}
-          <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ block.featured_product.title }}">
+          <img src="{{ zaglushka_url }}" alt="{{ block.featured_product.title }}" class="product-brand-placeholder"
+            style="padding: 40px; opacity: 0.8;">
           {% endif %}
           <div class="featured-meta" style="text-align: center; width: 100%;">
             <p class="home-product-price" style="width: 100%; justify-content: space-between; text-align: left;">
@@ -127,14 +130,15 @@
       {% for prod in block.brand.active_products|slice:":4" %}
       <a href="{% url 'catalog:detail' prod.slug %}" class="category-card" style="text-decoration:none; color:inherit;">
         <div class="category-card__image-wrapper">
-          {% if prod.main_image %}
-          <img src="{{ prod.main_image.url }}" alt="{{ prod.title }}"
-            onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+          {% static 'images/zaglushka.png' as zaglushka_url %}
+          {% if prod.get_main_image_url %}
+          <img src="{{ prod.get_main_image_url }}" alt="{{ prod.title }}"
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
           {% elif prod.brand_ref and prod.brand_ref.logo %}
           <img src="{{ prod.brand_ref.logo.url }}" alt="{{ prod.title }}" class="product-brand-placeholder"
-            onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
           {% else %}
-          <img src="{% static 'images/zaglushka.png' %}" alt="{{ prod.title }}" class="product-brand-placeholder"
+          <img src="{{ zaglushka_url }}" alt="{{ prod.title }}" class="product-brand-placeholder"
             style="padding: 40px; opacity: 0.8;">
           {% endif %}
         </div>

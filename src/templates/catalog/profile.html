@@ -142,15 +142,16 @@
         {% for order in orders %}
         <article class="order-card">
           <div class="order-card__info">
+            {% static 'images/zaglushka.png' as zaglushka_url %}
             <div class="order-card__icon">
-              {% if order.items.first.product.main_image %}
-              <img src="{{ order.items.first.product.main_image.url }}" alt=""
-                onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+              {% if order.items.first.product.get_main_image_url %}
+              <img src="{{ order.items.first.product.get_main_image_url }}" alt=""
+                onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
               {% elif order.items.first.product.brand_ref and order.items.first.product.brand_ref.logo %}
               <img src="{{ order.items.first.product.brand_ref.logo.url }}" alt="" class="product-brand-placeholder"
-                onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+                onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
               {% else %}
-              <img src="{% static 'images/zaglushka.png' %}" alt="" class="product-brand-placeholder"
+              <img src="{{ zaglushka_url }}" alt="" class="product-brand-placeholder"
                 style="padding: 10px; opacity: 0.8;">
               {% endif %}
             </div>
@@ -183,16 +184,17 @@
           {% for product in recommended_products %}
           <article class="product-card">
             <a href="{% url 'catalog:detail' product.slug %}" style="text-decoration: none; color: inherit;">
+              {% static 'images/zaglushka.png' as zaglushka_url %}
               <div class="product-thumb">
-                {% if product.main_image %}
-                <img src="{{ product.main_image.url }}" alt="{{ product.title }}"
-                  onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+                {% if product.get_main_image_url %}
+                <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"
+                  onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
                 {% elif product.brand_ref and product.brand_ref.logo %}
                 <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder"
-                  onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+                  onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
                 {% else %}
-                <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}"
-                  class="product-brand-placeholder" style="padding: 40px; opacity: 0.8;">
+                <img src="{{ zaglushka_url }}" alt="{{ product.title }}" class="product-brand-placeholder"
+                  style="padding: 40px; opacity: 0.8;">
                 {% endif %}
               </div>
               <div class="product-info">

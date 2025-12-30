@@ -13,14 +13,15 @@
         {% for item in items %}
         <article class="cart-item">
           <div class="cart-item__media">
-            {% if item.product.main_image %}
-            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.title }}"
-              onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+            {% static 'images/zaglushka.png' as zaglushka_url %}
+            {% if item.product.get_main_image_url %}
+            <img src="{{ item.product.get_main_image_url }}" alt="{{ item.product.title }}"
+              onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
             {% elif item.product.brand_ref and item.product.brand_ref.logo %}
             <img src="{{ item.product.brand_ref.logo.url }}" alt="{{ item.product.title }}"
-              class="product-brand-placeholder" onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+              class="product-brand-placeholder" onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
             {% else %}
-            <img src="{% static 'images/zaglushka.png' %}" alt="{{ item.product.title }}" class="product-brand-placeholder"
+            <img src="{{ zaglushka_url }}" alt="{{ item.product.title }}" class="product-brand-placeholder"
               style="padding: 10px; opacity: 0.8;">
             {% endif %}
           </div>

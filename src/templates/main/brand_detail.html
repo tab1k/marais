@@ -54,19 +54,20 @@
 <section class="brand-products-section" style="padding: 40px 0 80px;">
     <div class="container-m">
         <h3 style="text-align: center; font-size: 24px; font-weight: 350; margin-bottom: 40px;">Товары бренда {{ brand.name }}</h3>
+        {% static 'images/zaglushka.png' as zaglushka_url %}
         <div class="categories-grid">
             {% for product in brand.active_products|slice:":4" %}
             <a href="{% url 'catalog:detail' product.slug %}" class="category-card"
                 style="text-decoration: none; color: inherit;">
-                {% if product.main_image %}
-                <img src="{{ product.main_image.url }}" alt="{{ product.title }}"
-                    onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+                {% if product.get_main_image_url %}
+                <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"
+                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
                 {% elif brand.logo %}
                 <img src="{{ brand.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder"
-                    onerror="this.onerror=null;this.src='{% static 'images/zaglushka.png' %}';">
+                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
                 {% else %}
-                <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}"
-                    class="product-brand-placeholder" style="padding: 40px; opacity: 0.8;">
+                <img src="{{ zaglushka_url }}" alt="{{ product.title }}" class="product-brand-placeholder"
+                    style="padding: 40px; opacity: 0.8;">
                 {% endif %}
                 <div class="home-product-info">
                     <p class="home-product-price">{{ product.title|upper }} <span>{{ product.price|floatformat:0 }}₸</span></p>
