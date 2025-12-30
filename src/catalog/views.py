@@ -16,6 +16,7 @@ class CatalogView(View):
         # Filters
         # Filters
         category_slugs = request.GET.getlist('category')
+        clean_cats = []
         if category_slugs:
             # Handle 'None' or empty strings if any
             clean_cats = [c for c in category_slugs if c and c != 'None']
@@ -160,7 +161,7 @@ class CatalogView(View):
             'page_obj': page_obj, 
             'categories': categories,
             'brands': brands,
-            'selected_categories': category_slugs,
+            'selected_categories': clean_cats,
             'selected_brands': brand_names,
             'selected_collections': collections,
             'selected_sizes': sizes,

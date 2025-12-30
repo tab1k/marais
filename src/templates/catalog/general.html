@@ -86,7 +86,7 @@
         </div>
         {% endif %}
 
-        {% if available_sizes %}
+        {% if available_sizes and selected_categories %}
         <div class="filter-group {% if selected_sizes %}active{% endif %}" data-collapsible>
           <div class="filter-group-header" data-collapse-toggle>
             <div class="filter-group-title">Размер</div>
@@ -442,7 +442,7 @@
 
       <div class="catalog-content">
         {% if all_collections %}
-        
+
         <style>
           .collections-horizontal-list {
             display: flex;
