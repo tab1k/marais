@@ -9,14 +9,16 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/1KaysYxaB-0z897sifpycDDC68C1
 def convert_gdrive_link(url):
     if not url or 'drive.google.com' not in url:
         return url
+    
+    # Extract file ID
     match = re.search(r'/d/([^/]+)', url)
     if match:
         file_id = match.group(1)
-        return f"https://drive.google.com/uc?id={file_id}"
+        return f"https://lh3.googleusercontent.com/d/{file_id}"
     match = re.search(r'id=([^&]+)', url)
     if match:
         file_id = match.group(1)
-        return f"https://drive.google.com/uc?id={file_id}"
+        return f"https://lh3.googleusercontent.com/d/{file_id}"
     return url
 
 def clean_price(price_str):
