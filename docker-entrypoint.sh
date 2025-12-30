@@ -39,6 +39,10 @@ python manage.py migrate
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
+# Импорт товаров из Google Таблиц
+echo "Importing products from Google Sheets..."
+python import_products.py
+
 # Запуск
 echo "Starting Gunicorn..."
 exec gunicorn --bind 0.0.0.0:8000 --workers 3 marais.wsgi:application
