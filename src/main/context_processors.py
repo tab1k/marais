@@ -22,5 +22,5 @@ def all_collections(request):
     from django.db.models import Count
     # Display collections that have at least one product? Or all? User didn't specify, but similar to brands is safer.
     # But usually collections are curated, so maybe show all. Let's filter by having products to avoid empty pages.
-    collections = Collection.objects.annotate(product_count=Count('products')).filter(product_count__gt=0).order_by('name')
+    collections = Collection.objects.all().order_by('name')
     return {'all_collections': collections}

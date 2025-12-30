@@ -2688,6 +2688,7 @@ html.no-scroll {
 
   .catalog-mobile-bar {
     display: flex;
+    justify-content: space-between;
   }
 
   .filter-panel {
