@@ -20,7 +20,7 @@
         <div class="gallery-main" id="mobileGallery">
           {% for img in gallery_images %}
           <img src="{{ img }}" alt="{{ product.title }}" class="gallery-item {% if forloop.first %}active{% endif %}"
-            data-gallery-index="{{ forloop.counter0 }}" onerror="this.onerror=null;this.src='{{ logo_url }}';">
+            data-gallery-index="{{ forloop.counter0 }}" onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
           {% endfor %}
         </div>
 
@@ -36,7 +36,7 @@
           <button type="button" class="thumb {% if forloop.first %}active{% endif %}" data-gallery-src="{{ img }}"
             data-gallery-index="{{ forloop.counter0 }}" aria-label="{{ product.title }} {{ forloop.counter }}">
             <img src="{{ img }}" alt="{{ product.title }} {{ forloop.counter }}"
-              onerror="this.onerror=null;this.src='{{ logo_url }}';">
+              onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
           </button>
           {% endfor %}
         </div>
@@ -205,12 +205,12 @@
             {% endif %}
             {% if rel_prod.get_main_image_url %}
             <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
-              onerror="this.onerror=null;this.src='{{ logo_url }}';">
+              onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
             {% elif rel_prod.brand_ref and rel_prod.brand_ref.logo %}
             <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}"
-              onerror="this.onerror=null;this.src='{{ logo_url }}';">
+              onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
             {% else %}
-            <img src="{{ zaglushka_url }}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;">
+            <img src="{{ zaglushka_url }}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;" loading="lazy">
             {% endif %}
           </div>
             <div class="product-info">
@@ -266,12 +266,12 @@
               {% endif %}
               {% if comp_product.get_main_image_url %}
               <img src="{{ comp_product.get_main_image_url }}" alt="{{ comp_product.title }}"
-                onerror="this.onerror=null;this.src='{{ logo_url }}';">
+                onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
               {% elif comp_product.brand_ref and comp_product.brand_ref.logo %}
               <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}"
-                onerror="this.onerror=null;this.src='{{ logo_url }}';">
+                onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
               {% else %}
-              <img src="{{ zaglushka_url }}" alt="{{ comp_product.title }}" style="padding: 40px; opacity: 0.8;">
+              <img src="{{ zaglushka_url }}" alt="{{ comp_product.title }}" style="padding: 40px; opacity: 0.8;" loading="lazy">
               {% endif %}
             </div>
             <div class="product-info">

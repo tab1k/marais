@@ -16,13 +16,13 @@
             {% static 'images/zaglushka.png' as zaglushka_url %}
             {% if item.product.get_main_image_url %}
             <img src="{{ item.product.get_main_image_url }}" alt="{{ item.product.title }}"
-              onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+              onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
             {% elif item.product.brand_ref and item.product.brand_ref.logo %}
             <img src="{{ item.product.brand_ref.logo.url }}" alt="{{ item.product.title }}"
-              class="product-brand-placeholder" onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+              class="product-brand-placeholder" onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
             {% else %}
             <img src="{{ zaglushka_url }}" alt="{{ item.product.title }}" class="product-brand-placeholder"
-              style="padding: 10px; opacity: 0.8;">
+              style="padding: 10px; opacity: 0.8;" loading="lazy">
             {% endif %}
           </div>
           <div class="cart-item__body">

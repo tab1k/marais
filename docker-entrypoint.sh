@@ -39,6 +39,12 @@ python manage.py migrate
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
+# Оптимизация изображений (non-blocking)
+if command -v python >/dev/null 2>&1; then
+  echo "Optimizing images..."
+  python /app/optimize_images.py || echo "Image optimization skipped"
+fi
+
 # Импорт товаров из Google Таблиц
 echo "Importing products from Google Sheets..."
 python import_products.py

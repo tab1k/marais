@@ -6,7 +6,9 @@
 {% block content %}
 <section class="hero">
   <div class="container-m hero-wrapper">
-    <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
+    <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image" loading="eager"
+      srcset="{% static 'images/hero_image.png' %} 1200w, {% static 'images/hero_image.png' %} 800w, {% static 'images/hero_image.png' %} 480w"
+      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
     <div class="hero-overlay">
       <h1 style="color: white;">Бренды</h1>
     </div>

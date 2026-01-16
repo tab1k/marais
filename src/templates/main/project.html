@@ -6,7 +6,9 @@
 {% block content %}
 <section class="hero">
   <div class="container-m hero-wrapper">
-    <img class="hero-image" src="{% static 'images/about_banner.jpg' %}" alt="Hero image">
+    <img class="hero-image" src="{% static 'images/about_banner.jpg' %}" alt="Hero image" loading="eager"
+      srcset="{% static 'images/about_banner.jpg' %} 1200w, {% static 'images/about_banner.jpg' %} 800w, {% static 'images/about_banner.jpg' %} 480w"
+      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
     <div class="hero-overlay">
       <h1 style="color: white;">О нас</h1>
     </div>
@@ -29,7 +31,9 @@
           стиль, ценить индивидуальность, непринуждённую элегантность и душевность образов.</p>
       </div>
       <div class="project-hero__media">
-        <img src="{% static 'images/about_us_visual.jpg' %}" alt="О нас MARAIS">
+        <img src="{% static 'images/about_us_visual.jpg' %}" alt="О нас MARAIS" loading="lazy"
+          srcset="{% static 'images/about_us_visual.jpg' %} 1200w, {% static 'images/about_us_visual.jpg' %} 800w, {% static 'images/about_us_visual.jpg' %} 480w"
+          sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 640px">
       </div>
     </div>
 

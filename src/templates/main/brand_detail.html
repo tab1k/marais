@@ -8,12 +8,16 @@
 <section class="brand-hero-banner">
     <div class="container-m hero-wrapper">
         {% if brand.banner %}
-        <img class="hero-image" src="{{ brand.banner.url }}" alt="{{ brand.name }}">
+        <img class="hero-image" src="{{ brand.banner.url }}" alt="{{ brand.name }}" loading="eager"
+            srcset="{{ brand.banner.url }} 1200w, {{ brand.banner.url }} 800w, {{ brand.banner.url }} 480w"
+            sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
         {% elif brand.logo %}
-        <img class="hero-image" src="{{ brand.logo.url }}" alt="{{ brand.name }}"
+        <img class="hero-image" src="{{ brand.logo.url }}" alt="{{ brand.name }}" loading="lazy"
             style="object-fit: contain; background: #faf8f6;">
         {% else %}
-        <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="{{ brand.name }}">
+        <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="{{ brand.name }}" loading="eager"
+            srcset="{% static 'images/hero_image.png' %} 1200w, {% static 'images/hero_image.png' %} 800w, {% static 'images/hero_image.png' %} 480w"
+            sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
         {% endif %}
         <div class="hero-overlay">
             <h1 style="color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">{{ brand.name }}</h1>
@@ -39,10 +43,10 @@
             </div>
             <div class="brand-hero__media" style="flex: 1; max-width: 450px;">
                 {% if brand.logo %}
-                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width: 100%; height: auto;">
+                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width: 100%; height: auto;" loading="lazy">
                 {% else %}
                 <img src="{% static 'images/zaglushka.png' %}" alt="{{ brand.name }}"
-                    style="width: 100%; padding: 60px; opacity: 0.8;">
+                    style="width: 100%; padding: 60px; opacity: 0.8;" loading="lazy">
                 {% endif %}
             </div>
         </div>
@@ -61,13 +65,13 @@
                 style="text-decoration: none; color: inherit;">
                 {% if product.get_main_image_url %}
                 <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"
-                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
                 {% elif brand.logo %}
                 <img src="{{ brand.logo.url }}" alt="{{ product.title }}" class="product-brand-placeholder"
-                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+                    onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
                 {% else %}
                 <img src="{{ zaglushka_url }}" alt="{{ product.title }}" class="product-brand-placeholder"
-                    style="padding: 40px; opacity: 0.8;">
+                    style="padding: 40px; opacity: 0.8;" loading="lazy">
                 {% endif %}
                 <div class="home-product-info">
                     <p class="home-product-price">{{ product.title|upper }} <span>{{ product.price|floatformat:0 }}₸</span></p>

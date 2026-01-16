@@ -613,13 +613,13 @@
               {% endwith %}
               {% endif %}
               {% if product.get_main_image_url %}
-              <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"
+              <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" loading="lazy"
                 onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
               {% elif product.brand_ref and product.brand_ref.logo %}
-              <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}" class="product-brand-placeholder"
+              <img src="{% static 'images/zaglushka.png' %}" alt="{{ product.title }}" class="product-brand-placeholder" loading="lazy"
                 onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
               {% else %}
-              <img src="{{ zaglushka_url }}" alt="{{ product.title }}" class="product-brand-placeholder"
+              <img src="{{ zaglushka_url }}" alt="{{ product.title }}" class="product-brand-placeholder" loading="lazy"
                 style="padding: 40px; opacity: 0.8;">
               {% endif %}
             </div>

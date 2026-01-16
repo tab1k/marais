@@ -8,9 +8,14 @@
 <!-- Hero section -->
 <div class="container-m hero-wrapper" style="margin-bottom: 30px;">
   {% if hero_block and hero_block.image %}
-  <img class="hero-image" src="{{ hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}">
+  <img class="hero-image" src="{{ hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
+    loading="eager"
+    srcset="{{ hero_block.image.url }} 1200w, {{ hero_block.image.url }} 800w, {{ hero_block.image.url }} 480w"
+    sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
   {% else %}
-  <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image">
+  <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image" loading="eager"
+    srcset="{% static 'images/hero_image.png' %} 1200w, {% static 'images/hero_image.png' %} 800w, {% static 'images/hero_image.png' %} 480w"
+    sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
   {% endif %}
 </div>
 
@@ -42,17 +47,17 @@
         style="text-decoration: none; color: inherit;">
         <div class="category-card__image-wrapper">
           {% if cat.image %}
-          <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+          <img src="{{ cat.image.url }}" alt="{{ cat.name }}" loading="lazy">
           {% elif cat.slug == 'rings' or cat.slug == 'ring' %}
-          <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}">
+          <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}" loading="lazy">
           {% elif cat.slug == 'earrings' %}
-          <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}">
+          <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}" loading="lazy">
           {% elif cat.slug == 'necklaces' or cat.slug == 'necklace' %}
-          <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}">
+          <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}" loading="lazy">
           {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
-          <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}">
+          <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}" loading="lazy">
           {% else %}
-          <img src="{% static 'images/zaglushka.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder"
+          <img src="{% static 'images/zaglushka.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder" loading="lazy"
             style="padding: 40px; opacity: 0.8;">
           {% endif %}
         </div>
@@ -74,7 +79,9 @@
     <div class="split-media" style="align-items: center;text-align: center;margin: auto;">
       {% if block.image %}
       <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}">
-        <img src="{{ block.image.url }}" alt="{{ block.brand.name }}">
+        <img src="{{ block.image.url }}" alt="{{ block.brand.name }}" loading="lazy"
+          srcset="{{ block.image.url }} 1200w, {{ block.image.url }} 800w, {{ block.image.url }} 480w"
+          sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 640px">
       </a>
       {% endif %}
     </div>
@@ -88,7 +95,7 @@
           {% static 'images/zaglushka.png' as zaglushka_url %}
           {% if block.featured_product.get_main_image_url %}
           <img src="{{ block.featured_product.get_main_image_url }}" alt="{{ block.featured_product.title }}"
-            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
           {% else %}
           <img src="{{ zaglushka_url }}" alt="{{ block.featured_product.title }}" class="product-brand-placeholder"
             style="padding: 40px; opacity: 0.8;">
@@ -118,7 +125,9 @@
 <section class="mobile-full-bleed">
   <div class="container-m">
     {% if block.image %}
-    <img src="{{ block.image.url }}" alt="{{ block.brand.name }}" class="full-bleed-image">
+          <img src="{{ block.image.url }}" alt="{{ block.brand.name }}" class="full-bleed-image" loading="lazy"
+            srcset="{{ block.image.url }} 1200w, {{ block.image.url }} 800w, {{ block.image.url }} 480w"
+            sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
     {% endif %}
   </div>
 </section>
@@ -133,13 +142,13 @@
           {% static 'images/zaglushka.png' as zaglushka_url %}
           {% if prod.get_main_image_url %}
           <img src="{{ prod.get_main_image_url }}" alt="{{ prod.title }}"
-            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
           {% elif prod.brand_ref and prod.brand_ref.logo %}
           <img src="{{ prod.brand_ref.logo.url }}" alt="{{ prod.title }}" class="product-brand-placeholder"
-            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
+            onerror="this.onerror=null;this.src='{{ zaglushka_url }}';" loading="lazy">
           {% else %}
           <img src="{{ zaglushka_url }}" alt="{{ prod.title }}" class="product-brand-placeholder"
-            style="padding: 40px; opacity: 0.8;">
+            style="padding: 40px; opacity: 0.8;" loading="lazy">
           {% endif %}
         </div>
         <div class="home-product-info">
