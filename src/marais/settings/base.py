@@ -10,7 +10,7 @@ def env_list(name: str, default: str = ""):
 
 
 # Default values are tuned for production; specific environments override below.
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key')
+SECRET_KEY = os.getenv('SECRET_KEY', 'd38df8e1b3af4e5f9c9c3aa27a6e5184d0194f1cb7c48c872f6b7f2e8c98f7bc')
 DEBUG = False
 
 # Application definition
