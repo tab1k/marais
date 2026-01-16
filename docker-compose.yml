@@ -8,6 +8,8 @@ services:
       - media_volume:/app/src/media
     env_file:
       - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=marais.settings.production
     depends_on:
       - db
 

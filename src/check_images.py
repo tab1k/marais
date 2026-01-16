@@ -2,7 +2,7 @@
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marais.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marais.settings.development')
 django.setup()
 
 from catalog.models import Product, Brand

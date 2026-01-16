@@ -601,6 +601,17 @@
           <a class="product-card" href="{% url 'catalog:detail' product.slug %}"
             style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
+              {% if product.collection %}
+              {% with col=product.collection col_slug=product.collection.slug|default:''|lower %}
+              {% if 'skid' in col_slug or 'sale' in col_slug %}
+              <span class="product-tag product-tag--sale">{{ col.name }}</span>
+              {% elif 'nov' in col_slug %}
+              <span class="product-tag product-tag--new">{{ col.name }}</span>
+              {% else %}
+              <span class="product-tag">{{ col.name }}</span>
+              {% endif %}
+              {% endwith %}
+              {% endif %}
               {% if product.get_main_image_url %}
               <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"
                 onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">
@@ -615,7 +626,14 @@
             <div class="product-info">
               <div class="product-row">
                 <h3 class="product-name">{{ product.title }}</h3>
-                <span class="product-price">{{ product.price|floatformat:0 }} ₸</span>
+                <span class="product-price">
+                  {% if product.has_discount %}
+                  <span class="product-price-old">{{ product.price|floatformat:0 }} ₸</span>
+                  <span class="product-price-new">{{ product.final_price|floatformat:0 }} ₸</span>
+                  {% else %}
+                  {{ product.price|floatformat:0 }} ₸
+                  {% endif %}
+                </span>
               </div>
               <p class="product-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
             </div>

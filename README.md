@@ -171,6 +171,9 @@ http://localhost:8000/admin/
 
 ## 📝 Конфигурация
 
+- Настройки разнесены по файлам: `marais.settings.base` (общие), `marais.settings.development` (локальная разработка, DEBUG=True), `marais.settings.production` (продакшн, DEBUG=False, обязательный SECRET_KEY). Устанавливайте `DJANGO_SETTINGS_MODULE` соответствующим образом (в docker-compose уже используется `marais.settings.production`).
+- В dev по умолчанию используется SQLite (`DEV_USE_POSTGRES=true` переключит на Postgres с параметрами из env).
+
 ### `settings.py` ключевые параметры:
 ```python
 AUTH_USER_MODEL = 'users.CustomUser'  # Пользовательская модель пользователя
@@ -199,6 +202,14 @@ gunicorn marais.wsgi:application --bind 0.0.0.0:8000
 ```
 
 4. **Использовать Nginx** как reverse proxy
+
+## 🤖 CI/CD (GitHub Actions)
+
+- Workflow: `.github/workflows/ci.yml`
+- Триггеры: push/pull_request в `main`
+- Шаги: установка зависимостей → `python manage.py check --deploy` + `python -m compileall` → сборка Docker-образа
+- Публикация: в GHCR (`ghcr.io/<owner>/<repo>`) при push в `main` с использованием `GITHUB_TOKEN` (доп. секреты не нужны)
+- Если хотите другой реестр — поменяйте `REGISTRY`/`IMAGE_NAME` в env блока workflow и добавьте соответствующий логин/пароль в секцию login
 
 ## 📝 Дальнейшие шаги
 

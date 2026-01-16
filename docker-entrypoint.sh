@@ -9,7 +9,7 @@ for i in {1..30}; do
   if python -c "
 import os
 import sys
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marais.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marais.settings.production')
 import django
 try:
     django.setup()

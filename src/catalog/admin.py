@@ -10,7 +10,7 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-  list_display = ('title', 'article', 'price', 'currency', 'is_active', 'category', 'collection', 'brand_ref', 'stock')
+  list_display = ('title', 'article', 'price', 'discount_percent', 'currency', 'weight', 'is_active', 'category', 'collection', 'brand_ref', 'stock')
   list_filter = ('is_active', 'category', 'collection', 'brand_ref')
   search_fields = ('title', 'article', 'description', 'slug', 'brand', 'material', 'size', 'brand_ref__name')
   autocomplete_fields = ['related_colors']

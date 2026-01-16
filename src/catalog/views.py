@@ -186,6 +186,8 @@ class CatalogView(View):
 
 
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
 class ProductDetailView(View):
     def get(self, request, slug):
@@ -200,11 +202,26 @@ class ProductDetailView(View):
         if product.size:
              sizes_list = [s.strip() for s in product.size.split(',') if s.strip() and s.strip() != '0']
 
+        gallery_images = []
+        if product.get_main_image_url:
+            gallery_images.append(product.get_main_image_url)
+        for img in product.images.all():
+            if img.get_image_url and img.get_image_url not in gallery_images:
+                gallery_images.append(img.get_image_url)
+
+        referer = request.META.get('HTTP_REFERER', '')
+        back_url = None
+        if url_has_allowed_host_and_scheme(referer, allowed_hosts={request.get_host()}):
+            back_url = referer
+
         return render(request, 'catalog/detail.html', {
             'product': product,
             'related_products': related_products,
             'complementary_products': complementary_products,
             'sizes_list': sizes_list,
+            'back_url': back_url,
+            'catalog_home_url': reverse('catalog:home'),
+            'gallery_images': gallery_images,
         })
 
 
@@ -245,7 +262,11 @@ class SearchSuggestionsView(View):
         query = request.GET.get('q', '').strip()
         results = []
         if query:
-            products = Product.objects.filter(title__icontains=query, is_active=True)[:5]
+            from django.db.models import Q
+            products = Product.objects.filter(
+                Q(title__icontains=query) | Q(brand_ref__name__icontains=query),
+                is_active=True
+            ).select_related('brand_ref')[:5]
         else:
             # Show random suggestions if no query
             products = Product.objects.filter(is_active=True).order_by('?')[:5]

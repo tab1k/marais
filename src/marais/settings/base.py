@@ -1,8 +1,7 @@
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 def env_list(name: str, default: str = ""):
@@ -10,24 +9,11 @@ def env_list(name: str, default: str = ""):
     return [item for item in value.split(',') if item]
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-SECRET_KEY = os.getenv('SECRET_KEY')
-if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = 'django-insecure-@8oby_i7)+#jti4r5@p989l%7j%v2@e9rgztn7_%+b(v)!3vgw'
-    else:
-        raise ValueError("SECRET_KEY environment variable is required when DEBUG=False")
-
-# Allowed hosts / trusted origins
-ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'marais.kz,www.marais.kz,localhost,127.0.0.1')
-
+# Default values are tuned for production; specific environments override below.
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key')
+DEBUG = False
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,7 +24,7 @@ INSTALLED_APPS = [
 
     'corsheaders',
 
-    # DJANGO APPS
+    # Project apps
     'users.apps.UsersConfig',
     'main.apps.MainConfig',
     'basket.apps.BasketConfig',
@@ -47,7 +33,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
 ]
 
-WHATSAPP_NUMBER = "77772555348" # Number without symbols for API
+WHATSAPP_NUMBER = "77772555348"  # Number without symbols for API
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,17 +70,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'marais.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -110,45 +86,23 @@ DATABASES = {
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'ru'
-
 TIME_ZONE = 'Asia/Almaty'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# During development, also look for static files in the project `static/` folder
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
@@ -165,44 +119,47 @@ STORAGES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# Authentication settings
-
+# Authentication
 AUTH_USER_MODEL = 'users.CustomUser'
 
-
+# CORS/CSRF
 CORS_ALLOWED_ORIGINS = env_list(
     'CORS_ALLOWED_ORIGINS',
     'https://marais.kz,https://www.marais.kz'
 )
 CORS_ALLOW_CREDENTIALS = True
 
-csrf_default = env_list(
+CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
     'https://marais.kz,https://www.marais.kz'
 )
-if DEBUG:
-    csrf_default.extend([
-        'http://localhost',
-        'http://127.0.0.1:8000',
-        'http://localhost:8585',
-    ])
-CSRF_TRUSTED_ORIGINS = csrf_default
 
 USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DEFAULT_UPLOAD_LIMIT_MB = 100
 
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+# Email defaults (override via env or per-environment files)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# Logging to stdout with level from env
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+    },
+}
 
+# Primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 
 
 class Category(models.Model):
@@ -42,11 +43,13 @@ class Product(models.Model):
   description = models.TextField(blank=True)
   price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
   currency = models.CharField(max_length=8, default='₸')
+  discount_percent = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name='Скидка (%)')
   metal = models.CharField(max_length=100, blank=True)
   material = models.CharField(max_length=150, blank=True)
   coverage = models.CharField(max_length=100, blank=True)
   stones = models.CharField(max_length=200, blank=True)
   color = models.CharField(max_length=80, blank=True)
+  weight = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='Вес (г)')
   article = models.CharField(max_length=120, blank=True, verbose_name='Артикул')
   size = models.CharField(max_length=50, blank=True)
   stock = models.PositiveIntegerField(default=0)
@@ -81,6 +84,23 @@ class Product(models.Model):
   def has_main_image(self):
     """Check if product has main image (file or URL)"""
     return bool(self.main_image_url or self.main_image)
+
+  @property
+  def has_discount(self):
+    try:
+      return self.discount_percent is not None and Decimal(self.discount_percent) > 0
+    except Exception:
+      return False
+
+  @property
+  def final_price(self):
+    """Returns price with applied discount if present."""
+    if self.has_discount:
+      try:
+        return (self.price * (Decimal('1') - (Decimal(self.discount_percent) / Decimal('100')))).quantize(Decimal('0.01'))
+      except Exception:
+        return self.price
+    return self.price
 
 
 class ProductImage(models.Model):

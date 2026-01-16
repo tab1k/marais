@@ -9,7 +9,8 @@
 
 <section class="product-detail">
   <div class="container-m">
-    <a href="{% url 'catalog:home' %}" class="back-link">
+    <a href="{{ back_url|default:catalog_home_url }}" class="back-link"
+      onclick="if(document.referrer){history.back();return false;}">
       <img src="{% static 'images/arrow_back.png' %}" alt="">
       <span>Назад</span>
     </a>
@@ -17,58 +18,40 @@
     <div class="detail-layout">
       <div class="detail-gallery">
         <div class="gallery-main" id="mobileGallery">
-          <!-- Main Image -->
-          {% if product.get_main_image_url %}
-          <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" data-gallery-main
-            class="gallery-item active" onerror="this.onerror=null;this.src='{{ logo_url }}';">
-          {% elif product.brand_ref and product.brand_ref.logo %}
-          <img src="{{ product.brand_ref.logo.url }}" alt="{{ product.title }}" data-gallery-main
-            class="product-brand-placeholder gallery-item active"
-            onerror="this.onerror=null;this.src='{{ logo_url }}';">
-          {% else %}
-          <img src="{% static 'images/logo.png' %}" alt="{{ product.title }}" data-gallery-main
-            class="product-brand-placeholder gallery-item active" style="padding: 40px; opacity: 0.8;">
-          {% endif %}
-
-          <!-- Additional Images (visible on mobile scroll) -->
-          {% for img in product.images.all %}
-          {% if img.get_image_url and img.get_image_url != product.get_main_image_url %}
-          <img src="{{ img.get_image_url }}" alt="{{ img.alt }}" class="gallery-item"
-            onerror="this.onerror=null;this.src='{{ logo_url }}';">
-          {% endif %}
+          {% for img in gallery_images %}
+          <img src="{{ img }}" alt="{{ product.title }}" class="gallery-item {% if forloop.first %}active{% endif %}"
+            data-gallery-index="{{ forloop.counter0 }}" onerror="this.onerror=null;this.src='{{ logo_url }}';">
           {% endfor %}
         </div>
 
         <!-- Dots for mobile slider -->
         <div class="gallery-dots" id="galleryDots">
-          <span class="dot active"></span>
-          {% for img in product.images.all %}
-          <span class="dot"></span>
+          {% for img in gallery_images %}
+          <span class="dot {% if forloop.first %}active{% endif %}"></span>
           {% endfor %}
         </div>
 
         <div class="gallery-thumbs" data-gallery-thumbs>
-          {% if product.get_main_image_url %}
-          <button type="button" class="thumb active" data-gallery-src="{{ product.get_main_image_url }}"
-            aria-label="Main">
-            <img src="{{ product.get_main_image_url }}" alt="Main"
+          {% for img in gallery_images %}
+          <button type="button" class="thumb {% if forloop.first %}active{% endif %}" data-gallery-src="{{ img }}"
+            data-gallery-index="{{ forloop.counter0 }}" aria-label="{{ product.title }} {{ forloop.counter }}">
+            <img src="{{ img }}" alt="{{ product.title }} {{ forloop.counter }}"
               onerror="this.onerror=null;this.src='{{ logo_url }}';">
           </button>
-          {% endif %}
-          {% for img in product.images.all %}
-          {% if img.get_image_url %}
-          <button type="button" class="thumb" data-gallery-src="{{ img.get_image_url }}" aria-label="{{ img.alt }}">
-            <img src="{{ img.get_image_url }}" alt="{{ img.alt }}"
-              onerror="this.onerror=null;this.src='{{ logo_url }}';">
-          </button>
-          {% endif %}
           {% endfor %}
         </div>
       </div>
 
       <div class="detail-info">
         <h1 class="detail-title">{{ product.title }}</h1>
-        <h3 class="detail-price">{{ product.price|floatformat:0 }} ₸</h1>
+        <h3 class="detail-price">
+          {% if product.has_discount %}
+          <span class="product-price-old">{{ product.price|floatformat:0 }} ₸</span>
+          <span class="product-price-new">{{ product.final_price|floatformat:0 }} ₸</span>
+          {% else %}
+          {{ product.price|floatformat:0 }} ₸
+          {% endif %}
+        </h3>
           <p class="detail-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
 
           <p class="detail-description">
@@ -209,6 +192,17 @@
         <a class="product-card" href="{% url 'catalog:detail' rel_prod.slug %}"
           style="text-decoration:none; color:inherit;">
           <div class="product-thumb">
+            {% if rel_prod.collection %}
+            {% with col=rel_prod.collection col_slug=rel_prod.collection.slug|default:''|lower %}
+            {% if 'skid' in col_slug or 'sale' in col_slug %}
+            <span class="product-tag product-tag--sale">{{ col.name }}</span>
+            {% elif 'nov' in col_slug %}
+            <span class="product-tag product-tag--new">{{ col.name }}</span>
+            {% else %}
+            <span class="product-tag">{{ col.name }}</span>
+            {% endif %}
+            {% endwith %}
+            {% endif %}
             {% if rel_prod.get_main_image_url %}
             <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
               onerror="this.onerror=null;this.src='{{ logo_url }}';">
@@ -219,14 +213,21 @@
             <img src="{{ zaglushka_url }}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;">
             {% endif %}
           </div>
-          <div class="product-info">
-            <div class="product-row">
-              <h3 class="product-name">{{ rel_prod.title }}</h3>
-              <span class="product-price">{{ rel_prod.price|floatformat:0 }}₸</span>
+            <div class="product-info">
+              <div class="product-row">
+                <h3 class="product-name">{{ rel_prod.title }}</h3>
+                <span class="product-price">
+                  {% if rel_prod.has_discount %}
+                  <span class="product-price-old">{{ rel_prod.price|floatformat:0 }}₸</span>
+                  <span class="product-price-new">{{ rel_prod.final_price|floatformat:0 }}₸</span>
+                  {% else %}
+                  {{ rel_prod.price|floatformat:0 }}₸
+                  {% endif %}
+                </span>
+              </div>
+              <p class="product-subtitle">{{ rel_prod.brand_ref.name|default:rel_prod.metal }}</p>
             </div>
-            <p class="product-subtitle">{{ rel_prod.brand_ref.name|default:rel_prod.metal }}</p>
-          </div>
-        </a>
+          </a>
         {% endfor %}
       </div>
     </div>
@@ -252,6 +253,17 @@
         <article class="product-card">
           <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
+              {% if comp_product.collection %}
+              {% with col=comp_product.collection col_slug=comp_product.collection.slug|default:''|lower %}
+              {% if 'skid' in col_slug or 'sale' in col_slug %}
+              <span class="product-tag product-tag--sale">{{ col.name }}</span>
+              {% elif 'nov' in col_slug %}
+              <span class="product-tag product-tag--new">{{ col.name }}</span>
+              {% else %}
+              <span class="product-tag">{{ col.name }}</span>
+              {% endif %}
+              {% endwith %}
+              {% endif %}
               {% if comp_product.get_main_image_url %}
               <img src="{{ comp_product.get_main_image_url }}" alt="{{ comp_product.title }}"
                 onerror="this.onerror=null;this.src='{{ logo_url }}';">
@@ -265,7 +277,14 @@
             <div class="product-info">
               <div class="product-row">
                 <h3 class="product-name">{{ comp_product.title|upper }}</h3>
-                <span class="product-price">{{ comp_product.price|floatformat:0 }}₸</span>
+                <span class="product-price">
+                  {% if comp_product.has_discount %}
+                  <span class="product-price-old">{{ comp_product.price|floatformat:0 }}₸</span>
+                  <span class="product-price-new">{{ comp_product.final_price|floatformat:0 }}₸</span>
+                  {% else %}
+                  {{ comp_product.price|floatformat:0 }}₸
+                  {% endif %}
+                </span>
               </div>
               <p class="product-subtitle">{{ comp_product.metal|default:comp_product.category.name }}</p>
             </div>
@@ -341,29 +360,25 @@
     const closeBtn = lightbox.querySelector('.lightbox-close');
     const prevBtn = lightbox.querySelector('.lightbox-prev');
     const nextBtn = lightbox.querySelector('.lightbox-next');
-    const mainImage = document.querySelector('[data-gallery-main]');
-
-    // Collect all images (main + thumbnails)
-    let images = [];
-
-    // Add main image first
-    if (mainImage) {
-      images.push(mainImage.src);
-    }
-
-    // Add thumbnails
-    const thumbs = document.querySelectorAll('[data-gallery-src]');
-    thumbs.forEach(thumb => {
-      // Avoid duplicates if main image is also a thumb
-      if (!images.includes(thumb.getAttribute('data-gallery-src'))) {
-        images.push(thumb.getAttribute('data-gallery-src'));
-      }
-    });
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+    const thumbs = Array.from(document.querySelectorAll('.gallery-thumbs .thumb'));
+    const dots = Array.from(document.querySelectorAll('.gallery-dots .dot'));
+    const gallery = document.getElementById('mobileGallery');
 
     let currentIndex = 0;
 
+    const images = galleryItems.map(item => item.src);
+
+    function setActive(index) {
+      if (!galleryItems.length) return;
+      currentIndex = Math.max(0, Math.min(index, galleryItems.length - 1));
+      galleryItems.forEach((item, i) => item.classList.toggle('active', i === currentIndex));
+      thumbs.forEach((thumb, i) => thumb.classList.toggle('active', i === currentIndex));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+    }
+
     function openLightbox(index) {
-      if (images.length === 0) return;
+      if (!images.length) return;
       currentIndex = index;
       lightboxImg.src = images[currentIndex];
       lightbox.classList.add('active');
@@ -378,17 +393,20 @@
     function showNext() {
       currentIndex = (currentIndex + 1) % images.length;
       lightboxImg.src = images[currentIndex];
+      setActive(currentIndex);
     }
 
     function showPrev() {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       lightboxImg.src = images[currentIndex];
+      setActive(currentIndex);
     }
 
     // Event Listeners
-    if (mainImage) {
-      mainImage.style.cursor = 'zoom-in';
-      mainImage.addEventListener('click', () => openLightbox(0));
+    const activeMain = document.querySelector('.gallery-item.active');
+    if (activeMain) {
+      activeMain.style.cursor = 'zoom-in';
+      activeMain.addEventListener('click', () => openLightbox(currentIndex));
     }
 
     closeBtn.addEventListener('click', closeLightbox);
@@ -409,55 +427,40 @@
       if (e.key === 'ArrowRight') showNext();
       if (e.key === 'ArrowLeft') showPrev();
     });
-  });
 
+    // Dots click
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => setActive(i));
+    });
 
-  // Mobile Gallery Dots
-  document.addEventListener('DOMContentLoaded', function () {
-    const gallery = document.getElementById('mobileGallery');
-    const dots = document.querySelectorAll('.gallery-dots .dot');
-
-    if (gallery && dots.length > 0) {
-      gallery.addEventListener('scroll', function () {
-        // Calculate current index based on scroll position
-        const scrollLeft = gallery.scrollLeft;
-        const itemWidth = gallery.clientWidth;
-        const index = Math.round(scrollLeft / itemWidth);
-
-        // Update active dot
-        dots.forEach((dot, i) => {
-          if (i === index) {
-            dot.classList.add('active');
-          } else {
-            dot.classList.remove('active');
-          }
-        });
-      });
-    }
-  });
-
-  // Desktop Gallery Switcher
-  document.addEventListener('DOMContentLoaded', function () {
-    const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-    const galleryItems = document.querySelectorAll('.gallery-item');
-
+    // Thumbs click
     thumbs.forEach(thumb => {
       thumb.addEventListener('click', function () {
-        // Update active thumb
-        thumbs.forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-
-        // Update active main image
-        const src = this.getAttribute('data-gallery-src');
-        galleryItems.forEach(item => {
-          if (item.src.includes(src) || item.getAttribute('src') === src) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
-          }
-        });
+        const index = Number(this.getAttribute('data-gallery-index'));
+        setActive(index);
       });
     });
+
+    // Basic touch swipe on mobile
+    if (gallery) {
+      let startX = 0;
+      gallery.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+      });
+      gallery.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 40) {
+          if (dx < 0) {
+            setActive((currentIndex + 1) % galleryItems.length);
+          } else {
+            setActive((currentIndex - 1 + galleryItems.length) % galleryItems.length);
+          }
+        }
+      });
+    }
+
+    // Initialize first image
+    setActive(0);
   });
 </script>
 {% endblock %}
