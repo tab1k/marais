@@ -31,7 +31,7 @@ jobs:
         working-directory: src
         env:
           DJANGO_SETTINGS_MODULE: marais.settings.production
-          SECRET_KEY: django-insecure-@8oby_i7)+#jti4r5@p989l%7j%v2@e9rgztn7_%+b(v)!3vgw
+          SECRET_KEY: d857d6d58382a79f06090340b08e26e7ce0f3ecbaf89ab052988640e7edde681d16d34e329da789968da74d6ed6a9a01c5ad894fb872182808535845e33a1ad2
           DEBUG: "False"
           ALLOWED_HOSTS: localhost
           DB_NAME: test
