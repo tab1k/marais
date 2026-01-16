@@ -8,7 +8,7 @@
 <!-- Hero section -->
 <div class="container-m hero-wrapper" style="margin-bottom: 30px;">
   {% if hero_block and hero_block.image %}
-  <img class="hero-image" src="{{ hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
+  <img class="hero-image" src="{{ hero_block.image.url|default:hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
     loading="eager"
     srcset="{{ hero_block.image.url }} 1200w, {{ hero_block.image.url }} 800w, {{ hero_block.image.url }} 480w"
     sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
