@@ -30,7 +30,12 @@
     <div class="container-m">
         <div class="brand-hero" style="gap: 40px;">
             <div class="brand-hero__text" style="flex: 1;">
-                <h2 style="font-size: 28px; font-weight: 500; margin-bottom: 20px;">{{ brand.name }}</h2>
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 12px;">
+                    <h2 style="font-size: 28px; font-weight: 500; margin: 0;">{{ brand.name }}</h2>
+                    {% if brand.new_logo %}
+                        <img src="{{ brand.new_logo.url }}" alt="{{ brand.name }}" style="height: 42px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));">
+                    {% endif %}
+                </div>
                 {% if brand.country %}
                 <p style="color: #666; font-size: 16px; margin-bottom: 16px;"><strong>Страна:</strong> {{ brand.country }}</p>
                 {% endif %}

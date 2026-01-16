@@ -52,6 +52,30 @@
         </div>
     </div>
 
+    {% if site_settings and site_settings.promo_is_active and site_settings.promo_image %}
+        <!-- Promo Modal -->
+        <div class="promo-modal-backdrop" data-promo-backdrop></div>
+        <div class="promo-modal" data-promo-modal aria-modal="true" role="dialog">
+            <button class="promo-modal__close" data-promo-close aria-label="Закрыть">×</button>
+            <a class="promo-modal__link" href="{{ site_settings.promo_link|default:'#' }}">
+                <div class="promo-modal__media" style="--promo-img: url('{{ site_settings.promo_image.url }}');">
+                    <div class="promo-modal__overlay">
+                        <div class="promo-modal__glass">
+                            {% if site_settings.promo_eyebrow %}
+                                <p class="promo-modal__eyebrow">{{ site_settings.promo_eyebrow }}</p>
+                            {% endif %}
+                            <h3 class="promo-modal__title">{{ site_settings.promo_title|default:"Новая коллекция" }}</h3>
+                            {% if site_settings.promo_text %}
+                                <p class="promo-modal__text">{{ site_settings.promo_text }}</p>
+                            {% endif %}
+                            <span class="promo-modal__hint">Нажмите, чтобы открыть подборку</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endif %}
+
     <style>
         .search-modal-backdrop {
             position: fixed;
@@ -159,6 +183,59 @@
             color: #666;
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.querySelector('[data-promo-modal]');
+            const backdrop = document.querySelector('[data-promo-backdrop]');
+            const closeBtn = document.querySelector('[data-promo-close]');
+            const storageKey = 'promoModalSeenAt';
+            const ttlMs = 24 * 60 * 60 * 1000; // 24h
+            let lockedScrollY = 0;
+
+            if (!modal || !backdrop) return;
+
+            const lockScroll = () => {
+                lockedScrollY = window.scrollY || window.pageYOffset || 0;
+                document.body.dataset.promoScroll = lockedScrollY;
+                document.body.style.top = `-${lockedScrollY}px`;
+                document.body.classList.add('promo-locked');
+            };
+
+            const unlockScroll = () => {
+                const y = parseInt(document.body.dataset.promoScroll || '0', 10);
+                document.body.classList.remove('promo-locked');
+                document.body.style.top = '';
+                window.scrollTo(0, y);
+            };
+
+            const open = () => {
+                modal.classList.add('is-visible');
+                backdrop.classList.add('is-visible');
+                lockScroll();
+            };
+            const close = () => {
+                modal.classList.remove('is-visible');
+                backdrop.classList.remove('is-visible');
+                unlockScroll();
+                localStorage.setItem(storageKey, Date.now().toString());
+            };
+
+            const lastSeen = Number(localStorage.getItem(storageKey) || 0);
+            const shouldShow = !lastSeen || (Date.now() - lastSeen > ttlMs);
+            if (shouldShow) {
+                setTimeout(open, 800);
+            }
+
+            closeBtn?.addEventListener('click', close);
+            backdrop.addEventListener('click', close);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('is-visible')) {
+                    close();
+                }
+            });
+        });
+    </script>
 
     {% if cart_total_quantity > 0 and request.resolver_match.app_name != 'basket' %}
     <a href="{% url 'basket:detail' %}" class="floating-cart">

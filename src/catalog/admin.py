@@ -73,6 +73,20 @@ from .models import SiteSettings
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Общее', {'fields': ('is_snow_enabled',)}),
+        ('Промо-модалка', {
+            'fields': (
+                'promo_is_active',
+                'promo_image',
+                'promo_link',
+                'promo_eyebrow',
+                'promo_title',
+                'promo_text',
+            )
+        }),
+    )
+
     # Lock down add/delete usually, but for simplicity just basic
     def has_add_permission(self, request):
         # Allow add only if none exists

@@ -141,6 +141,7 @@ class Brand(models.Model):
   slug = models.SlugField(max_length=220, unique=True, blank=True)
   country = models.CharField(max_length=120, blank=True)
   logo = models.ImageField(upload_to='brands/', blank=True, null=True)
+  new_logo = models.ImageField(upload_to='brands/new/', blank=True, null=True, verbose_name='Логотип (новый)')
   banner = models.ImageField(upload_to='brands/banners/', blank=True, null=True, verbose_name='Баннер')
   description = models.TextField(blank=True)
   is_active = models.BooleanField(default=True)
@@ -227,6 +228,12 @@ class Review(models.Model):
 
 class SiteSettings(models.Model):
     is_snow_enabled = models.BooleanField(default=False, verbose_name="Включить эффект снега")
+    promo_is_active = models.BooleanField(default=False, verbose_name="Показывать промо-модалку")
+    promo_image = models.ImageField(upload_to='promo/', blank=True, null=True, verbose_name="Изображение промо")
+    promo_link = models.URLField(max_length=500, blank=True, verbose_name="Ссылка при клике")
+    promo_eyebrow = models.CharField(max_length=120, blank=True, verbose_name="Надпись над заголовком")
+    promo_title = models.CharField(max_length=200, blank=True, verbose_name="Заголовок")
+    promo_text = models.TextField(blank=True, verbose_name="Текст")
 
     class Meta:
         verbose_name = 'Настройки сайта'
