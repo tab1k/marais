@@ -13,8 +13,8 @@
     srcset="{{ hero_block.image.url }} 1200w, {{ hero_block.image.url }} 800w, {{ hero_block.image.url }} 480w"
     sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
   {% else %}
-  <img class="hero-image" src="{% static 'images/hero_image.png' %}" alt="Hero image" loading="eager"
-    srcset="{% static 'images/hero_image.png' %} 1200w, {% static 'images/hero_image.png' %} 800w, {% static 'images/hero_image.png' %} 480w"
+  <img class="hero-image" src="{% static 'images/hero_image.webp' %}" alt="Hero image" loading="eager"
+    srcset="{% static 'images/hero_image.webp' %} 1200w, {% static 'images/hero_image.webp' %} 800w, {% static 'images/hero_image.webp' %} 480w"
     sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
   {% endif %}
 </div>
@@ -49,13 +49,21 @@
           {% if cat.image %}
           <img src="{{ cat.image.url }}" alt="{{ cat.name }}" loading="lazy">
           {% elif cat.slug == 'rings' or cat.slug == 'ring' %}
-          <img src="{% static 'images/kolca.png' %}" alt="{{ cat.name }}" loading="lazy">
+          <img src="{% static 'images/kolca.webp' %}" alt="{{ cat.name }}" loading="lazy"
+            srcset="{% static 'images/kolca.webp' %} 400w, {% static 'images/kolca.webp' %} 800w"
+            sizes="(max-width: 600px) 50vw, 320px">
           {% elif cat.slug == 'earrings' %}
-          <img src="{% static 'images/sergi.png' %}" alt="{{ cat.name }}" loading="lazy">
+          <img src="{% static 'images/sergi.webp' %}" alt="{{ cat.name }}" loading="lazy"
+            srcset="{% static 'images/sergi.webp' %} 400w, {% static 'images/sergi.webp' %} 800w"
+            sizes="(max-width: 600px) 50vw, 320px">
           {% elif cat.slug == 'necklaces' or cat.slug == 'necklace' %}
-          <img src="{% static 'images/cepochki.png' %}" alt="{{ cat.name }}" loading="lazy">
+          <img src="{% static 'images/cepochki.webp' %}" alt="{{ cat.name }}" loading="lazy"
+            srcset="{% static 'images/cepochki.webp' %} 400w, {% static 'images/cepochki.webp' %} 800w"
+            sizes="(max-width: 600px) 50vw, 320px">
           {% elif cat.slug == 'bracelets' or cat.slug == 'bracelet' %}
-          <img src="{% static 'images/braslet.png' %}" alt="{{ cat.name }}" loading="lazy">
+          <img src="{% static 'images/braslet.webp' %}" alt="{{ cat.name }}" loading="lazy"
+            srcset="{% static 'images/braslet.webp' %} 400w, {% static 'images/braslet.webp' %} 800w"
+            sizes="(max-width: 600px) 50vw, 320px">
           {% else %}
           <img src="{% static 'images/zaglushka.png' %}" alt="{{ cat.name }}" class="product-brand-placeholder" loading="lazy"
             style="padding: 40px; opacity: 0.8;">
