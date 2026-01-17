@@ -187,7 +187,8 @@ class Command(BaseCommand):
                                 file_id = match_id.group(1)
                                 
                             if file_id:
-                                direct_url = f'https://drive.google.com/uc?export=view&id={file_id}'
+                                # Use lh3.googleusercontent.com for direct image access (avoids cookies/auth issues)
+                                direct_url = f'https://lh3.googleusercontent.com/d/{file_id}'
                                 image_urls.append(direct_url)
                             else:
                                 image_urls.append(raw_url)
