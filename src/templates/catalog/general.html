@@ -629,8 +629,7 @@
             style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
               {% if product.collection %}
-              <span class="product-tag" style="background-color: {{ product.collection.color }};">{{
-                product.collection.name }}</span>
+              <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
               {% endif %}
               {% if product.get_main_image_url %}
               <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" loading="lazy"

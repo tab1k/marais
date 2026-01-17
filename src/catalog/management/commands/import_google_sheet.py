@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
         created_count = 0
         
-        # Normalization Map
+        # Normalization Map - expanded to catch all variants
         CATEGORY_MAP = {
             'кольцо': 'Кольца',
             'кольца': 'Кольца',
@@ -77,7 +77,12 @@ class Command(BaseCommand):
             'серьги': 'Серьги',
             'сертификат': 'Сертификаты',
             'сертификаты': 'Сертификаты',
-            'колье': 'Колье', # Already plural-ish
+            'колье': 'Колье',
+            # Keep other categories as-is
+            '2в1': '2в1',
+            'другое': 'Другое',
+            'заколка': 'Заколка',
+            'слейв': 'Слейв',
         }
 
         for row in reader:
