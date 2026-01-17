@@ -20,7 +20,8 @@
         <div class="gallery-main" id="mobileGallery">
           {% for img in gallery_images %}
           <img src="{{ img }}" alt="{{ product.title }}" class="gallery-item {% if forloop.first %}active{% endif %}"
-            data-gallery-index="{{ forloop.counter0 }}" onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
+            data-gallery-index="{{ forloop.counter0 }}" onerror="this.onerror=null;this.src='{{ logo_url }}';"
+            loading="lazy">
           {% endfor %}
         </div>
 
@@ -52,124 +53,145 @@
           {{ product.price|floatformat:0 }} ₸
           {% endif %}
         </h3>
-          <p class="detail-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
+        <p class="detail-subtitle">{{ product.brand_ref.name|default:product.metal }}</p>
 
-          <p class="detail-description">
-            {{ product.description|linebreaks }}
-          </p>
+        <p class="detail-description">
+          {{ product.description|linebreaks }}
+        </p>
 
-          <div class="detail-specs">
-            {% if product.collection %}
-            <div class="spec-row">
-              <span class="spec-label">Коллекция:</span>
-              <span class="spec-value">{{ product.collection.name }}</span>
-            </div>
-            {% endif %}
-
-            {% if product.metal %}
-            <div class="spec-row">
-              <span class="spec-label">Металл:</span>
-              <span class="spec-value">{{ product.metal }}</span>
-            </div>
-            {% endif %}
-
-            {% if product.material %}
-            <div class="spec-row">
-              <span class="spec-label">Материал:</span>
-              <span class="spec-value">{{ product.material }}</span>
-            </div>
-            {% endif %}
-
-            {% if product.coverage %}
-            <div class="spec-row">
-              <span class="spec-label">Покрытие:</span>
-              <span class="spec-value">{{ product.coverage }}</span>
-            </div>
-            {% endif %}
-
-            {% if product.stones %}
-            <div class="spec-row">
-              <span class="spec-label">Камни:</span>
-              <span class="spec-value">{{ product.stones }}</span>
-            </div>
-            {% endif %}
-
-            {% if product.color %}
-            <div class="spec-row">
-              <span class="spec-label">Цвет:</span>
-              <span class="spec-value">{{ product.color }}</span>
-            </div>
-            {% endif %}
-          </div>
-
-          {% if sizes_list %}
-          <div class="detail-meta">
-            <h4>Размер</h4>
-            <div class="size-options">
-              {% for size_val in sizes_list %}
-              <button class="size-btn {% if forloop.first %}active{% endif %}">{{ size_val }}</button>
-              {% endfor %}
-            </div>
+        <div class="detail-specs">
+          {% if product.collection %}
+          <div class="spec-row">
+            <span class="spec-label">Коллекция:</span>
+            <span class="spec-value">{{ product.collection.name }}</span>
           </div>
           {% endif %}
 
-          {% if product.related_colors.exists %}
-          <div class="detail-meta">
-            <h4>Варианты</h4>
-            <div class="swatch-list">
-              <!-- Current product (active) -->
-              <a href="javascript:void(0)" class="swatch active" title="{{ product.title }}">
-                {% if product.get_main_image_url %}
-                <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}">
-                {% else %}
-                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
-                {% endif %}
-              </a>
-
-              <!-- Related variants -->
-              {% for variant in product.related_colors.all %}
-              <a href="{% url 'catalog:detail' variant.slug %}" class="swatch" title="{{ variant.title }}">
-                {% if variant.get_main_image_url %}
-                <img src="{{ variant.get_main_image_url }}" alt="{{ variant.title }}"
-                  onerror="this.onerror=null;this.src='{{ logo_url }}';">
-                {% elif variant.brand_ref and variant.brand_ref.logo %}
-                <img src="{{ variant.brand_ref.logo.url }}" alt="{{ variant.title }}" class="product-brand-placeholder"
-                  onerror="this.onerror=null;this.src='{{ logo_url }}';">
-                {% else %}
-                <img src="{% static 'images/logo.png' %}" alt="{{ variant.title }}" class="product-brand-placeholder"
-                  style="padding: 4px; opacity: 0.8;">
-                {% endif %}
-              </a>
-              {% endfor %}
-            </div>
+          {% if product.metal %}
+          <div class="spec-row">
+            <span class="spec-label">Металл:</span>
+            <span class="spec-value">{{ product.metal }}</span>
           </div>
           {% endif %}
 
-          <div class="detail-actions">
-            <form action="{% url 'basket:add' product.slug %}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="size" id="selected-size" value="{{ sizes_list.0|default:'' }}">
-              <button class="btn-primary cart-btn" type="submit">В корзину</button>
-            </form>
-            <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank" class="btn-secondary outline-btn"
-              style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Консультант</a>
+          {% if product.material %}
+          <div class="spec-row">
+            <span class="spec-label">Материал:</span>
+            <span class="spec-value">{{ product.material }}</span>
           </div>
+          {% endif %}
 
-          <details class="cart-info">
-            <summary>Информация о доставке</summary>
-            <div class="cart-info__body">
-              <p>Мы отправляем заказы из Алматы. В обычные дни оформление и передача в доставку занимает один день. В
-                период акций и праздников обработка может занять немного больше времени.</p>
-              <p>Доставка по Казахстану и в другие страны осуществляется через транспортные компании.</p>
-              <p>Срок зависит от вашего города и выбранного способа доставки. По Казахстану доставка обычно занимает до
-                4 рабочих дней. Для заказов от 300 000 ₸ доставка по Казахстану бесплатная.</p>
-              <ul class="cart-info__list">
-                <li>Бесплатная доставка при заказе от 300 000 ₸</li>
-                <li>Оплата с любого банка</li>
-                <li>Подарочная упаковка доступна</li>
-              </ul>
-            </div>
-          </details>
+          {% if product.coverage %}
+          <div class="spec-row">
+            <span class="spec-label">Покрытие:</span>
+            <span class="spec-value">{{ product.coverage }}</span>
+          </div>
+          {% endif %}
+
+          {% if product.stones %}
+          <div class="spec-row">
+            <span class="spec-label">Камни:</span>
+            <span class="spec-value">{{ product.stones }}</span>
+          </div>
+          {% endif %}
+
+          {% if product.color %}
+          <div class="spec-row">
+            <span class="spec-label">Цвет:</span>
+            <span class="spec-value">{{ product.color }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if sizes_list %}
+        <div class="detail-meta">
+          <h4>Размер</h4>
+          <div class="size-options">
+            {% for size_val in sizes_list %}
+            <button class="size-btn {% if forloop.first %}active{% endif %}">{{ size_val }}</button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if product.note %}
+        <div class="product-note-bubble">
+          {{ product.note }}
+        </div>
+        <style>
+          .product-note-bubble {
+            background-color: #f5f5f5;
+            color: #666;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-top: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+          }
+        </style>
+        {% endif %}
+
+        {% if product.related_colors.exists %}
+        <div class="detail-meta">
+          <h4>Варианты</h4>
+          <div class="swatch-list">
+            <!-- Current product (active) -->
+            <a href="javascript:void(0)" class="swatch active" title="{{ product.title }}">
+              {% if product.get_main_image_url %}
+              <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}">
+              {% else %}
+              <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.title }}">
+              {% endif %}
+            </a>
+
+            <!-- Related variants -->
+            {% for variant in product.related_colors.all %}
+            <a href="{% url 'catalog:detail' variant.slug %}" class="swatch" title="{{ variant.title }}">
+              {% if variant.get_main_image_url %}
+              <img src="{{ variant.get_main_image_url }}" alt="{{ variant.title }}"
+                onerror="this.onerror=null;this.src='{{ logo_url }}';">
+              {% elif variant.brand_ref and variant.brand_ref.logo %}
+              <img src="{{ variant.brand_ref.logo.url }}" alt="{{ variant.title }}" class="product-brand-placeholder"
+                onerror="this.onerror=null;this.src='{{ logo_url }}';">
+              {% else %}
+              <img src="{% static 'images/logo.png' %}" alt="{{ variant.title }}" class="product-brand-placeholder"
+                style="padding: 4px; opacity: 0.8;">
+              {% endif %}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="detail-actions">
+          <form action="{% url 'basket:add' product.slug %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="size" id="selected-size" value="{{ sizes_list.0|default:'' }}">
+            <button class="btn-primary cart-btn" type="submit">В корзину</button>
+          </form>
+          <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank" class="btn-secondary outline-btn"
+            style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Консультант</a>
+        </div>
+
+        <details class="cart-info">
+          <summary>Информация о доставке</summary>
+          <div class="cart-info__body">
+            <p>Мы отправляем заказы из Алматы. В обычные дни оформление и передача в доставку занимает один день. В
+              период акций и праздников обработка может занять немного больше времени.</p>
+            <p>Доставка по Казахстану и в другие страны осуществляется через транспортные компании.</p>
+            <p>Срок зависит от вашего города и выбранного способа доставки. По Казахстану доставка обычно занимает до
+              4 рабочих дней. Для заказов от 300 000 ₸ доставка по Казахстану бесплатная.</p>
+            <ul class="cart-info__list">
+              <li>Бесплатная доставка при заказе от 300 000 ₸</li>
+              <li>Оплата с любого банка</li>
+              <li>Подарочная упаковка доступна</li>
+            </ul>
+          </div>
+        </details>
 
       </div>
     </div>
@@ -210,24 +232,25 @@
             <img src="{{ rel_prod.brand_ref.logo.url }}" alt="{{ rel_prod.title }}"
               onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
             {% else %}
-            <img src="{{ zaglushka_url }}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;" loading="lazy">
+            <img src="{{ zaglushka_url }}" alt="{{ rel_prod.title }}" style="padding: 40px; opacity: 0.8;"
+              loading="lazy">
             {% endif %}
           </div>
-            <div class="product-info">
-              <div class="product-row">
-                <h3 class="product-name">{{ rel_prod.title }}</h3>
-                <span class="product-price">
-                  {% if rel_prod.has_discount %}
-                  <span class="product-price-old">{{ rel_prod.price|floatformat:0 }}₸</span>
-                  <span class="product-price-new">{{ rel_prod.final_price|floatformat:0 }}₸</span>
-                  {% else %}
-                  {{ rel_prod.price|floatformat:0 }}₸
-                  {% endif %}
-                </span>
-              </div>
-              <p class="product-subtitle">{{ rel_prod.brand_ref.name|default:rel_prod.metal }}</p>
+          <div class="product-info">
+            <div class="product-row">
+              <h3 class="product-name">{{ rel_prod.title }}</h3>
+              <span class="product-price">
+                {% if rel_prod.has_discount %}
+                <span class="product-price-old">{{ rel_prod.price|floatformat:0 }}₸</span>
+                <span class="product-price-new">{{ rel_prod.final_price|floatformat:0 }}₸</span>
+                {% else %}
+                {{ rel_prod.price|floatformat:0 }}₸
+                {% endif %}
+              </span>
             </div>
-          </a>
+            <p class="product-subtitle">{{ rel_prod.brand_ref.name|default:rel_prod.metal }}</p>
+          </div>
+        </a>
         {% endfor %}
       </div>
     </div>
@@ -271,7 +294,8 @@
               <img src="{{ comp_product.brand_ref.logo.url }}" alt="{{ comp_product.title }}"
                 onerror="this.onerror=null;this.src='{{ logo_url }}';" loading="lazy">
               {% else %}
-              <img src="{{ zaglushka_url }}" alt="{{ comp_product.title }}" style="padding: 40px; opacity: 0.8;" loading="lazy">
+              <img src="{{ zaglushka_url }}" alt="{{ comp_product.title }}" style="padding: 40px; opacity: 0.8;"
+                loading="lazy">
               {% endif %}
             </div>
             <div class="product-info">

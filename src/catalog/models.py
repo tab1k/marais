@@ -44,6 +44,7 @@ class Product(models.Model):
     ('female', 'Женский'),
   )
   gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, verbose_name="Пол")
+  note = models.TextField(blank=True, verbose_name="Примечание (облако)", help_text="Текст будет отображаться под размерами в сером облаке")
   
   title = models.CharField(max_length=200)
   slug = models.SlugField(max_length=220, unique=True)
