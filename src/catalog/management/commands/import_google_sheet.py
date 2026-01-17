@@ -1,19 +1,25 @@
-
 import csv
 import io
 import requests
 import re
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from catalog.models import Product, Category, Brand, ProductImage
+from catalog.models import Product, Category, Brand, ProductImage, Collection
 
 class Command(BaseCommand):
     help = 'Imports products from Google Sheet'
 
     def handle(self, *args, **options):
-        # CSV Export URL
-        url = 'https://docs.google.com/spreadsheets/d/1KaysYxaB-0z897sifpycDDC68C1EFPqydp23QheD2lY/export?format=csv&gid=686330706'
+        # New CSV Export URL
+        url = 'https://docs.google.com/spreadsheets/d/1eN2uHHQvhF3zelpx7U5xB__XevHlj04lzfSkWhXVB6w/export?format=csv&gid=0'
         
+        self.stdout.write('Clearing existing products...')
+        # Clear all existing products. Images will be deleted via cascade if set up, 
+        # but manual cleanup of ProductImage is good if Relation is different. 
+        # Django's ForeignKey(on_delete=models.CASCADE) on ProductImage will handle it.
+        Product.objects.all().delete()
+        self.stdout.write('Existing products cleared.')
+
         self.stdout.write(f'Downloading CSV from {url}...')
         response = requests.get(url)
         response.raise_for_status()
@@ -25,9 +31,8 @@ class Command(BaseCommand):
         reader = csv.reader(file)
         headers = next(reader)
         
-        # Identify columns by index to handle duplicate headers
         # Expected headers: 
-        # Категория, Артикул, Бренд, Фото (ссылка) x4, Размер, Описание, Материал, Покрытие, Камень, Цена, Количество
+        # Категория, Артикул, Бренд, Фото (ссылка)..., Размер, Описание, Материал, Покрытие, Камень, Цена, Количество, Коллекции
         
         # Mapping indices
         try:
@@ -42,8 +47,15 @@ class Command(BaseCommand):
             price_idx = headers.index('Цена')
             qty_idx = headers.index('Количество')
             
-            # Find all image indices
-            img_indices = [i for i, h in enumerate(headers) if h == 'Фото (ссылка)']
+            # Optional Collection column
+            if 'Коллекции' in headers:
+                col_idx = headers.index('Коллекции')
+            else:
+                col_idx = -1
+            
+            # Find all image indices by partial match or exact list
+            # The new sheet has "Фото (ссылка)", "Фото (ссылка) 2", etc.
+            img_indices = [i for i, h in enumerate(headers) if 'Фото (ссылка)' in h]
             
         except ValueError as e:
             self.stderr.write(self.style.ERROR(f'Missing column header: {e}'))
@@ -52,8 +64,7 @@ class Command(BaseCommand):
         self.stdout.write(f'Found {len(img_indices)} image columns.')
 
         created_count = 0
-        updated_count = 0
-
+        
         for row in reader:
             if not row or not any(row): continue
             
@@ -69,6 +80,7 @@ class Command(BaseCommand):
                 stones = row[stone_idx].strip()
                 price_str = row[price_idx].strip()
                 qty_str = row[qty_idx].strip()
+                collection_name = row[col_idx].strip() if col_idx != -1 and col_idx < len(row) else ""
                 
                 if not article:
                     self.stdout.write(self.style.WARNING(f'Skipping row without article: {row}'))
@@ -89,7 +101,6 @@ class Command(BaseCommand):
                     stock = 0
 
                 # Extract Title and Description
-                # Strategy: Split description by newline. First line is title, rest is description.
                 lines = raw_desc.split('\n')
                 if lines:
                     title = lines[0].strip()
@@ -119,16 +130,29 @@ class Command(BaseCommand):
                         defaults={'name': brand_name, 'slug': brand_slug}
                     )
 
-                # Create/Update Product
+                # Get/Create Collection
+                collection = None
+                if collection_name:
+                    col_slug = slugify(collection_name, allow_unicode=True) or collection_name.lower().replace(' ', '-')
+                    collection, _ = Collection.objects.get_or_create(
+                        name__iexact=collection_name,
+                        defaults={'name': collection_name, 'slug': col_slug}
+                    )
+
+                # Create Product (since we deleted all, we just create)
+                # But to be safe against duplicates in the CSV itself, we use update_or_create logic or get_or_create
+                # Since article should be unique-ish, let's use it as lookup
+                
                 product, created = Product.objects.update_or_create(
                     article=article,
                     defaults={
                         'title': title,
-                        'slug': slugify(title + '-' + article, allow_unicode=True)[:200], # Ensure unique slug approx
+                        'slug': slugify(title + '-' + article, allow_unicode=True)[:200], 
                         'description': description,
                         'category': category,
                         'brand_ref': brand,
                         'brand': brand_name,
+                        'collection': collection,
                         'size': size,
                         'material': material,
                         'coverage': coverage,
@@ -141,14 +165,12 @@ class Command(BaseCommand):
                 )
                 
                 # Handle Images
-                # Collect Image URLs
                 image_urls = []
                 for idx in img_indices:
                     if idx < len(row):
                         raw_url = row[idx].strip()
                         if raw_url:
-                            # Convert Google Drive link to direct link
-                            # Format: https://drive.google.com/file/d/ID/view... -> https://drive.google.com/uc?export=view&id=ID
+                            # Convert Google Drive link
                             match = re.search(r'/d/([a-zA-Z0-9_-]+)', raw_url)
                             if match:
                                 file_id = match.group(1)
@@ -157,14 +179,11 @@ class Command(BaseCommand):
                             else:
                                 image_urls.append(raw_url)
                 
-                # Assign Main Image
                 if image_urls:
                     product.main_image_url = image_urls[0]
                     product.save()
                     
-                    # Create Gallery Images (skip first as it's main)
-                    # First, clear existing gallery images to avoid dupes on re-run? 
-                    # Or update? Let's clear for cleaner sync.
+                    # Clear existing images if we updated an existing product (dup in csv)
                     product.images.all().delete()
                     
                     for i, url in enumerate(image_urls[1:]):
@@ -174,12 +193,9 @@ class Command(BaseCommand):
                             sort_order=i
                         )
 
-                if created:
-                    created_count += 1
-                else:
-                    updated_count += 1
+                created_count += 1
                     
             except Exception as e:
                  self.stdout.write(self.style.ERROR(f'Error processing row {article}: {e}'))
 
-        self.stdout.write(self.style.SUCCESS(f'Import finished. Created: {created_count}, Updated: {updated_count}'))
+        self.stdout.write(self.style.SUCCESS(f'Import finished. Processed/Created: {created_count} products.'))
