@@ -13,12 +13,12 @@ class Command(BaseCommand):
         # New CSV Export URL
         url = 'https://docs.google.com/spreadsheets/d/1eN2uHHQvhF3zelpx7U5xB__XevHlj04lzfSkWhXVB6w/export?format=csv&gid=0'
         
-        self.stdout.write('Clearing existing products...')
-        # Clear all existing products. Images will be deleted via cascade if set up, 
-        # but manual cleanup of ProductImage is good if Relation is different. 
-        # Django's ForeignKey(on_delete=models.CASCADE) on ProductImage will handle it.
+        self.stdout.write('Clearing existing products, categories, brands, collections...')
         Product.objects.all().delete()
-        self.stdout.write('Existing products cleared.')
+        Category.objects.all().delete()
+        Brand.objects.all().delete()
+        Collection.objects.all().delete()
+        self.stdout.write('All catalog data cleared.')
 
         self.stdout.write(f'Downloading CSV from {url}...')
         response = requests.get(url)
@@ -31,10 +31,7 @@ class Command(BaseCommand):
         reader = csv.reader(file)
         headers = next(reader)
         
-        # Expected headers: 
-        # Категория, Артикул, Бренд, Фото (ссылка)..., Размер, Описание, Материал, Покрытие, Камень, Цена, Количество, Коллекции
-        
-        # Mapping indices
+        # Expected headers...
         try:
             cat_idx = headers.index('Категория')
             art_idx = headers.index('Артикул')
@@ -47,14 +44,11 @@ class Command(BaseCommand):
             price_idx = headers.index('Цена')
             qty_idx = headers.index('Количество')
             
-            # Optional Collection column
             if 'Коллекции' in headers:
                 col_idx = headers.index('Коллекции')
             else:
                 col_idx = -1
             
-            # Find all image indices by partial match or exact list
-            # The new sheet has "Фото (ссылка)", "Фото (ссылка) 2", etc.
             img_indices = [i for i, h in enumerate(headers) if 'Фото (ссылка)' in h]
             
         except ValueError as e:
@@ -65,12 +59,25 @@ class Command(BaseCommand):
 
         created_count = 0
         
+        # Normalization Map
+        CATEGORY_MAP = {
+            'кольцо': 'Кольца',
+            'кольца': 'Кольца',
+            'браслет': 'Браслеты',
+            'браслеты': 'Браслеты',
+            'серьга': 'Серьги',
+            'серьги': 'Серьги',
+            'сертификат': 'Сертификаты',
+            'сертификаты': 'Сертификаты',
+            'колье': 'Колье', # Already plural-ish
+        }
+
         for row in reader:
             if not row or not any(row): continue
             
             try:
                 # Extract basic data
-                category_name = row[cat_idx].strip()
+                raw_cat = row[cat_idx].strip()
                 article = row[art_idx].strip()
                 brand_name = row[brand_idx].strip()
                 size = row[size_idx].strip()
@@ -85,10 +92,20 @@ class Command(BaseCommand):
                 if not article:
                     self.stdout.write(self.style.WARNING(f'Skipping row without article: {row}'))
                     continue
+                
+                # Normalize Category Name
+                category_name = raw_cat
+                if raw_cat:
+                    # Check lower case against map
+                    normalized = CATEGORY_MAP.get(raw_cat.lower())
+                    if normalized:
+                        category_name = normalized
+                    else:
+                        # Capitalize first letter if not in map
+                        category_name = raw_cat.capitalize()
 
                 # Parse Price
                 try:
-                    # Remove spaces, non-breaking spaces
                     clean_price = re.sub(r'\D', '', price_str)
                     price = int(clean_price) if clean_price else 0
                 except ValueError:
