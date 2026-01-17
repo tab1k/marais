@@ -3,7 +3,7 @@ import django
 import requests
 import csv
 import re
-from django.utils.text import slugify
+from slugify import slugify  # transliterates Cyrillic to ASCII
 from io import StringIO
 
 # Setup Django environment
@@ -52,14 +52,13 @@ def clean_stock(stock_str):
         return 0
 
 def get_slug(text):
-    """Transliteration and slugify for Russian text."""
-    trans = str.maketrans("абвгдеёжзийклмнопрстуфхцчшщъыьэюя", "abvgdeejziyklmnoprstufhzcss-y-eua")
-    slug = text.lower().translate(trans)
-    slug = re.sub(r'[^a-z0-9-]', '', slug)
-    if not slug:
+    """Generate ASCII slug with transliteration and a stable fallback."""
+    text = str(text or '').strip()
+    slugified = slugify(text)
+    if not slugified:
         import hashlib
-        slug = hashlib.md5(text.encode()).hexdigest()[:10]
-    return slug[:200]
+        slugified = hashlib.md5(text.encode()).hexdigest()[:10]
+    return slugified[:200]
 
 def import_data():
     print(f"Fetching data from {SHEET_URL}...")
@@ -146,9 +145,7 @@ def import_data():
 
             # 4. Generate Product Slug
             prod_slug_base = f"{title}-{article}"
-            prod_slug = slugify(prod_slug_base)
-            if not prod_slug:
-                prod_slug = get_slug(prod_slug_base)
+            prod_slug = get_slug(prod_slug_base)
 
             # 5. Prepare size string
             sizes_str = ", ".join(sorted(list(data['sizes'])))

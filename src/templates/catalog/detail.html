@@ -45,6 +45,11 @@
 
       <div class="detail-info">
         <h1 class="detail-title">{{ product.title }}</h1>
+        {% if product.is_sold_out %}
+        <div class="detail-status">
+          <span class="status-pill status-pill--sold">Продано</span>
+        </div>
+        {% endif %}
         <h3 class="detail-price">
           {% if product.has_discount %}
           <span class="product-price-old">{{ product.price|floatformat:0 }} ₸</span>
@@ -214,9 +219,11 @@
         <a class="product-card" href="{% url 'catalog:detail' rel_prod.slug %}"
           style="text-decoration:none; color:inherit;">
           <div class="product-thumb">
+            {% if rel_prod.is_sold_out %}
+            <span class="product-tag product-tag--sold">Продано</span>
+            {% endif %}
             {% if rel_prod.collection %}
-            <span class="product-tag" style="background-color: {{ rel_prod.collection.color }};">{{
-              rel_prod.collection.name }}</span>
+            <span class="product-tag" style="background-color: {{ rel_prod.collection.color }};">{{ rel_prod.collection.name }}</span>
             {% endif %}
             {% if rel_prod.get_main_image_url %}
             <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
@@ -269,6 +276,9 @@
         <article class="product-card">
           <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
+              {% if comp_product.is_sold_out %}
+              <span class="product-tag product-tag--sold">Продано</span>
+              {% endif %}
               {% if comp_product.collection %}
               <span class="product-tag" style="background-color: {{ comp_product.collection.color }};">{{
                 comp_product.collection.name }}</span>

@@ -1,5 +1,6 @@
 from django.db import models
 from decimal import Decimal
+from slugify import slugify
 
 
 class Category(models.Model):
@@ -102,6 +103,11 @@ class Product(models.Model):
       return False
 
   @property
+  def is_sold_out(self):
+    """True when stock is zero or below."""
+    return (self.stock or 0) <= 0
+
+  @property
   def final_price(self):
     """Returns price with applied discount if present."""
     if self.has_discount:
@@ -166,7 +172,6 @@ class Brand(models.Model):
 
   def save(self, *args, **kwargs):
     if not self.slug:
-      from django.utils.text import slugify
       self.slug = slugify(self.name)
     super().save(*args, **kwargs)
 

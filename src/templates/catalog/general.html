@@ -628,6 +628,9 @@
           <a class="product-card" href="{% url 'catalog:detail' product.slug %}"
             style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
+              {% if product.is_sold_out %}
+              <span class="product-tag product-tag--sold">Продано</span>
+              {% endif %}
               {% if product.collection %}
               <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
               {% endif %}
