@@ -175,9 +175,18 @@ class Command(BaseCommand):
                         raw_url = row[idx].strip()
                         if raw_url:
                             # Convert Google Drive link
-                            match = re.search(r'/d/([a-zA-Z0-9_-]+)', raw_url)
-                            if match:
-                                file_id = match.group(1)
+                            # Convert Google Drive link
+                            # Handle /d/ID/ and open?id=ID
+                            file_id = None
+                            match_d = re.search(r'/d/([a-zA-Z0-9_-]+)', raw_url)
+                            match_id = re.search(r'id=([a-zA-Z0-9_-]+)', raw_url)
+                            
+                            if match_d:
+                                file_id = match_d.group(1)
+                            elif match_id:
+                                file_id = match_id.group(1)
+                                
+                            if file_id:
                                 direct_url = f'https://drive.google.com/uc?export=view&id={file_id}'
                                 image_urls.append(direct_url)
                             else:
