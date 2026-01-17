@@ -36,6 +36,13 @@ class CatalogView(View):
                 # Filter by collection slug (or name, but slug is safer for URLs)
                 # Model has 'slug' field. Let's assume URL param uses slug.
                 products = products.filter(collection__slug__in=clean_collections)
+        
+        # Gender Filter
+        genders = request.GET.getlist('gender')
+        if genders:
+            clean_genders = [g for g in genders if g and g != 'None']
+            if clean_genders:
+                products = products.filter(gender__in=clean_genders)
 
         # Removed Metal, Coverage, Stones, Color filters as requested
 
@@ -164,6 +171,7 @@ class CatalogView(View):
             'selected_categories': clean_cats,
             'selected_brands': brand_names,
             'selected_collections': collections,
+            'selected_genders': genders,
             'selected_sizes': sizes,
             'selected_metals': metals,
             'selected_materials': materials,

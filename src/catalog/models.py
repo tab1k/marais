@@ -38,6 +38,13 @@ class Product(models.Model):
   collection = models.ForeignKey(Collection, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
   brand_ref = models.ForeignKey('Brand', related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
   brand = models.CharField(max_length=120, blank=True)
+  
+  GENDER_CHOICES = (
+    ('male', 'Мужской'),
+    ('female', 'Женский'),
+  )
+  gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, verbose_name="Пол")
+  
   title = models.CharField(max_length=200)
   slug = models.SlugField(max_length=220, unique=True)
   description = models.TextField(blank=True)

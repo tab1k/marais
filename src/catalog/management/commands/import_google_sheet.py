@@ -3,7 +3,8 @@ import io
 import requests
 import re
 from django.core.management.base import BaseCommand
-from django.utils.text import slugify
+# from django.utils.text import slugify # We use python-slugify now
+from slugify import slugify
 from catalog.models import Product, Category, Brand, ProductImage, Collection
 
 class Command(BaseCommand):
@@ -48,6 +49,13 @@ class Command(BaseCommand):
                 col_idx = headers.index('Коллекции')
             else:
                 col_idx = -1
+
+            if 'Пол' in headers:
+                gender_idx = headers.index('Пол')
+            elif 'Gender' in headers:
+                gender_idx = headers.index('Gender')
+            else:
+                gender_idx = -1
             
             img_indices = [i for i, h in enumerate(headers) if 'Фото (ссылка)' in h]
             
@@ -88,6 +96,7 @@ class Command(BaseCommand):
                 price_str = row[price_idx].strip()
                 qty_str = row[qty_idx].strip()
                 collection_name = row[col_idx].strip() if col_idx != -1 and col_idx < len(row) else ""
+                gender_raw = row[gender_idx].strip() if gender_idx != -1 and gender_idx < len(row) else ""
                 
                 if not article:
                     self.stdout.write(self.style.WARNING(f'Skipping row without article: {row}'))
@@ -129,10 +138,20 @@ class Command(BaseCommand):
                 if not title:
                     title = article
 
+                # Determine Gender
+                gender = None
+                if gender_raw:
+                    gr = gender_raw.lower()
+                    if 'муж' in gr or 'male' in gr:
+                        gender = 'male'
+                    elif 'жен' in gr or 'female' in gr:
+                        gender = 'female'
+
                 # Get/Create Category
                 category = None
                 if category_name:
-                    cat_slug = slugify(category_name, allow_unicode=True) or category_name.lower().replace(' ', '-')
+                    # New slugify is transliterating by default
+                    cat_slug = slugify(category_name)
                     # Use filter().first() to handle potential duplicates (case-insensitive)
                     existing_cats = Category.objects.filter(name__iexact=category_name)
                     if existing_cats.exists():
@@ -143,7 +162,7 @@ class Command(BaseCommand):
                 # Get/Create Brand
                 brand = None
                 if brand_name:
-                    brand_slug = slugify(brand_name, allow_unicode=True) or brand_name.lower().replace(' ', '-')
+                    brand_slug = slugify(brand_name)
                     existing_brands = Brand.objects.filter(name__iexact=brand_name)
                     if existing_brands.exists():
                         brand = existing_brands.first()
@@ -153,7 +172,7 @@ class Command(BaseCommand):
                 # Get/Create Collection
                 collection = None
                 if collection_name:
-                    col_slug = slugify(collection_name, allow_unicode=True) or collection_name.lower().replace(' ', '-')
+                    col_slug = slugify(collection_name)
                     existing_cols = Collection.objects.filter(name__iexact=collection_name)
                     if existing_cols.exists():
                         collection = existing_cols.first()
@@ -168,7 +187,7 @@ class Command(BaseCommand):
                     article=article,
                     defaults={
                         'title': title,
-                        'slug': slugify(title + '-' + article, allow_unicode=True)[:200], 
+                        'slug': slugify(title + '-' + article), 
                         'description': description,
                         'category': category,
                         'brand_ref': brand,
@@ -181,6 +200,7 @@ class Command(BaseCommand):
                         'price': price,
                         'stock': stock,
                         'currency': '₸',
+                        'gender': gender,
                         'is_active': True
                     }
                 )
