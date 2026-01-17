@@ -116,28 +116,32 @@ class Command(BaseCommand):
                 category = None
                 if category_name:
                     cat_slug = slugify(category_name, allow_unicode=True) or category_name.lower().replace(' ', '-')
-                    category, _ = Category.objects.get_or_create(
-                        name__iexact=category_name,
-                        defaults={'name': category_name, 'slug': cat_slug}
-                    )
+                    # Use filter().first() to handle potential duplicates (case-insensitive)
+                    existing_cats = Category.objects.filter(name__iexact=category_name)
+                    if existing_cats.exists():
+                        category = existing_cats.first()
+                    else:
+                        category = Category.objects.create(name=category_name, slug=cat_slug)
 
                 # Get/Create Brand
                 brand = None
                 if brand_name:
                     brand_slug = slugify(brand_name, allow_unicode=True) or brand_name.lower().replace(' ', '-')
-                    brand, _ = Brand.objects.get_or_create(
-                        name__iexact=brand_name,
-                        defaults={'name': brand_name, 'slug': brand_slug}
-                    )
+                    existing_brands = Brand.objects.filter(name__iexact=brand_name)
+                    if existing_brands.exists():
+                        brand = existing_brands.first()
+                    else:
+                        brand = Brand.objects.create(name=brand_name, slug=brand_slug)
 
                 # Get/Create Collection
                 collection = None
                 if collection_name:
                     col_slug = slugify(collection_name, allow_unicode=True) or collection_name.lower().replace(' ', '-')
-                    collection, _ = Collection.objects.get_or_create(
-                        name__iexact=collection_name,
-                        defaults={'name': collection_name, 'slug': col_slug}
-                    )
+                    existing_cols = Collection.objects.filter(name__iexact=collection_name)
+                    if existing_cols.exists():
+                        collection = existing_cols.first()
+                    else:
+                        collection = Collection.objects.create(name=collection_name, slug=col_slug)
 
                 # Create Product (since we deleted all, we just create)
                 # But to be safe against duplicates in the CSV itself, we use update_or_create logic or get_or_create
