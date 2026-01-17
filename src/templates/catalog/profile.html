@@ -187,15 +187,8 @@
               {% static 'images/zaglushka.png' as zaglushka_url %}
               <div class="product-thumb">
                 {% if product.collection %}
-                {% with col=product.collection col_slug=product.collection.slug|default:''|lower %}
-                {% if 'skid' in col_slug or 'sale' in col_slug %}
-                <span class="product-tag product-tag--sale">{{ col.name }}</span>
-                {% elif 'nov' in col_slug %}
-                <span class="product-tag product-tag--new">{{ col.name }}</span>
-                {% else %}
-                <span class="product-tag">{{ col.name }}</span>
-                {% endif %}
-                {% endwith %}
+                <span class="product-tag" style="background-color: {{ product.collection.color }};">{{
+                  product.collection.name }}</span>
                 {% endif %}
                 {% if product.get_main_image_url %}
                 <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}"

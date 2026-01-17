@@ -22,6 +22,7 @@ class Collection(models.Model):
   name = models.CharField(max_length=150, unique=True)
   slug = models.SlugField(max_length=160, unique=True)
   description = models.TextField(blank=True)
+  color = models.CharField(max_length=7, default='#a71930', verbose_name='Цвет тэга', help_text='HEX-код цвета (например, #a71930)')
   hero_image = models.ImageField(upload_to='collections/', blank=True, null=True)
 
   class Meta:

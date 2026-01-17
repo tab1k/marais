@@ -215,15 +215,8 @@
           style="text-decoration:none; color:inherit;">
           <div class="product-thumb">
             {% if rel_prod.collection %}
-            {% with col=rel_prod.collection col_slug=rel_prod.collection.slug|default:''|lower %}
-            {% if 'skid' in col_slug or 'sale' in col_slug %}
-            <span class="product-tag product-tag--sale">{{ col.name }}</span>
-            {% elif 'nov' in col_slug %}
-            <span class="product-tag product-tag--new">{{ col.name }}</span>
-            {% else %}
-            <span class="product-tag">{{ col.name }}</span>
-            {% endif %}
-            {% endwith %}
+            <span class="product-tag" style="background-color: {{ rel_prod.collection.color }};">{{
+              rel_prod.collection.name }}</span>
             {% endif %}
             {% if rel_prod.get_main_image_url %}
             <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
@@ -277,15 +270,8 @@
           <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
               {% if comp_product.collection %}
-              {% with col=comp_product.collection col_slug=comp_product.collection.slug|default:''|lower %}
-              {% if 'skid' in col_slug or 'sale' in col_slug %}
-              <span class="product-tag product-tag--sale">{{ col.name }}</span>
-              {% elif 'nov' in col_slug %}
-              <span class="product-tag product-tag--new">{{ col.name }}</span>
-              {% else %}
-              <span class="product-tag">{{ col.name }}</span>
-              {% endif %}
-              {% endwith %}
+              <span class="product-tag" style="background-color: {{ comp_product.collection.color }};">{{
+                comp_product.collection.name }}</span>
               {% endif %}
               {% if comp_product.get_main_image_url %}
               <img src="{{ comp_product.get_main_image_url }}" alt="{{ comp_product.title }}"
