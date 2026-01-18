@@ -108,12 +108,18 @@
           {% endif %}
         </div>
 
-        {% if sizes_list %}
+        {% if size_options %}
         <div class="detail-meta">
           <h4>Размер</h4>
           <div class="size-options">
-            {% for size_val in sizes_list %}
-            <button class="size-btn {% if forloop.first %}active{% endif %}">{{ size_val }}</button>
+            {% for opt in size_options %}
+            <button type="button"
+              class="size-btn {% if opt.stock == 0 %}disabled{% endif %} {% if opt.value == selected_size %}active{% endif %}"
+              data-size="{{ opt.value }}" data-stock="{{ opt.stock }}" {% if opt.stock == 0 %}disabled
+              aria-disabled="true"{% endif %}>
+              {{ opt.value }}
+              {% if opt.stock == 0 %}<span class="size-stock-label">Нет в наличии</span>{% endif %}
+            </button>
             {% endfor %}
           </div>
         </div>
@@ -175,7 +181,7 @@
         <div class="detail-actions">
           <form action="{% url 'basket:add' product.slug %}" method="post">
             {% csrf_token %}
-            <input type="hidden" name="size" id="selected-size" value="{{ sizes_list.0|default:'' }}">
+            <input type="hidden" name="size" id="selected-size" value="{{ selected_size|default:'' }}">
             <button class="btn-primary cart-btn" type="submit">В корзину</button>
           </form>
           <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank" class="btn-secondary outline-btn"
@@ -329,13 +335,16 @@
 
     sizeBtns.forEach(btn => {
       btn.addEventListener('click', function () {
+        if (this.classList.contains('disabled') || this.hasAttribute('disabled')) {
+          return;
+        }
         // Remove active class from all
         sizeBtns.forEach(b => b.classList.remove('active'));
         // Add active to current
         this.classList.add('active');
         // Update input value
         if (sizeInput) {
-          sizeInput.value = this.textContent.trim();
+          sizeInput.value = this.dataset.size || this.textContent.trim();
         }
       });
     });

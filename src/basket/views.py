@@ -67,16 +67,32 @@ class AddToCartView(View):
     def post(self, request, slug):
         product = get_object_or_404(Product, slug=slug)
         cart = _get_cart(request)
-        size = request.POST.get('size')
-        
-        item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size)
-        if not created:
-            item.quantity += 1
-            item.price = product.price # update price if changed
-            item.save()
+        size = (request.POST.get('size') or '').strip()
+        size_stock_map = product.size_stock_map
+
+        # Enforce size selection when stock is tracked per size
+        if size_stock_map and not size:
+            return redirect(request.META.get('HTTP_REFERER', 'catalog:home'))
+
+        available_qty = None
+        if size_stock_map:
+            available_qty = size_stock_map.get(size, 0)
         else:
-             item.price = product.price
-             item.save()
+            available_qty = product.stock
+
+        if available_qty is not None and available_qty <= 0:
+            return redirect(request.META.get('HTTP_REFERER', 'catalog:home'))
+
+        item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size)
+        desired_qty = item.quantity + 1 if not created else 1
+
+        if available_qty is not None and desired_qty > available_qty:
+            item.quantity = available_qty
+        else:
+            item.quantity = desired_qty
+
+        item.price = product.price # update price if changed
+        item.save()
              
         return redirect(request.META.get('HTTP_REFERER', 'catalog:home'))
 
@@ -94,8 +110,16 @@ class UpdateCartItemView(View):
         action = request.POST.get('action')
         
         if action == 'increment':
-            item.quantity += 1
-            item.save()
+            size_stock_map = item.product.size_stock_map
+            limit = None
+            if size_stock_map:
+                limit = size_stock_map.get(item.size, 0)
+            else:
+                limit = item.product.stock
+
+            if limit is None or item.quantity < limit:
+                item.quantity += 1
+                item.save()
         elif action == 'decrement':
             if item.quantity > 1:
                 item.quantity -= 1

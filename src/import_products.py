@@ -103,9 +103,10 @@ def import_data():
                     'brand_name': brand_name,
                     'photo1': convert_gdrive_link(row[3].strip()),
                     'photos_extra': [convert_gdrive_link(row[4].strip()), 
-                                    convert_gdrive_link(row[5].strip()), 
-                                    convert_gdrive_link(row[6].strip())],
+                                     convert_gdrive_link(row[5].strip()), 
+                                     convert_gdrive_link(row[6].strip())],
                     'sizes': set(),
+                    'size_stock': {},
                     'description': row[8].strip(),
                     'material': row[9].strip(),
                     'coverage': row[10].strip(),
@@ -116,6 +117,7 @@ def import_data():
             
             if size:
                 products_agg[article]['sizes'].add(size)
+                products_agg[article]['size_stock'][size] = products_agg[article]['size_stock'].get(size, 0) + stock
             products_agg[article]['stock'] += stock
 
         except Exception as e:
@@ -149,6 +151,8 @@ def import_data():
 
             # 5. Prepare size string
             sizes_str = ", ".join(sorted(list(data['sizes'])))
+            size_stock_map = {k: v for k, v in (data.get('size_stock') or {}).items() if k}
+            total_stock = sum(size_stock_map.values()) if size_stock_map else data['stock']
 
             # 6. Create/Update Product
             product, created = Product.objects.update_or_create(
@@ -165,14 +169,15 @@ def import_data():
                     'coverage': data['coverage'],
                     'stones': data['stones'],
                     'size': sizes_str,
-                    'stock': data['stock'],
+                    'size_stock': size_stock_map,
+                    'stock': total_stock,
                     'main_image_url': data['photo1'],
                     'is_active': True
                 }
             )
             
             verb = "Created" if created else "Updated"
-            print(f"{verb} Product: {title} ({article}) - Sizes: {sizes_str}, Stock: {data['stock']}")
+            print(f"{verb} Product: {title} ({article}) - Sizes: {sizes_str}, Stock: {total_stock}")
 
             # 7. Handle additional images
             ProductImage.objects.filter(product=product).delete()

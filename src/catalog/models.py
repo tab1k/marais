@@ -62,6 +62,7 @@ class Product(models.Model):
   weight = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='Вес (г)')
   article = models.CharField(max_length=120, blank=True, verbose_name='Артикул')
   size = models.CharField(max_length=50, blank=True)
+  size_stock = models.JSONField(default=dict, blank=True, verbose_name='Остаток по размерам')
   stock = models.PositiveIntegerField(default=0)
   is_active = models.BooleanField(default=True)
   main_image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='Главное фото (файл)')
@@ -77,6 +78,46 @@ class Product(models.Model):
 
   def __str__(self):
     return self.title
+
+  def save(self, *args, **kwargs):
+    """
+    Keep aggregate stock in sync with per-size stock when provided.
+    If size_stock is empty, stock can be set manually (legacy behavior).
+    """
+    if self.size_stock:
+      try:
+        self.stock = sum(max(int(v), 0) for v in self.size_stock.values() if v is not None)
+        size_values = [str(k).strip() for k in self.size_stock.keys() if str(k).strip()]
+        if size_values:
+          def _size_key(val):
+            try:
+              return float(str(val).replace(',', '.'))
+            except Exception:
+              return str(val)
+          self.size = ", ".join(sorted(size_values, key=_size_key))
+      except Exception:
+        pass
+    super().save(*args, **kwargs)
+
+  @property
+  def size_stock_map(self):
+    """
+    Returns a sanitized size->stock mapping.
+    Ensures we always get a dict even if DB value is None.
+    """
+    raw = self.size_stock or {}
+    if not isinstance(raw, dict):
+      return {}
+    cleaned = {}
+    for k, v in raw.items():
+      key = str(k).strip()
+      if not key:
+        continue
+      try:
+        cleaned[key] = int(v)
+      except Exception:
+        continue
+    return cleaned
 
   @property
   def get_main_image_url(self):

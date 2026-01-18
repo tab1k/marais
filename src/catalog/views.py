@@ -65,7 +65,12 @@ class CatalogView(View):
         
         for p in products:
              # Size
-            if p.size:
+            if p.size_stock_map:
+                for s, qty in p.size_stock_map.items():
+                    s_clean = str(s).strip()
+                    if s_clean and (qty is None or qty > 0):
+                        available_sizes.add(s_clean)
+            elif p.size:
                 for s in p.size.split(','):
                     s_clean = s.strip()
                     if s_clean: available_sizes.add(s_clean)
@@ -207,8 +212,33 @@ class ProductDetailView(View):
         complementary_products = Product.objects.filter(is_active=True).exclude(category=product.category).exclude(id=product.id)[:15]
         
         sizes_list = []
-        if product.size:
+        size_options = []
+        size_stock_map = product.size_stock_map
+
+        def _size_sort_key(val):
+            """Try to sort numeric sizes naturally."""
+            try:
+                return float(str(val).replace(',', '.'))
+            except Exception:
+                return str(val)
+
+        if size_stock_map:
+            for size_val, qty in sorted(size_stock_map.items(), key=lambda kv: _size_sort_key(kv[0])):
+                size_options.append({'value': size_val, 'stock': qty})
+                sizes_list.append(size_val)
+        elif product.size:
              sizes_list = [s.strip() for s in product.size.split(',') if s.strip() and s.strip() != '0']
+             for s in sizes_list:
+                 size_options.append({'value': s, 'stock': None})
+
+        selected_size = None
+        for opt in size_options:
+            # If stock is not tracked or greater than zero
+            if opt['stock'] is None or (opt['stock'] or 0) > 0:
+                selected_size = opt['value']
+                break
+        if not selected_size and size_options:
+            selected_size = size_options[0]['value']
 
         gallery_images = []
         if product.get_main_image_url:
@@ -227,6 +257,8 @@ class ProductDetailView(View):
             'related_products': related_products,
             'complementary_products': complementary_products,
             'sizes_list': sizes_list,
+            'size_options': size_options,
+            'selected_size': selected_size,
             'back_url': back_url,
             'catalog_home_url': reverse('catalog:home'),
             'gallery_images': gallery_images,

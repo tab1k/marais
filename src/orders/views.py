@@ -47,6 +47,19 @@ class WhatsAppCheckoutView(View):
                 price=item_price,
                 size=cart_item.size
             )
+
+            # Decrease stock per size if tracked
+            product_obj = cart_item.product
+            if product_obj:
+                size_stock_map = product_obj.size_stock_map
+                if size_stock_map and cart_item.size:
+                    current_qty = size_stock_map.get(cart_item.size, 0)
+                    size_stock_map[cart_item.size] = max(current_qty - cart_item.quantity, 0)
+                    product_obj.size_stock = size_stock_map
+                    product_obj.stock = max(sum(size_stock_map.values()), 0)
+                else:
+                    product_obj.stock = max((product_obj.stock or 0) - cart_item.quantity, 0)
+                product_obj.save()
             
             # Add to message
             size_str = f" (Размер: {cart_item.size})" if cart_item.size else ""

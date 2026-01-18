@@ -1720,6 +1720,23 @@ section.hero {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
+.size-btn.disabled,
+.size-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  background: #f5f1eb;
+  border-color: #e2dbd2;
+}
+
+.size-stock-label {
+  display: block;
+  font-size: 10px;
+  color: #a33;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
 .catalog-mobile-bar {
   display: none;
   align-items: center;

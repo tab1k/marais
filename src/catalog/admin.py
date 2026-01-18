@@ -10,12 +10,18 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-  list_display = ('title', 'article', 'price', 'discount_percent', 'currency', 'weight', 'is_active', 'category', 'collection', 'brand_ref', 'stock')
+  list_display = ('title', 'article', 'price', 'discount_percent', 'currency', 'weight', 'is_active', 'category', 'collection', 'brand_ref', 'stock', 'size_stock_display')
   list_filter = ('is_active', 'category', 'collection', 'brand_ref')
   search_fields = ('title', 'article', 'description', 'slug', 'brand', 'material', 'size', 'brand_ref__name')
   autocomplete_fields = ['related_colors']
   prepopulated_fields = {'slug': ('title',)}
   inlines = [ProductImageInline]
+
+  def size_stock_display(self, obj):
+    if not obj.size_stock_map:
+      return ''
+    return ", ".join([f"{size}:{qty}" for size, qty in obj.size_stock_map.items()])
+  size_stock_display.short_description = 'Размеры/остаток'
 
 
 @admin.register(Category)
