@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 
 from .models import Category, Collection, Product, ProductImage, Brand, HomepageBlock, Review
@@ -8,6 +9,65 @@ class ProductImageInline(admin.TabularInline):
   extra = 1
 
 
+class ProductAdminForm(forms.ModelForm):
+  size_stock_text = forms.CharField(
+    required=False,
+    label='Размеры/остатки',
+    help_text='Одна строка на размер: например "17=2". Можно несколько строк.',
+    widget=forms.Textarea(attrs={'rows': 3}),
+  )
+
+  class Meta:
+    model = Product
+    exclude = ('size_stock',)
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    # Pre-fill from existing size_stock_map
+    if self.instance and self.instance.pk:
+      pairs = []
+      for size, qty in self.instance.size_stock_map.items():
+        pairs.append(f"{size}={qty}")
+      if pairs:
+        self.initial['size_stock_text'] = "\n".join(pairs)
+
+  def clean_size_stock_text(self):
+    text = self.cleaned_data.get('size_stock_text', '') or ''
+    result = {}
+    for line in text.splitlines():
+      line = line.strip()
+      if not line:
+        continue
+      # allow separators "=" or ":"
+      if '=' in line:
+        parts = line.split('=', 1)
+      elif ':' in line:
+        parts = line.split(':', 1)
+      else:
+        raise forms.ValidationError('Используйте формат "размер=количество", например 17=2')
+      size = parts[0].strip()
+      qty_raw = parts[1].strip()
+      if not size:
+        raise forms.ValidationError('Размер не может быть пустым.')
+      try:
+        qty = int(qty_raw)
+      except ValueError:
+        raise forms.ValidationError(f'Не удалось прочитать количество "{qty_raw}" для размера {size}')
+      result[size] = max(qty, 0)
+    # Store parsed result for save()
+    self.cleaned_data['_parsed_size_stock'] = result
+    return text
+
+  def save(self, commit=True):
+    instance = super().save(commit=False)
+    parsed = self.cleaned_data.get('_parsed_size_stock', {})
+    instance.size_stock = parsed
+    if commit:
+      instance.save()
+      self.save_m2m()
+    return instance
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
   list_display = ('title', 'article', 'price', 'discount_percent', 'currency', 'weight', 'is_active', 'category', 'collection', 'brand_ref', 'stock', 'size_stock_display')
@@ -16,6 +76,8 @@ class ProductAdmin(admin.ModelAdmin):
   autocomplete_fields = ['related_colors']
   prepopulated_fields = {'slug': ('title',)}
   inlines = [ProductImageInline]
+  form = ProductAdminForm
+  exclude = ('size_stock',)
 
   def size_stock_display(self, obj):
     if not obj.size_stock_map:
