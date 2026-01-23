@@ -208,8 +208,8 @@
         </div>
         {% endif %}
 
-        {% if available_coverages %}
-        <div class="filter-group {% if selected_coverage %}active{% endif %}" data-collapsible>
+        {% if available_coverages or selected_in_stock %}
+        <div class="filter-group {% if selected_coverage or selected_in_stock %}active{% endif %}" data-collapsible>
           <div class="filter-group-header" data-collapse-toggle>
             <div class="filter-group-title">Покрытие</div>
             <span class="filter-chevron"></span>
@@ -223,6 +223,17 @@
               </a>
               {% endfor %}
             </div>
+          </div>
+        </div>
+
+        <div class="filter-group filter-group--availability">
+          <div class="filter-checkbox-row filter-checkbox-row--solo">
+            <a href="?{% if selected_in_stock %}{% url_replace in_stock=None %}{% else %}{% url_replace in_stock=1 %}{% endif %}"
+              class="filter-checkbox-link {% if selected_in_stock %}active{% endif %}"
+              role="checkbox" aria-checked="{% if selected_in_stock %}true{% else %}false{% endif %}">
+              <span class="filter-checkbox-box" aria-hidden="true"></span>
+              <span class="filter-checkbox-text">Есть в наличии</span>
+            </a>
           </div>
         </div>
         {% endif %}
@@ -271,6 +282,63 @@
         .filter-link.active {
           font-weight: 500;
           color: #a71930;
+        }
+
+        .filter-checkbox-row {
+          margin-top: 12px;
+        }
+
+        .filter-checkbox-row--solo {
+          margin-top: 8px;
+        }
+
+        .filter-group--availability {
+          padding: 4px 0 6px;
+        }
+
+        .filter-checkbox-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          color: #333;
+          font-size: 14px;
+          transition: color 0.2s;
+        }
+
+        .filter-checkbox-box {
+          width: 16px;
+          height: 16px;
+          border: 1.5px solid #333;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .filter-checkbox-link.active {
+          color: #a71930;
+        }
+
+        .filter-checkbox-link.active .filter-checkbox-box {
+          background: #a71930;
+          border-color: #a71930;
+        }
+
+        .filter-checkbox-link.active .filter-checkbox-box::after {
+          content: "";
+          width: 6px;
+          height: 10px;
+          border-right: 2px solid #fff;
+          border-bottom: 2px solid #fff;
+          transform: rotate(45deg);
+          margin-top: -1px;
+        }
+
+        .filter-checkbox-link:focus-visible .filter-checkbox-box {
+          outline: 2px solid #a71930;
+          outline-offset: 2px;
         }
 
         .filter-group-header {

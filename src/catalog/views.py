@@ -77,7 +77,11 @@ class CatalogView(View):
             
             # Other text fields (exact match)
             if p.metal: available_metals.add(p.metal)
-            if p.material: available_materials.add(p.material)
+            if p.material:
+                for m in p.material.split(','):
+                    m_clean = m.strip()
+                    if m_clean:
+                        available_materials.add(m_clean)
             if p.stones: available_stones.add(p.stones)
             if p.coverage: available_coverages.add(p.coverage)
             if p.color: available_colors.add(p.color)
@@ -114,7 +118,11 @@ class CatalogView(View):
         if materials:
             clean_vals = [v for v in materials if v and v != 'None']
             if clean_vals:
-                products = products.filter(material__in=clean_vals)
+                from django.db.models import Q
+                q_objs = Q()
+                for v in clean_vals:
+                    q_objs |= Q(material__icontains=v)
+                products = products.filter(q_objs)
 
         # Stones
         stones = request.GET.getlist('stones')
@@ -136,6 +144,12 @@ class CatalogView(View):
              clean_vals = [v for v in colors if v and v != 'None']
              if clean_vals:
                 products = products.filter(color__in=clean_vals)
+
+        # In stock
+        in_stock = request.GET.get('in_stock')
+        selected_in_stock = str(in_stock).lower() in ('1', 'true', 'yes', 'on')
+        if selected_in_stock:
+            products = products.filter(stock__gt=0)
 
         # Price Range
         # Calculate min and max prices from all available products (before price filtering)
@@ -183,6 +197,7 @@ class CatalogView(View):
             'selected_stones': stones,
             'selected_coverage': coverage,
             'selected_colors': colors,
+            'selected_in_stock': selected_in_stock,
             
             'available_sizes': available_sizes,
             'available_metals': available_metals,

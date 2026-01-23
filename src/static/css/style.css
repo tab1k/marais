@@ -1848,9 +1848,9 @@ html.no-scroll {
 }
 
 .product-tag--sold {
-  background: rgba(30, 30, 30, 0.92);
-  right: auto;
-  left: 10px;
+  background: rgb(120 120 120 / 92%);
+  right: 10px;
+  left: auto;
 }
 
 .product-info {
