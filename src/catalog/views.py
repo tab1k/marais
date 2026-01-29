@@ -82,7 +82,11 @@ class CatalogView(View):
                     m_clean = m.strip()
                     if m_clean:
                         available_materials.add(m_clean)
-            if p.stones: available_stones.add(p.stones)
+            if p.stones:
+                for st in p.stones.split(','):
+                    st_clean = st.strip()
+                    if st_clean:
+                        available_stones.add(st_clean)
             if p.coverage: available_coverages.add(p.coverage)
             if p.color: available_colors.add(p.color)
 
@@ -129,7 +133,11 @@ class CatalogView(View):
         if stones:
             clean_vals = [v for v in stones if v and v != 'None']
             if clean_vals:
-                products = products.filter(stones__in=clean_vals)
+                from django.db.models import Q
+                q_objs = Q()
+                for v in clean_vals:
+                    q_objs |= Q(stones__icontains=v)
+                products = products.filter(q_objs)
 
         # Coverage
         coverage = request.GET.getlist('coverage')
