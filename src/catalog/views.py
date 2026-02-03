@@ -87,7 +87,11 @@ class CatalogView(View):
                     st_clean = st.strip()
                     if st_clean:
                         available_stones.add(st_clean)
-            if p.coverage: available_coverages.add(p.coverage)
+            if p.coverage:
+                for cov in p.coverage.split(','):
+                    cov_clean = cov.strip()
+                    if cov_clean:
+                        available_coverages.add(cov_clean)
             if p.color: available_colors.add(p.color)
 
         available_sizes = sorted(list(available_sizes))
@@ -142,9 +146,13 @@ class CatalogView(View):
         # Coverage
         coverage = request.GET.getlist('coverage')
         if coverage:
-             clean_vals = [v for v in coverage if v and v != 'None']
-             if clean_vals:
-                products = products.filter(coverage__in=clean_vals)
+            clean_vals = [v for v in coverage if v and v != 'None']
+            if clean_vals:
+                from django.db.models import Q
+                q_objs = Q()
+                for v in clean_vals:
+                    q_objs |= Q(coverage__icontains=v)
+                products = products.filter(q_objs)
 
         # Color
         colors = request.GET.getlist('color')
