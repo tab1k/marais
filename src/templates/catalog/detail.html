@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}MARAIS — украшения{% endblock %}
+{% block title %}MARAIS — концептуальные украшения из разных стран{% endblock %}
 
 {% block content %}
 {% static 'images/logo.png' as logo_url %}
@@ -47,7 +47,7 @@
         <h1 class="detail-title">{{ product.title }}</h1>
         {% if product.is_sold_out %}
         <div class="detail-status">
-          <span class="status-pill status-pill--sold">Продано</span>
+          <span class="status-pill status-pill--sold">Soldout</span>
         </div>
         {% endif %}
         <h3 class="detail-price">
@@ -172,13 +172,20 @@
         {% endif %}
 
         <div class="detail-actions">
+          {% if not product.is_sold_out %}
           <form action="{% url 'basket:add' product.slug %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="size" id="selected-size" value="{{ selected_size|default:'' }}">
             <button class="btn-primary cart-btn" type="submit">В корзину</button>
           </form>
+          {% endif %}
+          {% if product.is_sold_out %}
+          <a href="https://wa.me/{{ whatsapp_number }}?text={{ whatsapp_preorder_text|urlencode }}" target="_blank" class="btn-secondary outline-btn"
+            style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Предзаказ</a>
+          {% else %}
           <a href="https://wa.me/message/CLSRMWNCKRLJO1" target="_blank" class="btn-secondary outline-btn"
             style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Консультант</a>
+          {% endif %}
         </div>
 
         <details class="cart-info">
@@ -219,9 +226,8 @@
           style="text-decoration:none; color:inherit;">
           <div class="product-thumb">
             {% if rel_prod.is_sold_out %}
-            <span class="product-tag product-tag--sold">Продано</span>
-            {% endif %}
-            {% if rel_prod.collection %}
+            <span class="product-tag product-tag--sold">Soldout</span>
+            {% elif rel_prod.collection %}
             <span class="product-tag" style="background-color: {{ rel_prod.collection.color }};">{{ rel_prod.collection.name }}</span>
             {% endif %}
             {% if rel_prod.get_main_image_url %}
@@ -276,9 +282,8 @@
           <a href="{% url 'catalog:detail' comp_product.slug %}" style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
               {% if comp_product.is_sold_out %}
-              <span class="product-tag product-tag--sold">Продано</span>
-              {% endif %}
-              {% if comp_product.collection %}
+              <span class="product-tag product-tag--sold">Soldout</span>
+              {% elif comp_product.collection %}
               <span class="product-tag" style="background-color: {{ comp_product.collection.color }};">{{
                 comp_product.collection.name }}</span>
               {% endif %}

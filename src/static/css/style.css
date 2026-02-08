@@ -250,21 +250,91 @@ body.promo-locked {
 
 @media (max-width: 768px) {
   .promo-modal {
-    transform: translate(-50%, -45%) scale(0.96);
+    width: min(92vw, 380px);
+    max-width: 380px;
+    background: #f7f4ee;
+    border: 1px solid #1c1815;
+    border-radius: 6px;
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.25);
+    top: auto;
+    left: auto;
+    right: 16px;
+    bottom: 96px;
+    transform: translate(0, 0) scale(0.96);
+    transform-origin: bottom right;
+  }
+  .promo-modal.is-visible {
+    transform: translate(0, 0) scale(1);
   }
   .promo-modal__media {
-    border-radius: 4px;
-    min-height: 450px;
+    background: none;
+    min-height: 0;
+    height: auto;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .promo-modal__media::before {
+    content: "";
+    display: block;
+    width: 100%;
+    padding-top: 100%;
+    background: var(--promo-img) center center / cover no-repeat;
+    border-bottom: 1px solid #1c1815;
   }
   .promo-modal__overlay {
-    padding: 16px 14px 18px;
+    position: static;
+    padding: 18px 16px 20px;
+    background: #f7f4ee;
+    color: #1f1a16;
   }
   .promo-modal__glass {
     padding: 0;
     border-radius: 0;
+    max-width: none;
+    gap: 10px;
+  }
+  .promo-modal__eyebrow {
+    color: #6e665b;
+    text-shadow: none;
   }
   .promo-modal__title {
     font-size: 20px;
+    color: #1f1a16;
+    text-shadow: none;
+  }
+  .promo-modal__text {
+    color: #514841;
+    text-shadow: none;
+  }
+  .promo-modal__hint {
+    color: #2a241f;
+    opacity: 0.7;
+    text-shadow: none;
+  }
+  .promo-modal__close {
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    font-size: 18px;
+    background: transparent;
+    border: none;
+    color: #1c1815;
+    box-shadow: none;
+  }
+  .promo-modal__close:hover {
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .promo-modal {
+    right: 12px;
+    bottom: 12px;
+    width: min(92vw, 360px);
   }
 }
 
@@ -1884,7 +1954,7 @@ html.no-scroll {
 
 .product-price {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   flex-shrink: 0;
 }
 
@@ -2294,8 +2364,8 @@ html.no-scroll {
 }
 
 .detail-price {
-  font-size: 23px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 400;
   color: #1a1a1a;
   margin: 0;
 }
@@ -3032,7 +3102,7 @@ html.no-scroll {
 
   .product-name {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     min-height: 2.4em;
     display: -webkit-box;
     line-clamp: 2;
@@ -3704,7 +3774,7 @@ html.no-scroll {
 
   .product-name {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 400;
     white-space: normal;
     margin-right: auto;
     line-height: 1.2;
@@ -3718,7 +3788,7 @@ html.no-scroll {
 
   .product-price {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     flex-shrink: 0;
   }
 }

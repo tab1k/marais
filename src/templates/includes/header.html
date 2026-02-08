@@ -32,6 +32,18 @@
         sessionStorage.setItem('hideTopBanner', 'true');
       });
     }
+
+    var bannerLinks = banner ? banner.querySelectorAll('a') : [];
+    if (bannerLinks.length) {
+      bannerLinks.forEach(function (link) {
+        link.addEventListener('click', function () {
+          sessionStorage.setItem('hideTopBanner', 'true');
+          if (banner) {
+            banner.style.display = 'none';
+          }
+        });
+      });
+    }
   })();
 </script>
 {% endif %}

@@ -2,7 +2,7 @@
 {% load static %}
 {% load catalog_tags %}
 
-{% block title %}MARAIS — украшения{% endblock %}
+{% block title %}MARAIS — концептуальные украшения из разных стран{% endblock %}
 
 {% block content %}
 {% static 'images/logo.png' as logo_url %}
@@ -60,26 +60,16 @@
         {% endif %}
 
         {% if selected_categories %}
-        <div class="filter-group active" data-collapsible>
-          <div class="filter-group-header" data-collapse-toggle>
-            <div class="filter-group-title">Пол</div>
-            <span class="filter-chevron"></span>
-          </div>
-          <div class="filter-group-content">
-            <div class="filter-options-list">
-              {% with 'male' as val %}
-              <a href="?{% if val in selected_genders %}{% url_replace gender=None %}{% else %}{% url_replace gender=val %}{% endif %}"
-                class="filter-link {% if val in selected_genders %}active{% endif %}">
-                Мужской
-              </a>
-              {% endwith %}
-              {% with 'female' as val %}
-              <a href="?{% if val in selected_genders %}{% url_replace gender=None %}{% else %}{% url_replace gender=val %}{% endif %}"
-                class="filter-link {% if val in selected_genders %}active{% endif %}">
-                Женский
-              </a>
-              {% endwith %}
-            </div>
+        <div class="filter-group filter-group--gender">
+          <div class="filter-checkbox-row filter-checkbox-row--solo">
+            {% with 'male' as val %}
+            <a href="?{% if val in selected_genders %}{% url_replace gender=None %}{% else %}{% url_replace gender=val %}{% endif %}"
+              class="filter-checkbox-link {% if val in selected_genders %}active{% endif %}"
+              role="checkbox" aria-checked="{% if val in selected_genders %}true{% else %}false{% endif %}">
+              <span class="filter-checkbox-box" aria-hidden="true"></span>
+              <span class="filter-checkbox-text">Для него</span>
+            </a>
+            {% endwith %}
           </div>
         </div>
         {% endif %}
@@ -189,24 +179,51 @@
         </div>
         {% endif %}
 
-        {% if available_stones %}
-        <div class="filter-group {% if selected_stones %}active{% endif %}" data-collapsible>
+        <div class="filter-group {% if selected_material_types %}active{% endif %}" data-collapsible>
+          <div class="filter-group-header" data-collapse-toggle>
+            <div class="filter-group-title">Материалы</div>
+            <span class="filter-chevron"></span>
+          </div>
+          <div class="filter-group-content">
+            <div class="filter-options-list">
+              {% with 'jewelry' as val %}
+              <a href="?{% if val in selected_material_types %}{% url_replace material_type=None %}{% else %}{% url_replace material_type=val %}{% endif %}"
+                class="filter-link {% if val in selected_material_types %}active{% endif %}">
+                Ювелирные материалы
+              </a>
+              {% endwith %}
+              {% with 'other' as val %}
+              <a href="?{% if val in selected_material_types %}{% url_replace material_type=None %}{% else %}{% url_replace material_type=val %}{% endif %}"
+                class="filter-link {% if val in selected_material_types %}active{% endif %}">
+                Другие материалы
+              </a>
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-group {% if selected_stone_options %}active{% endif %}" data-collapsible>
           <div class="filter-group-header" data-collapse-toggle>
             <div class="filter-group-title">Камни</div>
             <span class="filter-chevron"></span>
           </div>
           <div class="filter-group-content">
             <div class="filter-options-list">
-              {% for val in available_stones %}
-              <a href="?{% if val in selected_stones %}{% url_replace stones=None %}{% else %}{% url_replace stones=val %}{% endif %}"
-                class="filter-link {% if val in selected_stones %}active{% endif %}">
-                {{ val }}
+              {% with 'with_stones' as val %}
+              <a href="?{% if val in selected_stone_options %}{% url_replace stone_option=None %}{% else %}{% url_replace stone_option=val %}{% endif %}"
+                class="filter-link {% if val in selected_stone_options %}active{% endif %}">
+                С камнями
               </a>
-              {% endfor %}
+              {% endwith %}
+              {% with 'without_stones' as val %}
+              <a href="?{% if val in selected_stone_options %}{% url_replace stone_option=None %}{% else %}{% url_replace stone_option=val %}{% endif %}"
+                class="filter-link {% if val in selected_stone_options %}active{% endif %}">
+                Без камней
+              </a>
+              {% endwith %}
             </div>
           </div>
         </div>
-        {% endif %}
 
         {% if available_coverages or selected_in_stock %}
         <div class="filter-group {% if selected_coverage or selected_in_stock %}active{% endif %}" data-collapsible>
@@ -696,12 +713,11 @@
           <a class="product-card" href="{% url 'catalog:detail' product.slug %}"
             style="text-decoration: none; color: inherit;">
             <div class="product-thumb">
-              {% if product.is_sold_out %}
-              <span class="product-tag product-tag--sold">Продано</span>
-              {% endif %}
-              {% if product.collection %}
-              <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
-              {% endif %}
+            {% if product.is_sold_out %}
+            <span class="product-tag product-tag--sold">Soldout</span>
+            {% elif product.collection %}
+            <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
+            {% endif %}
               {% if product.get_main_image_url %}
               <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" loading="lazy"
                 onerror="this.onerror=null;this.src='{{ zaglushka_url }}';">

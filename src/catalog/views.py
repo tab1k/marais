@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.views import View
 
@@ -51,7 +52,8 @@ class CatalogView(View):
         # New filters collections
         available_metals = set()
         available_materials = set()
-        available_stones = set()
+        available_stone_options = set()
+        available_material_types = set()
         available_coverages = set()
         available_colors = set()
 
@@ -82,11 +84,10 @@ class CatalogView(View):
                     m_clean = m.strip()
                     if m_clean:
                         available_materials.add(m_clean)
-            if p.stones:
-                for st in p.stones.split(','):
-                    st_clean = st.strip()
-                    if st_clean:
-                        available_stones.add(st_clean)
+            if p.stone_option:
+                available_stone_options.add(p.stone_option)
+            if p.material_type:
+                available_material_types.add(p.material_type)
             if p.coverage:
                 for cov in p.coverage.split(','):
                     cov_clean = cov.strip()
@@ -97,7 +98,8 @@ class CatalogView(View):
         available_sizes = sorted(list(available_sizes))
         available_metals = sorted(list(available_metals))
         available_materials = sorted(list(available_materials))
-        available_stones = sorted(list(available_stones))
+        available_stone_options = sorted(list(available_stone_options))
+        available_material_types = sorted(list(available_material_types))
         available_coverages = sorted(list(available_coverages))
         available_colors = sorted(list(available_colors))
             
@@ -132,16 +134,19 @@ class CatalogView(View):
                     q_objs |= Q(material__icontains=v)
                 products = products.filter(q_objs)
 
-        # Stones
-        stones = request.GET.getlist('stones')
-        if stones:
-            clean_vals = [v for v in stones if v and v != 'None']
+        # Material type
+        material_types = request.GET.getlist('material_type')
+        if material_types:
+            clean_vals = [v for v in material_types if v and v != 'None']
             if clean_vals:
-                from django.db.models import Q
-                q_objs = Q()
-                for v in clean_vals:
-                    q_objs |= Q(stones__icontains=v)
-                products = products.filter(q_objs)
+                products = products.filter(material_type__in=clean_vals)
+
+        # Stones presence
+        stone_options = request.GET.getlist('stone_option')
+        if stone_options:
+            clean_vals = [v for v in stone_options if v and v != 'None']
+            if clean_vals:
+                products = products.filter(stone_option__in=clean_vals)
 
         # Coverage
         coverage = request.GET.getlist('coverage')
@@ -210,7 +215,8 @@ class CatalogView(View):
             'selected_sizes': sizes,
             'selected_metals': metals,
             'selected_materials': materials,
-            'selected_stones': stones,
+            'selected_stone_options': stone_options,
+            'selected_material_types': material_types,
             'selected_coverage': coverage,
             'selected_colors': colors,
             'selected_in_stock': selected_in_stock,
@@ -218,7 +224,8 @@ class CatalogView(View):
             'available_sizes': available_sizes,
             'available_metals': available_metals,
             'available_materials': available_materials,
-            'available_stones': available_stones,
+            'available_stone_options': available_stone_options,
+            'available_material_types': available_material_types,
             'available_coverages': available_coverages,
             'available_colors': available_colors,
             
@@ -293,6 +300,8 @@ class ProductDetailView(View):
             'back_url': back_url,
             'catalog_home_url': reverse('catalog:home'),
             'gallery_images': gallery_images,
+            'whatsapp_number': settings.WHATSAPP_NUMBER,
+            'whatsapp_preorder_text': f"Здравствуйте! Хочу оформить предзаказ на «{product.title}». Подскажите, пожалуйста, сроки и условия предзаказа. Ссылка: {request.build_absolute_uri()}",
         })
 
 

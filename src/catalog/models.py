@@ -45,6 +45,14 @@ class Product(models.Model):
     ('male', 'Мужской'),
     ('female', 'Женский'),
   )
+  STONE_OPTION_CHOICES = (
+    ('with_stones', 'С Камнями'),
+    ('without_stones', 'Без камней'),
+  )
+  MATERIAL_TYPE_CHOICES = (
+    ('jewelry', 'Ювелирные материалы'),
+    ('other', 'Другие материалы'),
+  )
   gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, verbose_name="Пол")
   note = models.TextField(blank=True, verbose_name="Примечание (облако)", help_text="Текст будет отображаться под размерами в сером облаке")
   
@@ -58,6 +66,8 @@ class Product(models.Model):
   material = models.CharField(max_length=150, blank=True)
   coverage = models.CharField(max_length=100, blank=True)
   stones = models.CharField(max_length=200, blank=True)
+  stone_option = models.CharField(max_length=20, choices=STONE_OPTION_CHOICES, blank=True, null=True, verbose_name='Камни')
+  material_type = models.CharField(max_length=20, choices=MATERIAL_TYPE_CHOICES, blank=True, null=True, verbose_name='Материалы')
   color = models.CharField(max_length=80, blank=True)
   weight = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='Вес (г)')
   article = models.CharField(max_length=120, blank=True, verbose_name='Артикул')

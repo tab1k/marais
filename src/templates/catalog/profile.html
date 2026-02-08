@@ -187,9 +187,8 @@
               {% static 'images/zaglushka.png' as zaglushka_url %}
               <div class="product-thumb">
                 {% if product.is_sold_out %}
-                <span class="product-tag product-tag--sold">Продано</span>
-                {% endif %}
-                {% if product.collection %}
+                <span class="product-tag product-tag--sold">Soldout</span>
+                {% elif product.collection %}
                 <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
                 {% endif %}
                 {% if product.get_main_image_url %}
