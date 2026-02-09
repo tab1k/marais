@@ -179,7 +179,7 @@ body.promo-locked {
   background: #f7f4ee;
   color: #1f1a16;
   display: flex;
-  align-items: baseline;
+  align-items: normal;
   border-top: none;
 }
 
