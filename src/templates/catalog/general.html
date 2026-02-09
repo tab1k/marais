@@ -160,25 +160,6 @@
         </div>
         {% endif %}
 
-        {% if available_materials %}
-        <div class="filter-group {% if selected_materials %}active{% endif %}" data-collapsible>
-          <div class="filter-group-header" data-collapse-toggle>
-            <div class="filter-group-title">Материал</div>
-            <span class="filter-chevron"></span>
-          </div>
-          <div class="filter-group-content">
-            <div class="filter-options-list">
-              {% for val in available_materials %}
-              <a href="?{% if val in selected_materials %}{% url_replace material=None %}{% else %}{% url_replace material=val %}{% endif %}"
-                class="filter-link {% if val in selected_materials %}active{% endif %}">
-                {{ val }}
-              </a>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
         <div class="filter-group {% if selected_material_types %}active{% endif %}" data-collapsible>
           <div class="filter-group-header" data-collapse-toggle>
             <div class="filter-group-title">Материалы</div>
