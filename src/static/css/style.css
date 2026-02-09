@@ -179,12 +179,13 @@ body.promo-locked {
   background: #f7f4ee;
   color: #1f1a16;
   display: flex;
-  align-items: normal;
+  align-items: self-start;
   border-top: none;
 }
 
 .promo-modal__glass {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   width: 100%;
   max-width: none;
@@ -193,6 +194,7 @@ body.promo-locked {
   border-radius: 0;
   padding: 0;
   box-shadow: none;
+  align-self: stretch;
 }
 
 .promo-modal__eyebrow {
@@ -223,7 +225,7 @@ body.promo-locked {
 }
 
 .promo-modal__hint {
-  margin: 4px 0 0;
+  margin: auto 0 0;
   font-size: 12px;
   letter-spacing: 0.3px;
   text-transform: uppercase;
