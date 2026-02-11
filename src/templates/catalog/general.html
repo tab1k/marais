@@ -696,8 +696,16 @@
             <div class="product-thumb">
             {% if product.is_sold_out %}
             <span class="product-tag product-tag--sold">Soldout</span>
-            {% elif product.collection %}
-            <span class="product-tag" style="background-color: {{ product.collection.color }};">{{ product.collection.name }}</span>
+            {% else %}
+            {% with product_collections=product.collections.all %}
+            {% if product_collections %}
+            <div class="product-tag-stack">
+              {% for col in product_collections %}
+              <span class="product-tag" style="background-color: {{ col.color }};">{{ col.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
             {% endif %}
               {% if product.get_main_image_url %}
               <img src="{{ product.get_main_image_url }}" alt="{{ product.title }}" loading="lazy"

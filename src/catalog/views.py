@@ -4,7 +4,7 @@ from django.views import View
 
 from basket.models import Order
 
-from catalog.models import Product, Category, Brand, Collection
+from catalog.models import Product, Category, Brand
 
 from django.core.paginator import Paginator
 
@@ -36,7 +36,7 @@ class CatalogView(View):
             if clean_collections:
                 # Filter by collection slug (or name, but slug is safer for URLs)
                 # Model has 'slug' field. Let's assume URL param uses slug.
-                products = products.filter(collection__slug__in=clean_collections)
+                products = products.filter(collections__slug__in=clean_collections).distinct()
         
         # Gender Filter
         genders = request.GET.getlist('gender')
@@ -198,6 +198,8 @@ class CatalogView(View):
             except ValueError:
                 pass
 
+        products = products.prefetch_related('collections')
+
         # Pagination
         paginator = Paginator(products, 12) # 12 items per page
         page_number = request.GET.get('page')
@@ -244,10 +246,10 @@ class ProductDetailView(View):
     def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug, is_active=True)
         # Suggest related products (same category, exclude current)
-        related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:15]
+        related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id).prefetch_related('collections')[:15]
         
         # Complementary products (different category, for "Complete the Look")
-        complementary_products = Product.objects.filter(is_active=True).exclude(category=product.category).exclude(id=product.id)[:15]
+        complementary_products = Product.objects.filter(is_active=True).exclude(category=product.category).exclude(id=product.id).prefetch_related('collections')[:15]
         
         sizes_list = []
         size_options = []
@@ -326,7 +328,7 @@ class ProfileView(View):
         orders = list(qs) # Show all orders
         
         # Get recommended products (random active products)
-        recommended_products = Product.objects.filter(is_active=True).order_by('?')[:4]
+        recommended_products = Product.objects.filter(is_active=True).prefetch_related('collections').order_by('?')[:4]
 
         return render(request, 'catalog/profile.html', {
             'orders': orders,

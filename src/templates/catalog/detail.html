@@ -227,8 +227,16 @@
           <div class="product-thumb">
             {% if rel_prod.is_sold_out %}
             <span class="product-tag product-tag--sold">Soldout</span>
-            {% elif rel_prod.collection %}
-            <span class="product-tag" style="background-color: {{ rel_prod.collection.color }};">{{ rel_prod.collection.name }}</span>
+            {% else %}
+            {% with rel_collections=rel_prod.collections.all %}
+            {% if rel_collections %}
+            <div class="product-tag-stack">
+              {% for col in rel_collections %}
+              <span class="product-tag" style="background-color: {{ col.color }};">{{ col.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
             {% endif %}
             {% if rel_prod.get_main_image_url %}
             <img src="{{ rel_prod.get_main_image_url }}" alt="{{ rel_prod.title }}"
@@ -283,9 +291,16 @@
             <div class="product-thumb">
               {% if comp_product.is_sold_out %}
               <span class="product-tag product-tag--sold">Soldout</span>
-              {% elif comp_product.collection %}
-              <span class="product-tag" style="background-color: {{ comp_product.collection.color }};">{{
-                comp_product.collection.name }}</span>
+              {% else %}
+              {% with comp_collections=comp_product.collections.all %}
+              {% if comp_collections %}
+              <div class="product-tag-stack">
+                {% for col in comp_collections %}
+                <span class="product-tag" style="background-color: {{ col.color }};">{{ col.name }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% endwith %}
               {% endif %}
               {% if comp_product.get_main_image_url %}
               <img src="{{ comp_product.get_main_image_url }}" alt="{{ comp_product.title }}"

@@ -37,7 +37,7 @@ class Collection(models.Model):
 
 class Product(models.Model):
   category = models.ForeignKey(Category, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
-  collection = models.ForeignKey(Collection, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
+  collections = models.ManyToManyField(Collection, related_name='products', blank=True)
   brand_ref = models.ForeignKey('Brand', related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
   brand = models.CharField(max_length=120, blank=True)
   

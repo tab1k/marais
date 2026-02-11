@@ -174,15 +174,18 @@ class Command(BaseCommand):
                     else:
                         brand = Brand.objects.create(name=brand_name, slug=brand_slug)
 
-                # Get/Create Collection
-                collection = None
+                # Get/Create Collections (comma-separated)
+                collections = []
                 if collection_name:
-                    col_slug = slugify(collection_name)
-                    existing_cols = Collection.objects.filter(name__iexact=collection_name)
-                    if existing_cols.exists():
-                        collection = existing_cols.first()
-                    else:
-                        collection = Collection.objects.create(name=collection_name, slug=col_slug)
+                    collection_names = [c.strip() for c in collection_name.split(',') if c.strip()]
+                    for col_name in collection_names:
+                        col_slug = slugify(col_name)
+                        existing_cols = Collection.objects.filter(name__iexact=col_name)
+                        if existing_cols.exists():
+                            collection = existing_cols.first()
+                        else:
+                            collection = Collection.objects.create(name=col_name, slug=col_slug)
+                        collections.append(collection)
 
                 # Create Product (since we deleted all, we just create)
                 # But to be safe against duplicates in the CSV itself, we use update_or_create logic or get_or_create
@@ -197,7 +200,6 @@ class Command(BaseCommand):
                         'category': category,
                         'brand_ref': brand,
                         'brand': brand_name,
-                        'collection': collection,
                         'size': size,
                         'material': material,
                         'coverage': coverage,
@@ -209,6 +211,11 @@ class Command(BaseCommand):
                         'is_active': True
                     }
                 )
+
+                if collections:
+                    product.collections.set(collections)
+                else:
+                    product.collections.clear()
                 
                 # Handle Images
                 image_urls = []
