@@ -2583,7 +2583,7 @@ html.no-scroll {
 }
 
 .category-card p {
-  font-size: 16px;
+  font-size: 12px;
   margin: 0;
   font-weight: 350;
 }
@@ -3625,7 +3625,7 @@ html.no-scroll {
   }
 
   .category-card p {
-    font-size: 16px;
+    font-size: 12px;
   }
 
   p.home-product-note {
@@ -3645,7 +3645,7 @@ html.no-scroll {
   }
 
   .home-product-price {
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 500;
     flex-direction: column;
     align-items: flex-start;
