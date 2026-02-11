@@ -112,6 +112,31 @@ def split_list(value):
     parts = re.split(r'[,\n;]+', str(value))
     return [p.strip() for p in parts if p.strip()]
 
+def is_url_like(value):
+    v = str(value or '').strip().lower()
+    return v.startswith('http://') or v.startswith('https://')
+
+def detect_image_indices(headers_raw, data_rows):
+    indices = []
+    for i, h in enumerate(headers_raw):
+        if 'фото' in normalize_header(h):
+            indices.append(i)
+
+    blank_idxs = [i for i, h in enumerate(headers_raw) if not str(h).strip()]
+    if blank_idxs:
+        url_counts = {i: 0 for i in blank_idxs}
+        for row in data_rows:
+            for i in blank_idxs:
+                if i < len(row):
+                    val = str(row[i]).strip()
+                    if is_url_like(val) or 'drive.google.com' in val or 'googleusercontent.com' in val:
+                        url_counts[i] += 1
+        for i, count in url_counts.items():
+            if count > 0:
+                indices.append(i)
+
+    return sorted(set(indices))
+
 def import_data():
     print(f"Fetching data from {SHEET_URL}...")
     try:
@@ -130,6 +155,7 @@ def import_data():
 
     headers_raw = rows[0]
     headers = [normalize_header(h) for h in headers_raw]
+    data_rows = rows[1:] # Skip header
 
     cat_idx = header_index(headers, 'Категория')
     art_idx = header_index(headers, 'Артикул')
@@ -148,13 +174,13 @@ def import_data():
     collection_idx = header_index(headers, 'Коллекции', 'Коллекция')
     gender_idx = header_index(headers, 'Пол', 'Gender')
 
-    img_indices = [i for i, h in enumerate(headers) if 'фото' in h]
+    img_indices = detect_image_indices(headers_raw, data_rows)
 
     if art_idx is None:
         print("Missing required column: Артикул")
         return
 
-    data_rows = rows[1:] # Skip header
+    print(f"Detected image columns: {img_indices}")
     print(f"Found {len(data_rows)} rows. Aggregating data...")
 
     # Dictionary to aggregate product data by article
