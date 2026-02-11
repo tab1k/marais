@@ -10,6 +10,7 @@ services:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=marais.settings.production
+      - CLEAR_CATALOG_ON_START=1
     depends_on:
       - db
 
