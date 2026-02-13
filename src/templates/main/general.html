@@ -86,7 +86,7 @@
   <div class="container-m split-grid">
     <div class="split-media" style="align-items: center;text-align: center;margin: auto;">
       {% if block.image %}
-      <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}">
+      <a href="{% if block.link_url %}{{ block.link_url }}{% elif block.brand %}{% url 'catalog:home' %}?brand={{ block.brand.name|urlencode }}{% else %}#{% endif %}">
         <img src="{{ block.image.url }}" alt="{{ block.brand.name }}" loading="lazy"
           srcset="{{ block.image.url }} 1200w, {{ block.image.url }} 800w, {{ block.image.url }} 480w"
           sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 640px">
@@ -95,7 +95,7 @@
     </div>
     <div class="split-content" style="justify-content: center; text-align: center;">
       <h2 class="split-title">КОЛЛЕКЦИЯ <br> {{ block.brand.name|upper }}</h2>
-      <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}" class="split-button">Посмотреть больше</a>
+      <a href="{% if block.link_url %}{{ block.link_url }}{% elif block.brand %}{% url 'catalog:home' %}?brand={{ block.brand.name|urlencode }}{% else %}#{% endif %}" class="split-button">Посмотреть больше</a>
 
       {% if block.featured_product and block.featured_product.is_active %}
       <a href="{% url 'catalog:detail' block.featured_product.slug %}" style="text-decoration: none; color: inherit;">
@@ -126,7 +126,7 @@
     <div class="categories-text">
       <h2 class="split-title">{{ block.brand.name|upper }}<br>COLLECTION</h2>
     </div>
-    <a href="{% url 'catalog:home' %}?brand={{ block.brand.name }}" class="split-button">Посмотреть больше</a>
+    <a href="{% if block.link_url %}{{ block.link_url }}{% elif block.brand %}{% url 'catalog:home' %}?brand={{ block.brand.name|urlencode }}{% else %}#{% endif %}" class="split-button">Посмотреть больше</a>
   </div>
 </section>
 

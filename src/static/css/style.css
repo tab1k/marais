@@ -171,6 +171,16 @@ body.promo-locked {
   min-height: 100%;
   background: var(--promo-img) center center / cover no-repeat;
   border-right: 1px solid #1c1815;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.promo-modal__link:hover .promo-modal__media::before,
+.promo-modal__link:focus-visible .promo-modal__media::before,
+.promo-modal__link:active .promo-modal__media::before {
+  transform: scale(1.06);
 }
 
 .promo-modal__overlay {
@@ -1912,6 +1922,12 @@ html.no-scroll {
   background: rgb(120 120 120 / 92%);
   right: 10px;
   left: auto;
+}
+
+@media (max-width: 768px) {
+  .product-tag {
+    padding: 2px 8px;
+  }
 }
 
 .product-info {
