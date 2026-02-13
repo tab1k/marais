@@ -8,14 +8,18 @@
 <!-- Hero section -->
 <div class="container-m hero-wrapper" style="margin-bottom: 30px;">
   {% if hero_block and hero_block.image %}
-  <img class="hero-image" src="{{ hero_block.image.url|default:hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
-    loading="eager"
-    srcset="{{ hero_block.image.url }} 1200w, {{ hero_block.image.url }} 800w, {{ hero_block.image.url }} 480w"
-    sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+  <a class="hero-link" href="{% if hero_block.link_url %}{{ hero_block.link_url }}{% elif hero_block.brand %}{% url 'catalog:home' %}?brand={{ hero_block.brand.name|urlencode }}{% else %}#{% endif %}">
+    <img class="hero-image" src="{{ hero_block.image.url|default:hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
+      loading="eager"
+      srcset="{{ hero_block.image.url }} 1200w, {{ hero_block.image.url }} 800w, {{ hero_block.image.url }} 480w"
+      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+  </a>
   {% else %}
-  <img class="hero-image" src="{% static 'images/hero_image.webp' %}" alt="Hero image" loading="eager"
-    srcset="{% static 'images/hero_image.webp' %} 1200w, {% static 'images/hero_image.webp' %} 800w, {% static 'images/hero_image.webp' %} 480w"
-    sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+  <a class="hero-link" href="#">
+    <img class="hero-image" src="{% static 'images/hero_image.webp' %}" alt="Hero image" loading="eager"
+      srcset="{% static 'images/hero_image.webp' %} 1200w, {% static 'images/hero_image.webp' %} 800w, {% static 'images/hero_image.webp' %} 480w"
+      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+  </a>
   {% endif %}
 </div>
 
