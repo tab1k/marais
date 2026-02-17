@@ -151,6 +151,79 @@ document.addEventListener('DOMContentLoaded', function () {
   }));
   mobileClose?.addEventListener('click', closeMenu);
 
+  // Hero slider
+  const heroSlider = document.querySelector('[data-hero-slider]');
+  const heroDataEl = document.getElementById('hero-images-data');
+  if (heroSlider && heroDataEl) {
+    let heroImages = [];
+    try {
+      heroImages = JSON.parse(heroDataEl.textContent) || [];
+    } catch (err) {
+      heroImages = [];
+    }
+    const urls = heroImages.map(item => item.url).filter(Boolean);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReducedMotion && urls.length > 1) {
+      const mainImg = heroSlider.querySelector('[data-hero-main]');
+      const nextImg = heroSlider.querySelector('[data-hero-next]');
+      const sheen = heroSlider.querySelector('[data-hero-sheen]');
+      const media = heroSlider.querySelector('.hero-media');
+      const linkEl = heroSlider.querySelector('[data-hero-link]');
+      const defaultLink = linkEl ? (linkEl.dataset.heroFallback || '#') : '#';
+      if (mainImg && nextImg && sheen && media) {
+
+        urls.forEach(url => {
+          const img = new Image();
+          img.src = url;
+        });
+
+        const intervalMs = Number(heroSlider.dataset.heroInterval || 7000);
+        let currentIndex = urls.indexOf(mainImg.getAttribute('src'));
+        if (currentIndex < 0) currentIndex = 0;
+        const getLinkByIndex = (idx) => {
+          const entry = heroImages[idx];
+          return entry && entry.link_url ? entry.link_url : defaultLink;
+        };
+        if (linkEl) {
+          linkEl.setAttribute('href', getLinkByIndex(currentIndex));
+        }
+        let isTransitioning = false;
+
+        const triggerSheen = () => {
+          sheen.classList.remove('is-animating');
+          void sheen.offsetWidth;
+          sheen.classList.add('is-animating');
+        };
+
+        const transitionMs = 900;
+
+        const swapTo = (nextUrl, nextIndex) => {
+          if (isTransitioning) return;
+          isTransitioning = true;
+          nextImg.src = nextUrl;
+          nextImg.srcset = `${nextUrl} 1200w, ${nextUrl} 800w, ${nextUrl} 480w`;
+          triggerSheen();
+          media.classList.add('is-transitioning');
+
+          window.setTimeout(() => {
+            mainImg.src = nextUrl;
+            mainImg.srcset = `${nextUrl} 1200w, ${nextUrl} 800w, ${nextUrl} 480w`;
+            if (linkEl) {
+              linkEl.setAttribute('href', getLinkByIndex(nextIndex));
+            }
+            media.classList.remove('is-transitioning');
+            isTransitioning = false;
+          }, transitionMs);
+        };
+
+        window.setInterval(() => {
+          currentIndex = (currentIndex + 1) % urls.length;
+          swapTo(urls[currentIndex], currentIndex);
+        }, intervalMs);
+      }
+    }
+  }
+
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeFilter();

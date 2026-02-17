@@ -259,6 +259,28 @@ class HomepageBlock(models.Model):
         return f"{self.get_block_type_display()}: {self.title or self.brand}"
 
 
+class HomepageHeroImage(models.Model):
+    block = models.ForeignKey(
+        HomepageBlock,
+        on_delete=models.CASCADE,
+        related_name='hero_images',
+        limit_choices_to={'block_type': 'hero'},
+        verbose_name='Hero блок',
+    )
+    image = models.ImageField(upload_to='blocks/hero/', verbose_name='Изображение')
+    link_url = models.CharField(max_length=500, blank=True, verbose_name="Ссылка")
+    sort_order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    is_active = models.BooleanField(default=True, verbose_name="Активно")
+
+    class Meta:
+        verbose_name = 'Изображение для Hero'
+        verbose_name_plural = 'Изображения для Hero'
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return f"Hero image #{self.pk} for {self.block}"
+
+
 class Review(models.Model):
     STATUS_CHOICES = (
         ('pending', 'На модерации'),

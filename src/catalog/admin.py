@@ -1,12 +1,19 @@
 from django import forms
 from django.contrib import admin
 
-from .models import Category, Collection, Product, ProductImage, Brand, HomepageBlock, Review
+from .models import Category, Collection, Product, ProductImage, Brand, HomepageBlock, HomepageHeroImage, Review
 
 
 class ProductImageInline(admin.TabularInline):
   model = ProductImage
   extra = 1
+
+
+class HomepageHeroImageInline(admin.TabularInline):
+  model = HomepageHeroImage
+  extra = 1
+  fields = ('image', 'link_url', 'sort_order', 'is_active')
+  ordering = ('sort_order',)
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -117,6 +124,12 @@ class HomepageBlockAdmin(admin.ModelAdmin):
     list_editable = ('is_active', 'sort_order')
     list_filter = ('block_type', 'is_active')
     search_fields = ('title', 'brand__name')
+    inlines = [HomepageHeroImageInline]
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj or obj.block_type != 'hero':
+            return []
+        return super().get_inline_instances(request, obj)
 
 
 @admin.register(Review)

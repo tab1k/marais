@@ -6,8 +6,23 @@
 {% block content %}
 
 <!-- Hero section -->
-<div class="container-m hero-wrapper" style="margin-bottom: 30px;">
-  {% if hero_block and hero_block.image %}
+<div class="container-m hero-wrapper hero-slider" style="margin-bottom: 30px;" data-hero-slider data-hero-interval="5000">
+  {% if hero_block and hero_images %}
+  {{ hero_images_data|json_script:"hero-images-data" }}
+  <a class="hero-link" data-hero-link data-hero-fallback="{% if hero_block.link_url %}{{ hero_block.link_url }}{% elif hero_block.brand %}{% url 'catalog:home' %}?brand={{ hero_block.brand.name|urlencode }}{% else %}#{% endif %}" href="{% if hero_images.0.link_url %}{{ hero_images.0.link_url }}{% elif hero_block.link_url %}{{ hero_block.link_url }}{% elif hero_block.brand %}{% url 'catalog:home' %}?brand={{ hero_block.brand.name|urlencode }}{% else %}#{% endif %}">
+    <div class="hero-media">
+      <img class="hero-image hero-image--current" data-hero-main src="{{ hero_images.0.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
+        loading="eager"
+        srcset="{{ hero_images.0.image.url }} 1200w, {{ hero_images.0.image.url }} 800w, {{ hero_images.0.image.url }} 480w"
+        sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+      <img class="hero-image hero-image--next" data-hero-next src="{{ hero_images.0.image.url }}" alt=""
+        aria-hidden="true"
+        srcset="{{ hero_images.0.image.url }} 1200w, {{ hero_images.0.image.url }} 800w, {{ hero_images.0.image.url }} 480w"
+        sizes="(max-width: 600px) 100vw, (max-width: 1200px) 90vw, 1380px">
+      <div class="hero-sheen" data-hero-sheen aria-hidden="true"></div>
+    </div>
+  </a>
+  {% elif hero_block and hero_block.image %}
   <a class="hero-link" href="{% if hero_block.link_url %}{{ hero_block.link_url }}{% elif hero_block.brand %}{% url 'catalog:home' %}?brand={{ hero_block.brand.name|urlencode }}{% else %}#{% endif %}">
     <img class="hero-image" src="{{ hero_block.image.url|default:hero_block.image.url }}" alt="{{ hero_block.title|default:'Hero' }}"
       loading="eager"

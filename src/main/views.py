@@ -9,13 +9,20 @@ class GeneralPageView(View):
     def get(self, request):
         categories = Category.objects.all()
         blocks = HomepageBlock.objects.filter(is_active=True).exclude(block_type='hero').order_by('sort_order')
-        hero_block = HomepageBlock.objects.filter(block_type='hero', is_active=True).first()
+        hero_block = HomepageBlock.objects.filter(block_type='hero', is_active=True).prefetch_related('hero_images').first()
+        hero_images = []
+        hero_images_data = []
+        if hero_block:
+            hero_images = list(hero_block.hero_images.filter(is_active=True).order_by('sort_order', 'id'))
+            hero_images_data = [{'url': img.image.url, 'link_url': img.link_url} for img in hero_images]
         reviews = Review.objects.filter(status='approved').order_by('-created_at')[:6]
         return render(request, 'main/general.html', {
             'categories': categories,
             'blocks': blocks,
             'reviews': reviews,
-            'hero_block': hero_block
+            'hero_block': hero_block,
+            'hero_images': hero_images,
+            'hero_images_data': hero_images_data,
         })
     
     def post(self, request):
