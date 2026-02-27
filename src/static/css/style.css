@@ -74,6 +74,10 @@ img {
   position: relative;
 }
 
+.hero-link {
+  display: block;
+}
+
 .hero-wrapper::after {
   content: "";
   position: absolute;
